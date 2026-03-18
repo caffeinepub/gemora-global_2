@@ -9,6 +9,7 @@ const links = [
   { label: "Wholesale", to: "/wholesale" },
   { label: "Markets", to: "/export" },
   { label: "Gallery", to: "/gallery" },
+  { label: "Blog", to: "/blog" },
   { label: "Contact", to: "/contact" },
 ];
 
@@ -21,9 +22,9 @@ export default function Navbar() {
       <div className="container flex items-center justify-between h-16">
         <Link to="/" className="flex items-center">
           <img
-            src="/assets/generated/gemora-logo-gold-transparent.dim_400x120.png"
+            src="/assets/uploads/logo-removebg-preview-1.png"
             alt="Gemora Global"
-            style={{ height: "48px", width: "auto", objectFit: "contain" }}
+            style={{ height: "56px", width: "auto", objectFit: "contain" }}
           />
         </Link>
         <div className="hidden md:flex items-center gap-5">

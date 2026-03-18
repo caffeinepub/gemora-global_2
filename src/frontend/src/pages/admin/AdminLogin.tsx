@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useActor } from "../../hooks/useActor";
+import { createActorWithConfig } from "../../config";
 
 const BOKEH = [
   { w: 60, h: 60, l: 10, t: 20 },
@@ -14,11 +14,9 @@ const BOKEH = [
   { w: 180, h: 180, l: 58, t: 20 },
   { w: 210, h: 210, l: 70, t: 45 },
   { w: 240, h: 240, l: 82, t: 20 },
-  { w: 270, h: 270, l: 94, t: 45 },
 ];
 
 export default function AdminLogin() {
-  const { actor, isFetching } = useActor();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -27,14 +25,9 @@ export default function AdminLogin() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!actor) {
-      toast.info(
-        "Server is still connecting, please wait a moment and try again.",
-      );
-      return;
-    }
     setLoading(true);
     try {
+      const actor = await createActorWithConfig();
       const valid = await actor.verifyAdminLogin(username, password);
       if (valid) {
         sessionStorage.setItem("adminSession", "true");
@@ -74,20 +67,18 @@ export default function AdminLogin() {
           />
         ))}
       </div>
-
       <div className="relative w-full max-w-md px-4">
         <div className="text-center mb-8">
           <img
-            src="/assets/generated/gemora-logo-gold-transparent.dim_400x120.png"
+            src="/assets/uploads/logo-removebg-preview-1.png"
             alt="Gemora Global"
-            style={{ height: "64px", width: "auto", objectFit: "contain" }}
+            style={{ height: "72px", width: "auto", objectFit: "contain" }}
             className="mx-auto mb-4"
           />
           <p className="text-amber-400/60 text-sm tracking-widest uppercase">
             Admin Portal
           </p>
         </div>
-
         <div
           className="rounded-2xl p-8"
           style={{
@@ -102,13 +93,6 @@ export default function AdminLogin() {
           <p className="text-amber-400/50 text-sm mb-8">
             Sign in to manage your store
           </p>
-
-          {isFetching && !loading && (
-            <p className="text-amber-400/50 text-xs text-center mb-4">
-              Connecting to server...
-            </p>
-          )}
-
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
               <Label className="text-amber-200/70 text-sm mb-2 block">
@@ -124,7 +108,6 @@ export default function AdminLogin() {
                 className="bg-black/30 border-amber-400/20 text-white placeholder:text-white/30 focus:border-amber-400/60 h-11"
               />
             </div>
-
             <div>
               <Label className="text-amber-200/70 text-sm mb-2 block">
                 Password
@@ -149,7 +132,6 @@ export default function AdminLogin() {
                 </button>
               </div>
             </div>
-
             <Button
               type="submit"
               disabled={loading}
@@ -160,11 +142,7 @@ export default function AdminLogin() {
               }}
               data-ocid="admin.submit_button"
             >
-              {loading
-                ? "Signing in..."
-                : isFetching
-                  ? "Connecting..."
-                  : "Sign In"}
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
         </div>

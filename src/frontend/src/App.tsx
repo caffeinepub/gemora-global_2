@@ -2,9 +2,12 @@ import { Toaster } from "@/components/ui/sonner";
 import { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AdminGuard from "./components/AdminGuard";
+import ScrollToTop from "./components/ScrollToTop";
 import WhatsAppButton from "./components/WhatsAppButton";
 import { useActor } from "./hooks/useActor";
 import About from "./pages/About";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import Contact from "./pages/Contact";
 import ExportMarkets from "./pages/ExportMarkets";
 import Gallery from "./pages/Gallery";
@@ -32,6 +35,7 @@ function VisitTracker() {
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <VisitTracker />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -41,6 +45,8 @@ export default function App() {
         <Route path="/wholesale" element={<Wholesale />} />
         <Route path="/export" element={<ExportMarkets />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route

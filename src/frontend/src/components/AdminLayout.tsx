@@ -42,7 +42,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           style={{ borderBottom: "1px solid rgba(201,168,76,0.12)" }}
         >
           <img
-            src="/assets/uploads/logo-1.png"
+            src="/assets/uploads/logo-removebg-preview-1.png"
             alt="Gemora Global"
             className="h-10 object-contain"
           />

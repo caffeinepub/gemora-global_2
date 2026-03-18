@@ -96,7 +96,8 @@ actor {
   var adminUsername : Text = "admin";
   var adminPassword : Text = "Gemora@2024";
 
-  public shared func verifyAdminLogin(username : Text, password : Text) : async Bool {
+  // Changed to query func for fast, reliable login verification
+  public query func verifyAdminLogin(username : Text, password : Text) : async Bool {
     Text.equal(username, adminUsername) and Text.equal(password, adminPassword);
   };
 

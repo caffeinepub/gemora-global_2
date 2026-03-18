@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://gemoraglobal-tje.caffeine.xyz/sitemap.xml
