@@ -8,34 +8,62 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
 
+const CATEGORY_IMAGES: Record<string, string> = {
+  Necklaces: "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg",
+  Earrings: "/assets/generated/jewellery-earrings-hd.dim_800x800.jpg",
+  Bracelets: "/assets/generated/jewellery-bracelets-hd.dim_800x800.jpg",
+  Rings: "/assets/generated/jewellery-rings-hd.dim_800x800.jpg",
+  "Bridal Jewellery": "/assets/generated/jewellery-bridal-hd.dim_800x800.jpg",
+  "Minimal Fashion": "/assets/generated/jewellery-minimal-hd.dim_800x800.jpg",
+  "Minimal Fashion Jewellery":
+    "/assets/generated/jewellery-minimal-hd.dim_800x800.jpg",
+};
+
+const FALLBACK_IMAGE =
+  "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg";
+
 const SAMPLE_CATEGORIES: Category[] = [
   {
     id: 1n,
     name: "Necklaces",
     description: "Exquisite handcrafted necklaces",
-    imageUrl: "https://placehold.co/400x400/1a1a2e/c9a84c?text=Necklaces",
+    imageUrl: "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg",
     sortOrder: 1n,
   },
   {
     id: 2n,
     name: "Earrings",
     description: "Stunning earring collections",
-    imageUrl: "https://placehold.co/400x400/1a1a2e/c9a84c?text=Earrings",
+    imageUrl: "/assets/generated/jewellery-earrings-hd.dim_800x800.jpg",
     sortOrder: 2n,
   },
   {
     id: 3n,
-    name: "Bangles",
-    description: "Traditional & modern bangles",
-    imageUrl: "https://placehold.co/400x400/1a1a2e/c9a84c?text=Bangles",
+    name: "Bracelets",
+    description: "Elegant bracelet designs",
+    imageUrl: "/assets/generated/jewellery-bracelets-hd.dim_800x800.jpg",
     sortOrder: 3n,
   },
   {
     id: 4n,
-    name: "Bridal Sets",
-    description: "Complete bridal jewellery sets",
-    imageUrl: "https://placehold.co/400x400/1a1a2e/c9a84c?text=Bridal+Sets",
+    name: "Rings",
+    description: "Statement rings for every occasion",
+    imageUrl: "/assets/generated/jewellery-rings-hd.dim_800x800.jpg",
     sortOrder: 4n,
+  },
+  {
+    id: 5n,
+    name: "Bridal Jewellery",
+    description: "Complete bridal jewellery sets",
+    imageUrl: "/assets/generated/jewellery-bridal-hd.dim_800x800.jpg",
+    sortOrder: 5n,
+  },
+  {
+    id: 6n,
+    name: "Minimal Fashion",
+    description: "Modern minimal fashion jewellery",
+    imageUrl: "/assets/generated/jewellery-minimal-hd.dim_800x800.jpg",
+    sortOrder: 6n,
   },
 ];
 
@@ -71,25 +99,32 @@ const SAMPLE_TESTIMONIALS: Testimonial[] = [
 
 const WHY_CHOOSE = [
   {
-    icon: "💎",
-    title: "Premium Craftsmanship",
-    desc: "Each piece handcrafted by skilled artisans with decades of experience.",
-  },
-  {
     icon: "💰",
-    title: "Wholesale Pricing",
-    desc: "Competitive bulk pricing with flexible MOQ for businesses of all sizes.",
+    title: "Competitive Pricing",
+    desc: "Factory-direct bulk pricing. Best margins for wholesalers and distributors.",
   },
   {
-    icon: "✈️",
-    title: "Global Shipping",
-    desc: "Reliable export to UAE, USA, UK, Europe and 50+ countries worldwide.",
+    icon: "✨",
+    title: "Premium Finishing",
+    desc: "Anti-tarnish, gold-plated, rhodium-finished jewellery with lasting quality.",
   },
   {
-    icon: "🎨",
-    title: "Custom Designs",
-    desc: "OEM/ODM services available. Bring your design ideas to life.",
+    icon: "🤝",
+    title: "Reliable Export Partner",
+    desc: "10+ years of global export experience. On-time delivery guaranteed.",
   },
+  {
+    icon: "🌟",
+    title: "Trendy Fashion Designs",
+    desc: "500+ fresh designs updated seasonally to keep your store ahead of trends.",
+  },
+];
+
+const STATS = [
+  { value: "500+", label: "Designs" },
+  { value: "50+", label: "Countries" },
+  { value: "10+", label: "Years Experience" },
+  { value: "10,000+", label: "Happy Clients" },
 ];
 
 export default function Home() {
@@ -120,6 +155,12 @@ export default function Home() {
       ? testimonials.filter((t) => t.active)
       : SAMPLE_TESTIMONIALS;
 
+  const getCategoryImage = (cat: Category) => {
+    if (cat.imageUrl && !cat.imageUrl.includes("placehold.co"))
+      return cat.imageUrl;
+    return CATEGORY_IMAGES[cat.name] || FALLBACK_IMAGE;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -128,15 +169,17 @@ export default function Home() {
       <section
         className="relative min-h-[90vh] flex items-center justify-center pt-16"
         style={{
-          background:
-            "linear-gradient(135deg, oklch(0.10 0.015 285) 0%, oklch(0.18 0.02 285) 50%, oklch(0.12 0.01 285) 100%)",
+          backgroundImage:
+            "url('/assets/generated/hero-jewellery-banner.dim_1600x700.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage:
-              "radial-gradient(circle at 30% 50%, oklch(0.78 0.12 75 / 0.08) 0%, transparent 60%), radial-gradient(circle at 70% 50%, oklch(0.78 0.12 75 / 0.06) 0%, transparent 60%)",
+            background:
+              "linear-gradient(135deg, rgba(10,6,2,0.78) 0%, rgba(20,12,4,0.65) 50%, rgba(10,6,2,0.75) 100%)",
           }}
         />
         <div className="container text-center relative z-10 px-4">
@@ -158,23 +201,39 @@ export default function Home() {
               asChild
               size="lg"
               className="bg-primary text-primary-foreground hover:bg-primary/90 px-8"
-              data-ocid="hero.primary_button"
             >
-              <Link to="/products">View Collection</Link>
+              <Link to="/gallery">View Catalogue</Link>
             </Button>
             <Button
               asChild
               size="lg"
               variant="outline"
               className="border-primary text-primary hover:bg-primary/10 px-8"
-              data-ocid="hero.secondary_button"
             >
-              <Link to="/contact">Get Wholesale Quote</Link>
+              <Link to="/contact">Contact for Wholesale</Link>
             </Button>
           </div>
           <p className="text-muted-foreground/60 text-sm mt-8 tracking-widest">
             GLOBAL JEWELLERY. INDIAN CRAFTSMANSHIP.
           </p>
+        </div>
+      </section>
+
+      {/* Stats Bar */}
+      <section className="bg-primary/10 border-y border-primary/20 py-8">
+        <div className="container">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            {STATS.map((s) => (
+              <div key={s.label}>
+                <div className="font-serif text-3xl font-bold text-primary">
+                  {s.value}
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  {s.label}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -188,54 +247,57 @@ export default function Home() {
             Explore our curated jewellery categories
           </p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {displayCategories.map((cat) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {displayCategories.slice(0, 6).map((cat) => (
             <Link
               key={String(cat.id)}
               to={`/products?category=${cat.id}`}
               className="group relative overflow-hidden rounded-lg aspect-square cursor-pointer"
             >
               <img
-                src={
-                  cat.imageUrl ||
-                  `https://placehold.co/400x400/1a1a2e/c9a84c?text=${encodeURIComponent(cat.name)}`
-                }
+                src={getCategoryImage(cat)}
                 alt={cat.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <h3 className="font-serif text-white font-semibold text-lg">
+              <div className="absolute bottom-0 left-0 right-0 p-3">
+                <h3 className="font-serif text-white font-semibold text-sm">
                   {cat.name}
                 </h3>
               </div>
             </Link>
           ))}
         </div>
+        <div className="text-center mt-8">
+          <Button
+            asChild
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary/10"
+          >
+            <Link to="/products">View All Collections</Link>
+          </Button>
+        </div>
       </section>
 
       {/* Featured Products */}
-      <section className="bg-card py-16">
-        <div className="container">
-          <div className="text-center mb-10">
-            <h2 className="font-serif text-3xl md:text-4xl font-bold mb-3">
-              Featured Products
-            </h2>
-            <p className="text-muted-foreground">
-              Bestselling designs loved by buyers worldwide
-            </p>
-          </div>
-          {featured && featured.length > 0 ? (
+      {featured && featured.length > 0 && (
+        <section className="bg-card py-16">
+          <div className="container">
+            <div className="text-center mb-10">
+              <h2 className="font-serif text-3xl md:text-4xl font-bold mb-3">
+                Featured Products
+              </h2>
+              <p className="text-muted-foreground">
+                Bestselling designs loved by buyers worldwide
+              </p>
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {featured.slice(0, 8).map((product) => (
                 <Link key={String(product.id)} to={`/products/${product.id}`}>
-                  <Card className="overflow-hidden group hover:shadow-gold transition-shadow">
+                  <Card className="overflow-hidden group hover:border-primary/50 transition-all">
                     <div className="aspect-square overflow-hidden">
                       <img
-                        src={
-                          product.imageUrls[0] ||
-                          `https://placehold.co/400x400/1a1a2e/c9a84c?text=${encodeURIComponent(product.name)}`
-                        }
+                        src={product.imageUrls[0] || FALLBACK_IMAGE}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -252,44 +314,50 @@ export default function Home() {
                 </Link>
               ))}
             </div>
-          ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <p className="text-4xl mb-4">💎</p>
-              <p>Products are being added. Check back soon!</p>
-              <Button
-                asChild
-                className="mt-4 bg-primary text-primary-foreground"
-              >
-                <Link to="/contact">Request Catalog</Link>
-              </Button>
-            </div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
-      {/* Export Countries */}
+      {/* Global Markets */}
       <section className="container py-16">
         <div className="text-center mb-10">
           <h2 className="font-serif text-3xl font-bold mb-3">
-            Trusted by Buyers in
+            Trusted by Buyers In
           </h2>
+          <p className="text-muted-foreground">
+            Supplying premium jewellery to wholesalers across the globe
+          </p>
         </div>
-        <div className="flex flex-wrap justify-center gap-8">
+        <div className="flex flex-wrap justify-center gap-6">
           {[
+            { flag: "🇫🇷", country: "France" },
             { flag: "🇦🇪", country: "UAE" },
             { flag: "🇺🇸", country: "USA" },
             { flag: "🇬🇧", country: "UK" },
             { flag: "🇪🇺", country: "Europe" },
             { flag: "🇨🇦", country: "Canada" },
             { flag: "🇦🇺", country: "Australia" },
+            { flag: "🇸🇬", country: "Singapore" },
           ].map((m) => (
-            <div key={m.country} className="flex flex-col items-center gap-2">
-              <span className="text-4xl">{m.flag}</span>
-              <span className="text-sm font-medium text-muted-foreground">
+            <div
+              key={m.country}
+              className="flex flex-col items-center gap-2 bg-card border border-border rounded-lg p-4 min-w-[80px] hover:border-primary/50 transition-colors"
+            >
+              <span className="text-3xl">{m.flag}</span>
+              <span className="text-xs font-medium text-muted-foreground">
                 {m.country}
               </span>
             </div>
           ))}
+        </div>
+        <div className="text-center mt-8">
+          <Button
+            asChild
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary/10"
+          >
+            <Link to="/export">View All Markets</Link>
+          </Button>
         </div>
       </section>
 
@@ -300,6 +368,10 @@ export default function Home() {
             <h2 className="font-serif text-3xl md:text-4xl font-bold mb-3">
               Why Choose Gemora Global?
             </h2>
+            <p className="text-muted-foreground">
+              The preferred wholesale jewellery supplier for international
+              buyers
+            </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {WHY_CHOOSE.map((item) => (
@@ -331,14 +403,16 @@ export default function Home() {
             >
               <CardContent className="p-0">
                 <div className="flex gap-1 mb-3">
-                  {Array.from(Array(Number(t.rating)).keys()).map((n) => (
-                    <span
-                      key={`${String(t.id)}-star-${n + 1}`}
-                      className="text-primary"
-                    >
-                      ★
-                    </span>
-                  ))}
+                  {Array.from({ length: Number(t.rating) }, (_, n) => n).map(
+                    (n) => (
+                      <span
+                        key={`${String(t.id)}-star-${n}`}
+                        className="text-primary"
+                      >
+                        ★
+                      </span>
+                    ),
+                  )}
                 </div>
                 <p className="text-sm text-muted-foreground italic mb-4">
                   "{t.text}"
@@ -355,23 +429,93 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Inquiry CTA */}
+      {/* Instagram Grid */}
+      <section className="bg-card border-y border-border py-16">
+        <div className="container">
+          <div className="text-center mb-8">
+            <h2 className="font-serif text-3xl font-bold mb-2">
+              Follow Our Designs
+            </h2>
+            <p className="text-muted-foreground">@gemoraglobal on Instagram</p>
+          </div>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+            {[
+              "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg",
+              "/assets/generated/jewellery-earrings-hd.dim_800x800.jpg",
+              "/assets/generated/jewellery-bracelets-hd.dim_800x800.jpg",
+              "/assets/generated/jewellery-rings-hd.dim_800x800.jpg",
+              "/assets/generated/jewellery-bridal-hd.dim_800x800.jpg",
+              "/assets/generated/jewellery-minimal-hd.dim_800x800.jpg",
+            ].map((src, i) => (
+              <a
+                key={src}
+                href="https://instagram.com/gemoraglobal"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`View Instagram post ${i + 1}`}
+                className="aspect-square overflow-hidden rounded-lg border border-border hover:border-primary/50 transition-colors group block"
+              >
+                <img
+                  src={src}
+                  alt={`Gemora jewellery ${i + 1}`}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </a>
+            ))}
+          </div>
+          <div className="text-center mt-6">
+            <a
+              href="https://instagram.com/gemoraglobal"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-primary hover:underline text-sm font-medium"
+            >
+              View on Instagram →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Catalogue Download + Inquiry CTA */}
       <section className="bg-primary/10 border-y border-primary/20 py-16">
         <div className="container text-center">
           <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4 text-primary">
             Ready to Start Wholesale?
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto mb-8">
-            Contact us today for pricing, MOQ details, and our latest catalogue.
-            We serve buyers worldwide.
+            Download our catalogue or contact us for pricing, MOQ details, and
+            latest designs.
           </p>
-          <Button
-            asChild
-            size="lg"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 px-10"
-          >
-            <Link to="/contact">Send Inquiry Now</Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              asChild
+              size="lg"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 px-10"
+            >
+              <Link to="/contact">Send Inquiry Now</Link>
+            </Button>
+            <a
+              href="/catalogue.pdf"
+              download
+              className="inline-flex items-center gap-2 border border-primary text-primary hover:bg-primary/10 px-8 py-3 rounded-lg text-sm font-medium transition-colors"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+              Download Catalogue
+            </a>
+          </div>
         </div>
       </section>
 

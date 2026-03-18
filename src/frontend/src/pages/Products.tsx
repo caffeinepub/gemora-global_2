@@ -1,17 +1,203 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useQuery } from "@tanstack/react-query";
+import { Textarea } from "@/components/ui/textarea";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 import type { Category, Product } from "../backend";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
 
+const CATEGORY_IMAGES: Record<string, string> = {
+  Necklaces: "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg",
+  Earrings: "/assets/generated/jewellery-earrings-hd.dim_800x800.jpg",
+  Bracelets: "/assets/generated/jewellery-bracelets-hd.dim_800x800.jpg",
+  Rings: "/assets/generated/jewellery-rings-hd.dim_800x800.jpg",
+  "Bridal Jewellery": "/assets/generated/jewellery-bridal-hd.dim_800x800.jpg",
+  "Minimal Fashion": "/assets/generated/jewellery-minimal-hd.dim_800x800.jpg",
+  "Minimal Fashion Jewellery":
+    "/assets/generated/jewellery-minimal-hd.dim_800x800.jpg",
+};
+
+const SAMPLE_CATEGORIES: Category[] = [
+  {
+    id: 1n,
+    name: "Necklaces",
+    description: "Exquisite handcrafted necklaces",
+    imageUrl: "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg",
+    sortOrder: 1n,
+  },
+  {
+    id: 2n,
+    name: "Earrings",
+    description: "Stunning earring collections",
+    imageUrl: "/assets/generated/jewellery-earrings-hd.dim_800x800.jpg",
+    sortOrder: 2n,
+  },
+  {
+    id: 3n,
+    name: "Bracelets",
+    description: "Elegant bracelet designs",
+    imageUrl: "/assets/generated/jewellery-bracelets-hd.dim_800x800.jpg",
+    sortOrder: 3n,
+  },
+  {
+    id: 4n,
+    name: "Rings",
+    description: "Statement rings for every occasion",
+    imageUrl: "/assets/generated/jewellery-rings-hd.dim_800x800.jpg",
+    sortOrder: 4n,
+  },
+  {
+    id: 5n,
+    name: "Bridal Jewellery",
+    description: "Complete bridal jewellery sets",
+    imageUrl: "/assets/generated/jewellery-bridal-hd.dim_800x800.jpg",
+    sortOrder: 5n,
+  },
+  {
+    id: 6n,
+    name: "Minimal Fashion Jewellery",
+    description: "Modern minimal fashion jewellery",
+    imageUrl: "/assets/generated/jewellery-minimal-hd.dim_800x800.jpg",
+    sortOrder: 6n,
+  },
+];
+
+interface InquiryModalProps {
+  product: Product | null;
+  open: boolean;
+  onClose: () => void;
+}
+
+function InquiryModal({ product, open, onClose }: InquiryModalProps) {
+  const { actor } = useActor();
+  const [form, setForm] = useState({
+    name: "",
+    country: "",
+    whatsapp: "",
+    requirement: "",
+  });
+
+  const mutation = useMutation({
+    mutationFn: () =>
+      actor!.submitInquiry(
+        form.name,
+        form.country,
+        form.whatsapp,
+        form.requirement,
+        product ? product.id : null,
+      ),
+    onSuccess: () => {
+      toast.success("Inquiry sent! We'll contact you shortly.");
+      setForm({ name: "", country: "", whatsapp: "", requirement: "" });
+      onClose();
+    },
+    onError: () => toast.error("Failed to send. Please try WhatsApp."),
+  });
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) onClose();
+      }}
+    >
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="font-serif">
+            {product ? `Inquire: ${product.name}` : "Wholesale Inquiry"}
+          </DialogTitle>
+        </DialogHeader>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            mutation.mutate();
+          }}
+          className="space-y-4"
+        >
+          <div>
+            <Label htmlFor="inq-name">Your Name *</Label>
+            <Input
+              id="inq-name"
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              placeholder="Full name"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="inq-country">Country *</Label>
+            <Input
+              id="inq-country"
+              value={form.country}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, country: e.target.value }))
+              }
+              placeholder="Your country"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="inq-whatsapp">WhatsApp Number *</Label>
+            <Input
+              id="inq-whatsapp"
+              value={form.whatsapp}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, whatsapp: e.target.value }))
+              }
+              placeholder="+1 234 567 8900"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="inq-req">Requirement *</Label>
+            <Textarea
+              id="inq-req"
+              value={form.requirement}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, requirement: e.target.value }))
+              }
+              placeholder="Describe your requirement, quantity, budget..."
+              rows={3}
+              required
+            />
+          </div>
+          <div className="flex gap-3">
+            <Button
+              type="submit"
+              disabled={mutation.isPending}
+              className="flex-1 bg-primary text-primary-foreground"
+            >
+              {mutation.isPending ? "Sending..." : "Send Inquiry"}
+            </Button>
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function Products() {
   const { actor } = useActor();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCatId = searchParams.get("category");
+  const [inquiryProduct, setInquiryProduct] = useState<Product | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const { data: categories, isLoading: catsLoading } = useQuery<Category[]>({
     queryKey: ["categories"],
@@ -25,15 +211,36 @@ export default function Products() {
     enabled: !!actor,
   });
 
+  const displayCategories =
+    categories && categories.length > 0 ? categories : SAMPLE_CATEGORIES;
+
+  const getCategoryImage = (cat: Category) => {
+    if (cat.imageUrl && !cat.imageUrl.includes("placehold.co"))
+      return cat.imageUrl;
+    return (
+      CATEGORY_IMAGES[cat.name] ||
+      "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg"
+    );
+  };
+
+  const openInquiry = (product: Product, e: React.MouseEvent) => {
+    e.preventDefault();
+    setInquiryProduct(product);
+    setModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-16">
         <div className="bg-card border-b border-border py-12">
           <div className="container">
-            <h1 className="font-serif text-4xl font-bold mb-2">Our Products</h1>
+            <h1 className="font-serif text-4xl font-bold mb-2">
+              Product Collections
+            </h1>
             <p className="text-muted-foreground">
-              Browse our complete jewellery catalogue
+              Browse our complete jewellery catalogue — wholesale inquiries
+              welcome
             </p>
           </div>
         </div>
@@ -44,20 +251,18 @@ export default function Products() {
               variant={!activeCatId ? "default" : "outline"}
               size="sm"
               onClick={() => setSearchParams({})}
-              data-ocid="products.tab"
               className={
                 !activeCatId ? "bg-primary text-primary-foreground" : ""
               }
             >
               All
             </Button>
-            {categories?.map((cat) => (
+            {displayCategories.map((cat) => (
               <Button
                 key={String(cat.id)}
                 variant={activeCatId === String(cat.id) ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSearchParams({ category: String(cat.id) })}
-                data-ocid="products.tab"
                 className={
                   activeCatId === String(cat.id)
                     ? "bg-primary text-primary-foreground"
@@ -69,29 +274,58 @@ export default function Products() {
             ))}
           </div>
 
+          {/* Category Grid when no products filtered */}
+          {!activeCatId &&
+            (!products || products.length === 0) &&
+            !prodsLoading && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+                {displayCategories.map((cat) => (
+                  <button
+                    key={String(cat.id)}
+                    type="button"
+                    onClick={() =>
+                      setSearchParams({ category: String(cat.id) })
+                    }
+                    className="group relative overflow-hidden rounded-xl aspect-square cursor-pointer border border-border hover:border-primary/50 transition-all"
+                  >
+                    <img
+                      src={getCategoryImage(cat)}
+                      alt={cat.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-left">
+                      <h3 className="font-serif text-white font-bold text-lg">
+                        {cat.name}
+                      </h3>
+                      <p className="text-white/70 text-sm">{cat.description}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
           {/* Products Grid */}
           {catsLoading || prodsLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {Array.from({ length: 8 }, (_, skIdx) => `sk-${skIdx}`).map(
-                (skKey) => (
-                  <Skeleton key={skKey} className="aspect-square rounded-lg" />
-                ),
-              )}
+              {Array.from({ length: 8 }, (_, i) => `sk-${i}`).map((k) => (
+                <Skeleton key={k} className="aspect-square rounded-lg" />
+              ))}
             </div>
           ) : products && products.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {products.map((product) => (
-                <Link
+                <div
                   key={String(product.id)}
-                  to={`/products/${product.id}`}
-                  className="group"
+                  className="group rounded-lg overflow-hidden border border-border hover:border-primary/50 transition-all bg-card flex flex-col"
                 >
-                  <div className="rounded-lg overflow-hidden border border-border hover:border-primary/50 transition-all hover:shadow-gold bg-card">
+                  <Link to={`/products/${product.id}`} className="flex-1">
                     <div className="aspect-square overflow-hidden">
                       <img
                         src={
                           product.imageUrls[0] ||
-                          `https://placehold.co/400x400/1a1a2e/c9a84c?text=${encodeURIComponent(product.name)}`
+                          CATEGORY_IMAGES[product.name] ||
+                          "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg"
                         }
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -101,7 +335,10 @@ export default function Products() {
                       <h3 className="font-medium text-sm truncate">
                         {product.name}
                       </h3>
-                      <div className="flex items-center justify-between mt-1">
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                        {product.description}
+                      </p>
+                      <div className="flex items-center gap-2 mt-2">
                         <span className="text-xs text-muted-foreground">
                           MOQ: {product.moq}
                         </span>
@@ -112,24 +349,56 @@ export default function Products() {
                         )}
                       </div>
                     </div>
+                  </Link>
+                  <div className="px-3 pb-3">
+                    <Button
+                      size="sm"
+                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs"
+                      onClick={(e) => openInquiry(product, e)}
+                    >
+                      Get Wholesale Quote
+                    </Button>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
-          ) : (
-            <div className="text-center py-20" data-ocid="products.empty_state">
+          ) : activeCatId ? (
+            <div className="text-center py-20">
               <p className="text-5xl mb-4">💎</p>
-              <p className="text-muted-foreground mb-6">
-                No products in this category yet.
+              <p className="text-muted-foreground mb-2 font-medium">
+                Our catalogue is being updated.
               </p>
-              <Button asChild className="bg-primary text-primary-foreground">
-                <Link to="/contact">Request Custom Catalogue</Link>
-              </Button>
+              <p className="text-muted-foreground text-sm mb-6">
+                Contact us to request a custom catalogue for{" "}
+                {displayCategories.find((c) => String(c.id) === activeCatId)
+                  ?.name ?? "this category"}
+                .
+              </p>
+              <div className="flex gap-3 justify-center flex-wrap">
+                <Button asChild className="bg-primary text-primary-foreground">
+                  <Link to="/contact">Request Catalogue</Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-primary text-primary"
+                  onClick={() => {
+                    setInquiryProduct(null);
+                    setModalOpen(true);
+                  }}
+                >
+                  Quick Inquiry
+                </Button>
+              </div>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
       <Footer />
+      <InquiryModal
+        product={inquiryProduct}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+      />
     </div>
   );
 }

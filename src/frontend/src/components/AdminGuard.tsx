@@ -1,21 +1,18 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { type ReactNode, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { useActor } from "../hooks/useActor";
 
 export default function AdminGuard({ children }: { children: ReactNode }) {
-  const { actor, isFetching } = useActor();
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [checked, setChecked] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    if (!actor) return;
-    actor
-      .isCallerAdmin()
-      .then(setIsAdmin)
-      .catch(() => setIsAdmin(false));
-  }, [actor]);
+    const session = sessionStorage.getItem("adminSession");
+    setIsAdmin(session === "true");
+    setChecked(true);
+  }, []);
 
-  if (isFetching || isAdmin === null) {
+  if (!checked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Skeleton className="h-12 w-48" />

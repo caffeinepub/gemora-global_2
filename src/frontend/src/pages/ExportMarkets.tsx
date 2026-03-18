@@ -5,6 +5,17 @@ import Navbar from "../components/Navbar";
 
 const markets = [
   {
+    flag: "🇫🇷",
+    country: "France",
+    description:
+      "French boutiques and fashion retailers trust Gemora for on-trend European designs. We supply seasonal collections tailored to Parisian fashion tastes.",
+    packaging:
+      "Elegant gift boxes with satin ribbon. Custom branding available.",
+    shipping:
+      "Direct flights from Mumbai to Paris CDG. Delivery in 6-8 business days.",
+    bulk: "MOQ starts at 100 pieces. Mixed collections welcome.",
+  },
+  {
     flag: "🇦🇪",
     country: "UAE",
     description:
@@ -40,7 +51,7 @@ const markets = [
     flag: "🇪🇺",
     country: "Europe",
     description:
-      "We supply to boutiques across Germany, France, Netherlands, and beyond. Our designs are tailored to European fashion sensibilities.",
+      "We supply to boutiques across Germany, Netherlands, Spain, and beyond. Our designs are tailored to European fashion sensibilities.",
     packaging:
       "EU-compliant packaging with material composition labels available.",
     shipping: "Via Frankfurt or Amsterdam hubs. 8-12 days standard.",
@@ -56,7 +67,7 @@ export default function ExportMarkets() {
         <div className="bg-card border-b border-border py-12">
           <div className="container">
             <h1 className="font-serif text-4xl font-bold mb-2">
-              Export Markets
+              Global Export Markets
             </h1>
             <p className="text-muted-foreground">
               We deliver premium jewellery to wholesalers worldwide

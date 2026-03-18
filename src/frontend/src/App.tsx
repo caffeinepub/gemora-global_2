@@ -11,6 +11,7 @@ import Gallery from "./pages/Gallery";
 import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
 import Products from "./pages/Products";
+import Wholesale from "./pages/Wholesale";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<ProductDetail />} />
+        <Route path="/wholesale" element={<Wholesale />} />
         <Route path="/export" element={<ExportMarkets />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/contact" element={<Contact />} />

@@ -154,6 +154,8 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
+    verifyAdminLogin(username: string, password: string): Promise<boolean>;
+    changeAdminCredentials(currentUsername: string, currentPassword: string, newUsername: string, newPassword: string): Promise<boolean>;
     _caffeineStorageBlobIsLive(hash: Uint8Array): Promise<boolean>;
     _caffeineStorageBlobsToDelete(): Promise<Array<Uint8Array>>;
     _caffeineStorageConfirmBlobDeletion(blobs: Array<Uint8Array>): Promise<void>;
@@ -201,6 +203,14 @@ export interface backendInterface {
 import type { Inquiry as _Inquiry, Product as _Product, UserProfile as _UserProfile, UserRole as _UserRole, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
+    async verifyAdminLogin(arg0: string, arg1: string): Promise<boolean> {
+        const result = await this.actor.verifyAdminLogin(arg0, arg1);
+        return result;
+    }
+    async changeAdminCredentials(arg0: string, arg1: string, arg2: string, arg3: string): Promise<boolean> {
+        const result = await this.actor.changeAdminCredentials(arg0, arg1, arg2, arg3);
+        return result;
+    }
     async _caffeineStorageBlobIsLive(arg0: Uint8Array): Promise<boolean> {
         if (this.processError) {
             try {

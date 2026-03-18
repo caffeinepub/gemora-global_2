@@ -6,7 +6,8 @@ const links = [
   { label: "Home", to: "/" },
   { label: "About", to: "/about" },
   { label: "Products", to: "/products" },
-  { label: "Export", to: "/export" },
+  { label: "Wholesale", to: "/wholesale" },
+  { label: "Markets", to: "/export" },
   { label: "Gallery", to: "/gallery" },
   { label: "Contact", to: "/contact" },
 ];
@@ -20,12 +21,12 @@ export default function Navbar() {
       <div className="container flex items-center justify-between h-16">
         <Link to="/" className="flex items-center">
           <img
-            src="/assets/uploads/logo-1.png"
+            src="/assets/generated/gemora-logo-gold-transparent.dim_400x120.png"
             alt="Gemora Global"
-            className="h-14 w-auto object-contain"
+            style={{ height: "48px", width: "auto", objectFit: "contain" }}
           />
         </Link>
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-5">
           {links.map((l) => (
             <Link
               key={l.to}
@@ -94,6 +95,15 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
+          <Button
+            asChild
+            size="sm"
+            className="bg-primary text-primary-foreground w-fit"
+          >
+            <Link to="/contact" onClick={() => setOpen(false)}>
+              Get Quote
+            </Link>
+          </Button>
         </div>
       )}
     </nav>

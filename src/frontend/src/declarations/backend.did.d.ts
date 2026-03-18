@@ -125,6 +125,8 @@ export interface _SERVICE {
   'getTestimonials' : ActorMethod<[], Array<Testimonial>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'verifyAdminLogin' : ActorMethod<[string, string], boolean>,
+  'changeAdminCredentials' : ActorMethod<[string, string, string, string], boolean>,
   'recordVisit' : ActorMethod<[], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'setContent' : ActorMethod<[string, string], undefined>,

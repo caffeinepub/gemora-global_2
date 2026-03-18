@@ -12,9 +12,29 @@ export default function Footer() {
             Global Jewellery. Indian Craftsmanship.
           </p>
           <p className="text-muted-foreground text-sm mt-2">
-            India's leading imitation jewellery manufacturer & global exporter
-            serving wholesalers, boutiques & distributors worldwide.
+            India's leading imitation jewellery manufacturer &amp; global
+            exporter — fashion jewellery manufacturer, wholesale jewellery
+            supplier, and imitation jewellery exporter serving boutiques &amp;
+            distributors worldwide.
           </p>
+          <div className="flex gap-4 mt-4">
+            <a
+              href="https://wa.me/919999999999"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-green-500 hover:text-green-400 text-sm font-medium"
+            >
+              WhatsApp
+            </a>
+            <a
+              href="https://instagram.com/gemoraglobal"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary text-sm font-medium"
+            >
+              Instagram
+            </a>
+          </div>
         </div>
         <div>
           <h4 className="text-sm font-semibold mb-3">Navigation</h4>
@@ -35,6 +55,11 @@ export default function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/wholesale" className="hover:text-primary">
+                Wholesale
+              </Link>
+            </li>
+            <li>
               <Link to="/export" className="hover:text-primary">
                 Export Markets
               </Link>
@@ -44,12 +69,17 @@ export default function Footer() {
                 Gallery
               </Link>
             </li>
+            <li>
+              <Link to="/contact" className="hover:text-primary">
+                Contact
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
           <h4 className="text-sm font-semibold mb-3">Contact</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>Mumbai, India</li>
+            <li>Rajkot, Gujarat, India</li>
             <li>info@gemoraglobal.com</li>
             <li>+91 99999 99999</li>
             <li>

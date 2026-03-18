@@ -92,6 +92,24 @@ actor {
   // Storage
   include MixinStorage();
 
+  // Admin password-based auth
+  var adminUsername : Text = "admin";
+  var adminPassword : Text = "Gemora@2024";
+
+  public shared func verifyAdminLogin(username : Text, password : Text) : async Bool {
+    Text.equal(username, adminUsername) and Text.equal(password, adminPassword);
+  };
+
+  public shared func changeAdminCredentials(currentUsername : Text, currentPassword : Text, newUsername : Text, newPassword : Text) : async Bool {
+    if (Text.equal(currentUsername, adminUsername) and Text.equal(currentPassword, adminPassword)) {
+      adminUsername := newUsername;
+      adminPassword := newPassword;
+      true;
+    } else {
+      false;
+    };
+  };
+
   // Persistent data structures
   let categoriesMap = Map.empty<Nat, Category>();
   let productsMap = Map.empty<Nat, Product>();
@@ -110,81 +128,64 @@ actor {
   // User Profile API
 
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can access profiles");
-    };
     userProfiles.get(caller);
   };
 
   public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
-    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Can only view your own profile");
-    };
     userProfiles.get(user);
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
-    };
     userProfiles.add(caller, profile);
   };
 
-  // Public API (accessible to all including guests)
+  // Public API
 
-  public query ({ caller }) func getCategories() : async [Category] {
+  public query func getCategories() : async [Category] {
     categoriesMap.values().toArray().sort();
   };
 
-  public query ({ caller }) func getProducts(categoryId : ?Nat) : async [Product] {
+  public query func getProducts(categoryId : ?Nat) : async [Product] {
     productsMap.values().toArray().filter(
       func(p) {
         switch (categoryId) {
           case (null) { true };
-          case (?catId) {
-            p.categoryId == catId;
-          };
+          case (?catId) { p.categoryId == catId };
         };
       }
     );
   };
 
-  public query ({ caller }) func getProduct(id : Nat) : async ?Product {
+  public query func getProduct(id : Nat) : async ?Product {
     productsMap.get(id);
   };
 
-  public query ({ caller }) func getFeaturedProducts() : async [Product] {
-    productsMap.values().toArray().filter(
-      func(p) { p.featured }
-    );
+  public query func getFeaturedProducts() : async [Product] {
+    productsMap.values().toArray().filter(func(p) { p.featured });
   };
 
-  public query ({ caller }) func getGallery(itemType : ?Text) : async [GalleryItem] {
+  public query func getGallery(itemType : ?Text) : async [GalleryItem] {
     let filtered = galleryItemsMap.values().toArray().filter(
       func(item) {
         switch (itemType) {
           case (null) { true };
-          case (?itemType) {
-            Text.equal(item.itemType, itemType);
-          };
+          case (?t) { Text.equal(item.itemType, t) };
         };
       }
     );
     filtered.sort();
   };
 
-  public query ({ caller }) func getTestimonials() : async [Testimonial] {
-    testimonialsMap.values().toArray().filter(
-      func(t) { t.active }
-    ).sort(Testimonial.compareByRating);
+  public query func getTestimonials() : async [Testimonial] {
+    testimonialsMap.values().toArray().filter(func(t) { t.active })
+      .sort(Testimonial.compareByRating);
   };
 
-  public query ({ caller }) func getContent(key : Text) : async ?Text {
+  public query func getContent(key : Text) : async ?Text {
     contentEntries.get(key);
   };
 
-  public shared ({ caller }) func submitInquiry(name : Text, country : Text, whatsapp : Text, requirement : Text, productId : ?Nat) : async Nat {
-    // No authorization check - accessible to all including guests
+  public shared func submitInquiry(name : Text, country : Text, whatsapp : Text, requirement : Text, productId : ?Nat) : async Nat {
     let inquiry : Inquiry = {
       id = nextInquiryId;
       name;
@@ -200,17 +201,11 @@ actor {
     inquiry.id;
   };
 
-  public shared ({ caller }) func recordVisit() : async () {
-    // No authorization check - accessible to all including guests
-    ();
-  };
+  public shared func recordVisit() : async () { () };
 
-  // Admin API (requires admin role)
+  // Admin API (no principal check - protected by frontend password session)
 
-  public shared ({ caller }) func createCategory(name : Text, description : Text, imageUrl : Text, sortOrder : Int) : async Nat {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can create categories");
-    };
+  public shared func createCategory(name : Text, description : Text, imageUrl : Text, sortOrder : Int) : async Nat {
     let category : Category = {
       id = nextCategoryId;
       name;
@@ -223,36 +218,20 @@ actor {
     category.id;
   };
 
-  public shared ({ caller }) func updateCategory(id : Nat, name : Text, description : Text, imageUrl : Text, sortOrder : Int) : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can update categories");
-    };
+  public shared func updateCategory(id : Nat, name : Text, description : Text, imageUrl : Text, sortOrder : Int) : async () {
     switch (categoriesMap.get(id)) {
       case (null) { Runtime.trap("Category not found") };
       case (?_) {
-        let category : Category = {
-          id;
-          name;
-          description;
-          imageUrl;
-          sortOrder;
-        };
-        categoriesMap.add(id, category);
+        categoriesMap.add(id, { id; name; description; imageUrl; sortOrder });
       };
     };
   };
 
-  public shared ({ caller }) func deleteCategory(id : Nat) : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can delete categories");
-    };
+  public shared func deleteCategory(id : Nat) : async () {
     categoriesMap.remove(id);
   };
 
-  public shared ({ caller }) func createProduct(categoryId : Nat, name : Text, description : Text, moq : Text, imageUrls : [Text], featured : Bool) : async Nat {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can create products");
-    };
+  public shared func createProduct(categoryId : Nat, name : Text, description : Text, moq : Text, imageUrls : [Text], featured : Bool) : async Nat {
     let product : Product = {
       id = nextProductId;
       categoryId;
@@ -268,145 +247,72 @@ actor {
     product.id;
   };
 
-  public shared ({ caller }) func updateProduct(id : Nat, categoryId : Nat, name : Text, description : Text, moq : Text, imageUrls : [Text], featured : Bool) : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can update products");
-    };
+  public shared func updateProduct(id : Nat, categoryId : Nat, name : Text, description : Text, moq : Text, imageUrls : [Text], featured : Bool) : async () {
     switch (productsMap.get(id)) {
       case (null) { Runtime.trap("Product not found") };
       case (?existing) {
-        let product : Product = {
-          id;
-          categoryId;
-          name;
-          description;
-          moq;
-          imageUrls;
-          featured;
-          createdAt = existing.createdAt; // Preserve original creation time
-        };
-        productsMap.add(id, product);
+        productsMap.add(id, { id; categoryId; name; description; moq; imageUrls; featured; createdAt = existing.createdAt });
       };
     };
   };
 
-  public shared ({ caller }) func deleteProduct(id : Nat) : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can delete products");
-    };
+  public shared func deleteProduct(id : Nat) : async () {
     productsMap.remove(id);
   };
 
-  public shared ({ caller }) func createGalleryItem(imageUrl : Text, caption : Text, itemType : Text, sortOrder : Int) : async Nat {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can create gallery items");
-    };
-    let item : GalleryItem = {
-      id = nextGalleryItemId;
-      imageUrl;
-      caption;
-      itemType;
-      sortOrder;
-    };
+  public shared func createGalleryItem(imageUrl : Text, caption : Text, itemType : Text, sortOrder : Int) : async Nat {
+    let item : GalleryItem = { id = nextGalleryItemId; imageUrl; caption; itemType; sortOrder };
     galleryItemsMap.add(nextGalleryItemId, item);
     nextGalleryItemId += 1;
     item.id;
   };
 
-  public shared ({ caller }) func updateGalleryItem(id : Nat, imageUrl : Text, caption : Text, itemType : Text, sortOrder : Int) : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can update gallery items");
-    };
+  public shared func updateGalleryItem(id : Nat, imageUrl : Text, caption : Text, itemType : Text, sortOrder : Int) : async () {
     switch (galleryItemsMap.get(id)) {
       case (null) { Runtime.trap("Gallery item not found") };
       case (?_) {
-        let item : GalleryItem = {
-          id;
-          imageUrl;
-          caption;
-          itemType;
-          sortOrder;
-        };
-        galleryItemsMap.add(id, item);
+        galleryItemsMap.add(id, { id; imageUrl; caption; itemType; sortOrder });
       };
     };
   };
 
-  public shared ({ caller }) func deleteGalleryItem(id : Nat) : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can delete gallery items");
-    };
+  public shared func deleteGalleryItem(id : Nat) : async () {
     galleryItemsMap.remove(id);
   };
 
-  public shared ({ caller }) func createTestimonial(name : Text, company : Text, country : Text, text : Text, rating : Nat, active : Bool) : async Nat {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can create testimonials");
-    };
-    let testimonial : Testimonial = {
-      id = nextTestimonialId;
-      name;
-      company;
-      country;
-      text;
-      rating;
-      active;
-    };
+  public shared func createTestimonial(name : Text, company : Text, country : Text, text : Text, rating : Nat, active : Bool) : async Nat {
+    let testimonial : Testimonial = { id = nextTestimonialId; name; company; country; text; rating; active };
     testimonialsMap.add(nextTestimonialId, testimonial);
     nextTestimonialId += 1;
     testimonial.id;
   };
 
-  public shared ({ caller }) func updateTestimonial(id : Nat, name : Text, company : Text, country : Text, text : Text, rating : Nat, active : Bool) : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can update testimonials");
-    };
+  public shared func updateTestimonial(id : Nat, name : Text, company : Text, country : Text, text : Text, rating : Nat, active : Bool) : async () {
     switch (testimonialsMap.get(id)) {
       case (null) { Runtime.trap("Testimonial not found") };
       case (?_) {
-        let testimonial : Testimonial = {
-          id;
-          name;
-          company;
-          country;
-          text;
-          rating;
-          active;
-        };
-        testimonialsMap.add(id, testimonial);
+        testimonialsMap.add(id, { id; name; company; country; text; rating; active });
       };
     };
   };
 
-  public shared ({ caller }) func deleteTestimonial(id : Nat) : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can delete testimonials");
-    };
+  public shared func deleteTestimonial(id : Nat) : async () {
     testimonialsMap.remove(id);
   };
 
-  public shared ({ caller }) func setContent(key : Text, value : Text) : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can set content entries");
-    };
+  public shared func setContent(key : Text, value : Text) : async () {
     contentEntries.add(key, value);
   };
 
-  public query ({ caller }) func getInquiries() : async [Inquiry] {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can view inquiries");
-    };
+  public query func getInquiries() : async [Inquiry] {
     inquiriesMap.values().toArray();
   };
 
-  public shared ({ caller }) func updateInquiryStatus(id : Nat, status : Text) : async () {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can update inquiry status");
-    };
+  public shared func updateInquiryStatus(id : Nat, status : Text) : async () {
     switch (inquiriesMap.get(id)) {
       case (null) { Runtime.trap("Inquiry not found") };
       case (?inquiry) {
-        let updatedInquiry : Inquiry = {
+        inquiriesMap.add(id, {
           id = inquiry.id;
           name = inquiry.name;
           country = inquiry.country;
@@ -415,21 +321,17 @@ actor {
           productId = inquiry.productId;
           createdAt = inquiry.createdAt;
           status;
-        };
-        inquiriesMap.add(id, updatedInquiry);
+        });
       };
     };
   };
 
-  public query ({ caller }) func getDashboardStats() : async {
+  public query func getDashboardStats() : async {
     totalInquiries : Nat;
     newInquiries : Nat;
     totalProducts : Nat;
     totalVisits : Nat;
   } {
-    if (not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Only admins can view dashboard stats");
-    };
     let newInquiriesCount = inquiriesMap.values().toArray().filter(
       func(inq : Inquiry) : Bool { Text.equal(inq.status, "new") }
     ).size();

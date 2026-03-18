@@ -61,6 +61,8 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
+    verifyAdminLogin(username: string, password: string): Promise<boolean>;
+    changeAdminCredentials(currentUsername: string, currentPassword: string, newUsername: string, newPassword: string): Promise<boolean>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createCategory(name: string, description: string, imageUrl: string, sortOrder: bigint): Promise<bigint>;
     createGalleryItem(imageUrl: string, caption: string, itemType: string, sortOrder: bigint): Promise<bigint>;
