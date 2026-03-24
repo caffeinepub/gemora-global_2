@@ -125,6 +125,70 @@ actor {
   var nextInquiryId = 1;
   var nextGalleryItemId = 1;
   var nextTestimonialId = 1;
+  // Seed initial data if empty
+  do {
+    if (categoriesMap.size() == 0) {
+      let cats = [
+        ("Necklaces", "Exquisite handcrafted necklaces for every occasion", "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg", 1),
+        ("Earrings", "Stunning earring collections from studs to chandelier drops", "/assets/generated/jewellery-earrings-hd.dim_800x800.jpg", 2),
+        ("Bracelets", "Elegant bracelet and bangle designs", "/assets/generated/jewellery-bracelets-hd.dim_800x800.jpg", 3),
+        ("Rings", "Statement rings for every occasion", "/assets/generated/jewellery-rings-hd.dim_800x800.jpg", 4),
+        ("Bridal Jewellery", "Complete bridal jewellery sets for weddings", "/assets/generated/jewellery-bridal-hd.dim_800x800.jpg", 5),
+        ("Minimal Fashion", "Modern minimalist fashion jewellery", "/assets/generated/jewellery-minimal-hd.dim_800x800.jpg", 6),
+      ];
+      for ((name, desc, img, order) in cats.vals()) {
+        categoriesMap.add(nextCategoryId, { id = nextCategoryId; name; description = desc; imageUrl = img; sortOrder = order });
+        nextCategoryId += 1;
+      };
+    };
+
+    if (productsMap.size() == 0) {
+      let prods = [
+        (1, "Gold Kundan Layered Necklace", "Premium export quality gold-plated kundan necklace. 3-micron gold plating, handcrafted in Jaipur.", "50 pcs", ["/assets/generated/product-necklace.dim_600x600.jpg"], true),
+        (2, "Pearl Drop Chandelier Earrings", "Elegant pearl drop earrings with kundan stone detailing. Lightweight and comfortable.", "50 pcs", ["/assets/generated/product-earrings.dim_600x600.jpg"], true),
+        (3, "Gold Bangle Stack Set", "Set of 6 gold-plated bangles with enamel work. Stackable design, anti-tarnish coating.", "100 sets", ["/assets/generated/product-bracelets.dim_600x600.jpg"], false),
+        (4, "Cocktail Statement Ring", "Bold gold-tone cocktail ring with colourful stone setting. One-size adjustable.", "100 pcs", ["/assets/generated/product-rings.dim_600x600.jpg"], false),
+        (5, "Bridal Kundan Jewellery Set", "Complete bridal set: choker necklace, maang tikka, earrings, and bangles. Premium kundan work.", "20 sets", ["/assets/generated/product-bridal.dim_600x600.jpg"], true),
+        (6, "Minimal Gold Chain Necklace", "Delicate layered gold-tone chain necklace for everyday wear. Perfect for western boutiques.", "100 pcs", ["/assets/generated/jewellery-minimal-hd.dim_800x800.jpg"], true),
+      ];
+      for ((catId, name, desc, moq, imgs, feat) in prods.vals()) {
+        productsMap.add(nextProductId, { id = nextProductId; categoryId = catId; name; description = desc; moq; imageUrls = imgs; featured = feat; createdAt = 0 });
+        nextProductId += 1;
+      };
+    };
+
+    if (testimonialsMap.size() == 0) {
+      let tests = [
+        ("Fatima Al-Hassan", "Al-Noor Boutique", "UAE", "Outstanding quality and prompt delivery. Our customers love Gemora's designs!", 5),
+        ("Marie Dubois", "Paris Bijoux", "France", "Best imitation jewellery exporter we have worked with. Consistent quality every order.", 5),
+        ("Sarah Johnson", "NYC Accessories", "USA", "Gemora's bridal sets are our top sellers. The craftsmanship is exceptional for the price.", 5),
+        ("Ahmed Al-Rashidi", "Gulf Wholesale", "Kuwait", "Fast shipping, competitive pricing, professional team. Highly recommended.", 4),
+      ];
+      for ((name, company, country, text, rating) in tests.vals()) {
+        testimonialsMap.add(nextTestimonialId, { id = nextTestimonialId; name; company; country; text; rating; active = true });
+        nextTestimonialId += 1;
+      };
+    };
+
+    if (galleryItemsMap.size() == 0) {
+      let items = [
+        ("/assets/generated/jewellery-necklace-hd.dim_800x800.jpg", "Gold Kundan Necklace Collection", "image", 1),
+        ("/assets/generated/jewellery-earrings-hd.dim_800x800.jpg", "Chandelier Earrings Collection", "image", 2),
+        ("/assets/generated/jewellery-bracelets-hd.dim_800x800.jpg", "Bangle & Bracelet Collection", "image", 3),
+        ("/assets/generated/jewellery-rings-hd.dim_800x800.jpg", "Statement Rings Collection", "image", 4),
+        ("/assets/generated/jewellery-bridal-hd.dim_800x800.jpg", "Bridal Jewellery Sets", "image", 5),
+        ("/assets/generated/jewellery-minimal-hd.dim_800x800.jpg", "Minimal Fashion Collection", "image", 6),
+        ("/assets/generated/product-necklace.dim_600x600.jpg", "Export Quality Necklace", "image", 7),
+        ("/assets/generated/product-earrings.dim_600x600.jpg", "Premium Earrings", "image", 8),
+        ("/assets/generated/product-bridal.dim_600x600.jpg", "Bridal Set Export", "image", 9),
+      ];
+      for ((url, caption, t, order) in items.vals()) {
+        galleryItemsMap.add(nextGalleryItemId, { id = nextGalleryItemId; imageUrl = url; caption; itemType = t; sortOrder = order });
+        nextGalleryItemId += 1;
+      };
+    };
+  };
+
 
   // User Profile API
 

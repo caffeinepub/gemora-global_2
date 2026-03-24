@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -16,11 +17,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { Upload } from "lucide-react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import type { GalleryItem } from "../../backend";
 import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
+import { useStorageUpload } from "../../hooks/useStorageUpload";
 
 type GForm = {
   imageUrl: string;
@@ -41,6 +44,8 @@ export default function AdminGallery() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<GalleryItem | null>(null);
   const [form, setForm] = useState<GForm>(EMPTY);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { uploadFile, uploading, progress } = useStorageUpload();
 
   const { data: items } = useQuery<GalleryItem[]>({
     queryKey: ["gallery", ""],
@@ -103,10 +108,23 @@ export default function AdminGallery() {
     setOpen(true);
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const url = await uploadFile(file);
+      setForm((f) => ({ ...f, imageUrl: url }));
+      toast.success("Image uploaded");
+    } catch {
+      toast.error("Upload failed");
+    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   return (
     <AdminLayout>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="font-serif text-2xl font-bold">Gallery</h1>
+        <h1 className="font-serif text-2xl font-bold">Gallery / Media</h1>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button
@@ -116,7 +134,7 @@ export default function AdminGallery() {
                 setForm(EMPTY);
                 setOpen(true);
               }}
-              data-ocid="admin.add_button"
+              data-ocid="admin.gallery.add_button"
             >
               Add Image
             </Button>
@@ -132,14 +150,78 @@ export default function AdminGallery() {
               }}
               className="space-y-3 mt-2"
             >
+              {/* File Upload */}
               <div>
-                <Label>Image URL</Label>
+                <Label>Upload Image</Label>
+                <div
+                  className="mt-1 border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-colors"
+                  style={{
+                    borderColor: uploading ? "gold" : "#333",
+                    background: "#111",
+                  }}
+                  onClick={() => fileInputRef.current?.click()}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ")
+                      fileInputRef.current?.click();
+                  }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={async (e) => {
+                    e.preventDefault();
+                    const file = e.dataTransfer.files?.[0];
+                    if (!file || !file.type.startsWith("image/")) return;
+                    try {
+                      const url = await uploadFile(file);
+                      setForm((f) => ({ ...f, imageUrl: url }));
+                      toast.success("Image uploaded");
+                    } catch {
+                      toast.error("Upload failed");
+                    }
+                  }}
+                  data-ocid="admin.gallery.dropzone"
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  <Upload
+                    className="mx-auto mb-2 text-muted-foreground"
+                    size={20}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Drag & drop or{" "}
+                    <span style={{ color: "gold" }}>click to browse</span>
+                  </p>
+                </div>
+                {uploading && (
+                  <div className="mt-2" data-ocid="admin.gallery.loading_state">
+                    <Progress value={progress} className="h-2" />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Uploading... {progress}%
+                    </p>
+                  </div>
+                )}
+                {form.imageUrl && (
+                  <img
+                    src={form.imageUrl}
+                    alt="Preview"
+                    className="mt-2 w-full h-32 object-cover rounded-lg"
+                  />
+                )}
+              </div>
+
+              {/* Fallback URL */}
+              <div>
+                <Label>Or enter image URL manually</Label>
                 <Input
                   value={form.imageUrl}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, imageUrl: e.target.value }))
                   }
-                  required
+                  placeholder="https://..."
+                  data-ocid="admin.gallery.input"
                 />
               </div>
               <div>
@@ -180,6 +262,10 @@ export default function AdminGallery() {
               <Button
                 type="submit"
                 className="w-full bg-primary text-primary-foreground"
+                disabled={
+                  createMut.isPending || updateMut.isPending || uploading
+                }
+                data-ocid="admin.gallery.submit_button"
               >
                 Save
               </Button>
@@ -187,11 +273,13 @@ export default function AdminGallery() {
           </DialogContent>
         </Dialog>
       </div>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {items?.map((item, i) => (
+        {(items ?? []).map((item, i) => (
           <div
             key={String(item.id)}
             className="rounded-lg overflow-hidden border border-border group relative"
+            data-ocid={`admin.gallery.item.${i + 1}`}
           >
             <img
               src={item.imageUrl}
@@ -207,7 +295,7 @@ export default function AdminGallery() {
                 variant="outline"
                 className="h-6 text-xs"
                 onClick={() => openEdit(item)}
-                data-ocid={`admin.edit_button.${i + 1}`}
+                data-ocid={`admin.gallery.edit_button.${i + 1}`}
               >
                 Edit
               </Button>
@@ -216,7 +304,7 @@ export default function AdminGallery() {
                 variant="destructive"
                 className="h-6 text-xs"
                 onClick={() => deleteMut.mutate(item.id)}
-                data-ocid={`admin.delete_button.${i + 1}`}
+                data-ocid={`admin.gallery.delete_button.${i + 1}`}
               >
                 Del
               </Button>

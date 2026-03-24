@@ -8,14 +8,147 @@ import { toast } from "sonner";
 import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
 
-const CONTENT_KEYS = [
-  { key: "hero_headline", label: "Hero Headline", multiline: false },
-  { key: "hero_subtext", label: "Hero Subtext", multiline: false },
-  { key: "about_intro", label: "About Company Intro", multiline: true },
+const CONTENT_SECTIONS = [
   {
-    key: "whatsapp_number",
-    label: "WhatsApp Number (with country code)",
-    multiline: false,
+    section: "🏠 Homepage",
+    fields: [
+      {
+        key: "hero_title",
+        label: "Hero Title",
+        multiline: false,
+        placeholder:
+          "India's Leading Imitation Jewellery Manufacturer & Global Exporter",
+        hint: "Main headline on the homepage hero section",
+      },
+      {
+        key: "hero_subtitle",
+        label: "Hero Subtitle",
+        multiline: false,
+        placeholder:
+          "Premium handcrafted designs for wholesalers, boutiques & distributors worldwide.",
+        hint: "Subtext below the hero headline",
+      },
+    ],
+  },
+  {
+    section: "📖 About Page",
+    fields: [
+      {
+        key: "about_story",
+        label: "Our Story Text",
+        multiline: true,
+        placeholder:
+          "Gemora Global is India's premier imitation jewellery manufacturer...",
+        hint: "Main paragraph on the About page",
+      },
+      {
+        key: "about_export",
+        label: "Export Experience Text",
+        multiline: true,
+        placeholder: "With over a decade of international trade experience...",
+        hint: "Export experience section on About page",
+      },
+    ],
+  },
+  {
+    section: "📦 Products & Wholesale",
+    fields: [
+      {
+        key: "wholesale_intro",
+        label: "Wholesale Page Intro",
+        multiline: true,
+        placeholder: "Gemora Global offers premium wholesale jewellery...",
+        hint: "Intro paragraph on the Wholesale & Export page",
+      },
+      {
+        key: "moq_text",
+        label: "MOQ Details",
+        multiline: false,
+        placeholder: "Minimum Order Quantity: 50 pieces per design",
+        hint: "Minimum order quantity shown on wholesale page",
+      },
+    ],
+  },
+  {
+    section: "📞 Contact Information",
+    fields: [
+      {
+        key: "contact_email",
+        label: "Email Address",
+        multiline: false,
+        placeholder: "globalgemora@gmail.com",
+        hint: "Business email shown on Contact page and footer",
+      },
+      {
+        key: "contact_phone",
+        label: "Phone / WhatsApp Number",
+        multiline: false,
+        placeholder: "+91 7976341419",
+        hint: "Phone number shown on Contact page, footer, and WhatsApp button",
+      },
+      {
+        key: "contact_address",
+        label: "Business Address",
+        multiline: true,
+        placeholder:
+          "B 66 MAA Hinglaj Nagar, Gandhi Path West, Vaishali Nagar, Jaipur 302021",
+        hint: "Physical address shown on Contact page and footer",
+      },
+      {
+        key: "whatsapp_number",
+        label: "WhatsApp Number (digits only, with country code)",
+        multiline: false,
+        placeholder: "917976341419",
+        hint: "Used for the WhatsApp chat button (no + or spaces)",
+      },
+    ],
+  },
+  {
+    section: "🌐 SEO Settings",
+    fields: [
+      {
+        key: "seo_home_title",
+        label: "Homepage SEO Title",
+        multiline: false,
+        placeholder: "Gemora Global | Leading Imitation Jewellery Exporter",
+        hint: "Title shown in Google search results (keep under 60 chars)",
+      },
+      {
+        key: "seo_home_description",
+        label: "Homepage Meta Description",
+        multiline: false,
+        placeholder:
+          "Premium handcrafted imitation jewellery exporter from India. MOQ-friendly wholesale supply...",
+        hint: "Description shown in Google search results (keep under 155 chars)",
+      },
+      {
+        key: "instagram_handle",
+        label: "Instagram Handle",
+        multiline: false,
+        placeholder: "gemoraglobal",
+        hint: "Your Instagram username (without @)",
+      },
+    ],
+  },
+  {
+    section: "🏷️ Footer & Branding",
+    fields: [
+      {
+        key: "footer_tagline",
+        label: "Footer Tagline",
+        multiline: false,
+        placeholder: "Global Jewellery. Indian Craftsmanship.",
+        hint: "Tagline shown in the website footer",
+      },
+      {
+        key: "footer_about",
+        label: "Footer About Text",
+        multiline: true,
+        placeholder:
+          "India's leading imitation jewellery manufacturer & global exporter...",
+        hint: "Short description shown in footer",
+      },
+    ],
   },
 ];
 
@@ -23,7 +156,15 @@ function ContentField({
   contentKey,
   label,
   multiline,
-}: { contentKey: string; label: string; multiline: boolean }) {
+  placeholder,
+  hint,
+}: {
+  contentKey: string;
+  label: string;
+  multiline: boolean;
+  placeholder?: string;
+  hint?: string;
+}) {
   const { actor } = useActor();
   const [value, setValue] = useState("");
 
@@ -34,32 +175,87 @@ function ContentField({
   });
 
   useEffect(() => {
-    if (data !== undefined && data !== null) setValue(data);
+    if (data !== undefined && data !== null) setValue(data as string);
   }, [data]);
 
   const mutation = useMutation({
     mutationFn: () => actor!.setContent(contentKey, value),
-    onSuccess: () => toast.success(`${label} saved`),
+    onSuccess: () =>
+      toast.success(`${label} saved — changes will reflect on the website`),
     onError: () => toast.error("Failed to save"),
   });
 
   return (
-    <div className="bg-card border border-border rounded-lg p-4 space-y-2">
-      <Label>{label}</Label>
+    <div
+      style={{
+        background: "#1a1a1a",
+        border: "1px solid #2a2a2a",
+        borderRadius: 10,
+        padding: 16,
+      }}
+    >
+      <div style={{ marginBottom: 6 }}>
+        <label
+          htmlFor={`field-${contentKey}`}
+          style={{
+            color: "#ddd",
+            fontSize: 13,
+            fontWeight: 600,
+            display: "block",
+            marginBottom: 2,
+          }}
+        >
+          {label}
+        </label>
+        {hint && (
+          <p
+            style={{
+              color: "rgba(255,255,255,0.4)",
+              fontSize: 11,
+              marginBottom: 6,
+            }}
+          >
+            {hint}
+          </p>
+        )}
+      </div>
       {multiline ? (
         <Textarea
+          id={`field-${contentKey}`}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           rows={3}
+          placeholder={placeholder}
+          style={{
+            background: "#111",
+            border: "1px solid #333",
+            color: "#fff",
+          }}
         />
       ) : (
-        <Input value={value} onChange={(e) => setValue(e.target.value)} />
+        <Input
+          id={`field-${contentKey}`}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={placeholder}
+          style={{
+            background: "#111",
+            border: "1px solid #333",
+            color: "#fff",
+          }}
+        />
       )}
       <Button
         size="sm"
-        className="bg-primary text-primary-foreground"
         onClick={() => mutation.mutate()}
         disabled={mutation.isPending}
+        style={{
+          background: "gold",
+          color: "#111",
+          border: "none",
+          fontWeight: 700,
+          marginTop: 10,
+        }}
       >
         {mutation.isPending ? "Saving..." : "Save"}
       </Button>
@@ -70,15 +266,55 @@ function ContentField({
 export default function AdminContent() {
   return (
     <AdminLayout>
-      <h1 className="font-serif text-2xl font-bold mb-6">Content Editor</h1>
-      <div className="space-y-4 max-w-2xl">
-        {CONTENT_KEYS.map(({ key, label, multiline }) => (
-          <ContentField
-            key={key}
-            contentKey={key}
-            label={label}
-            multiline={multiline}
-          />
+      <div style={{ maxWidth: 800 }}>
+        <h1
+          style={{
+            color: "gold",
+            fontWeight: 700,
+            fontSize: 22,
+            marginBottom: 6,
+          }}
+        >
+          Content Manager
+        </h1>
+        <p
+          style={{
+            color: "rgba(255,255,255,0.5)",
+            fontSize: 13,
+            marginBottom: 28,
+          }}
+        >
+          Edit text content for any page. Changes are saved to the backend and
+          reflect on the website immediately.
+        </p>
+
+        {CONTENT_SECTIONS.map(({ section, fields }) => (
+          <div key={section} style={{ marginBottom: 32 }}>
+            <h2
+              style={{
+                color: "rgba(255,255,255,0.8)",
+                fontSize: 15,
+                fontWeight: 600,
+                marginBottom: 12,
+                borderBottom: "1px solid #222",
+                paddingBottom: 8,
+              }}
+            >
+              {section}
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {fields.map(({ key, label, multiline, placeholder, hint }) => (
+                <ContentField
+                  key={key}
+                  contentKey={key}
+                  label={label}
+                  multiline={multiline}
+                  placeholder={placeholder}
+                  hint={hint}
+                />
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </AdminLayout>

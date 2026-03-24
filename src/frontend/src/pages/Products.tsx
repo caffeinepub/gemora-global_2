@@ -34,42 +34,48 @@ const SAMPLE_CATEGORIES: Category[] = [
   {
     id: 1n,
     name: "Necklaces",
-    description: "Exquisite handcrafted necklaces",
+    description:
+      "Export quality artificial jewellery wholesale — gold-plated, oxidised & kundan necklaces",
     imageUrl: "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg",
     sortOrder: 1n,
   },
   {
     id: 2n,
     name: "Earrings",
-    description: "Stunning earring collections",
+    description:
+      "Trendy imitation jewellery bulk supplier India — drop, stud & jhumka earrings",
     imageUrl: "/assets/generated/jewellery-earrings-hd.dim_800x800.jpg",
     sortOrder: 2n,
   },
   {
     id: 3n,
     name: "Bracelets",
-    description: "Elegant bracelet designs",
+    description:
+      "Elegant bracelet designs for wholesale fashion jewellery suppliers",
     imageUrl: "/assets/generated/jewellery-bracelets-hd.dim_800x800.jpg",
     sortOrder: 3n,
   },
   {
     id: 4n,
     name: "Rings",
-    description: "Statement rings for every occasion",
+    description:
+      "Bulk artificial jewellery manufacturer India — statement rings for every occasion",
     imageUrl: "/assets/generated/jewellery-rings-hd.dim_800x800.jpg",
     sortOrder: 4n,
   },
   {
     id: 5n,
     name: "Bridal Jewellery",
-    description: "Complete bridal jewellery sets",
+    description:
+      "Premium imitation jewellery supplier for export — complete bridal sets",
     imageUrl: "/assets/generated/jewellery-bridal-hd.dim_800x800.jpg",
     sortOrder: 5n,
   },
   {
     id: 6n,
     name: "Minimal Fashion Jewellery",
-    description: "Modern minimal fashion jewellery",
+    description:
+      "Wholesale fashion jewellery suppliers for boutiques — modern minimal designs",
     imageUrl: "/assets/generated/jewellery-minimal-hd.dim_800x800.jpg",
     sortOrder: 6n,
   },
@@ -236,14 +242,32 @@ export default function Products() {
         <div className="bg-card border-b border-border py-12">
           <div className="container">
             <h1 className="font-serif text-4xl font-bold mb-2">
-              Product Collections
+              Export Quality Artificial Jewellery Wholesale
             </h1>
-            <p className="text-muted-foreground">
-              Browse our complete jewellery catalogue — wholesale inquiries
-              welcome
+            <p className="text-muted-foreground max-w-2xl">
+              Bulk artificial jewellery manufacturer India — browse our complete
+              collection of premium imitation jewellery for boutiques,
+              distributors &amp; wholesale buyers worldwide.
             </p>
           </div>
         </div>
+
+        {/* SEO keyword subheading */}
+        {!activeCatId && (
+          <div className="bg-primary/5 border-b border-border py-4">
+            <div className="container">
+              <p className="text-sm text-muted-foreground">
+                <span className="text-primary font-medium">
+                  Wholesale fashion jewellery suppliers for boutiques
+                </span>{" "}
+                — necklaces, earrings, bracelets, rings, bridal sets &amp;
+                minimal fashion jewellery. MOQ-friendly bulk orders shipped
+                worldwide.
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="container py-8">
           {/* Category Tabs */}
           <div className="flex flex-wrap gap-2 mb-8">
@@ -278,31 +302,70 @@ export default function Products() {
           {!activeCatId &&
             (!products || products.length === 0) &&
             !prodsLoading && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
-                {displayCategories.map((cat) => (
-                  <button
-                    key={String(cat.id)}
-                    type="button"
-                    onClick={() =>
-                      setSearchParams({ category: String(cat.id) })
-                    }
-                    className="group relative overflow-hidden rounded-xl aspect-square cursor-pointer border border-border hover:border-primary/50 transition-all"
-                  >
-                    <img
-                      src={getCategoryImage(cat)}
-                      alt={cat.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 text-left">
-                      <h3 className="font-serif text-white font-bold text-lg">
-                        {cat.name}
-                      </h3>
-                      <p className="text-white/70 text-sm">{cat.description}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
+              <>
+                <h2 className="font-serif text-2xl font-bold mb-6 text-foreground">
+                  Trendy Imitation Jewellery — Bulk Supplier India
+                </h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+                  {displayCategories.map((cat) => (
+                    <button
+                      key={String(cat.id)}
+                      type="button"
+                      onClick={() =>
+                        setSearchParams({ category: String(cat.id) })
+                      }
+                      className="group relative overflow-hidden rounded-xl aspect-square cursor-pointer border border-border hover:border-primary/50 transition-all"
+                    >
+                      <img
+                        src={getCategoryImage(cat)}
+                        alt={`${cat.name} - wholesale imitation jewellery by Gemora Global`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-left">
+                        <h3 className="font-serif text-white font-bold text-lg">
+                          {cat.name}
+                        </h3>
+                        <p className="text-white/70 text-sm line-clamp-2">
+                          {cat.description}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* SEO keyword section */}
+                <div className="bg-card border border-border rounded-xl p-6 mb-8">
+                  <h2 className="font-serif text-xl font-bold mb-3">
+                    Premium Imitation Jewellery Supplier for Export
+                  </h2>
+                  <p className="text-muted-foreground text-sm leading-relaxed mb-3">
+                    Gemora Global is India's best imitation jewellery exporter,
+                    supplying{" "}
+                    <Link
+                      to="/wholesale"
+                      className="text-primary hover:underline"
+                    >
+                      wholesale fashion jewellery
+                    </Link>{" "}
+                    to boutiques, distributors, and retailers in USA, UK,
+                    France, UAE, and 50+ countries. As a leading{" "}
+                    <strong>
+                      bulk artificial jewellery manufacturer in India
+                    </strong>
+                    , we offer private label jewellery manufacturing, custom
+                    branding, and export-quality finishing on every piece.
+                  </p>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    Whether you're sourcing{" "}
+                    <strong>Indian costume jewellery for the USA market</strong>{" "}
+                    or looking for a{" "}
+                    <strong>global jewellery wholesale distributor</strong>{" "}
+                    based in India, Gemora Global is your trusted partner. MOQ
+                    starts at just 50 pieces per design.
+                  </p>
+                </div>
+              </>
             )}
 
           {/* Products Grid */}
@@ -327,7 +390,7 @@ export default function Products() {
                           CATEGORY_IMAGES[product.name] ||
                           "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg"
                         }
-                        alt={product.name}
+                        alt={`${product.name} - export quality artificial jewellery by Gemora Global`}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>

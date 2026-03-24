@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -11,7 +12,7 @@ import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
 
 export default function Contact() {
-  const { actor } = useActor();
+  const { actor, isFetching } = useActor();
   const [searchParams] = useSearchParams();
   const productId = searchParams.get("product");
 
@@ -41,11 +42,13 @@ export default function Contact() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!actor) {
-      toast.error("Please wait and try again.");
+      toast.info("Connecting to server, please try again in a moment.");
       return;
     }
     mutation.mutate();
   };
+
+  const isConnecting = isFetching && !actor;
 
   return (
     <div className="min-h-screen bg-background">
@@ -79,7 +82,7 @@ export default function Contact() {
                     }
                     placeholder="Your full name"
                     required
-                    data-ocid="inquiry.name_input"
+                    data-ocid="inquiry.input"
                   />
                 </div>
                 <div>
@@ -92,7 +95,6 @@ export default function Contact() {
                     }
                     placeholder="Your country"
                     required
-                    data-ocid="inquiry.country_input"
                   />
                 </div>
                 <div>
@@ -105,7 +107,6 @@ export default function Contact() {
                     }
                     placeholder="+1 234 567 8900"
                     required
-                    data-ocid="inquiry.whatsapp_input"
                   />
                 </div>
                 <div>
@@ -119,7 +120,7 @@ export default function Contact() {
                     placeholder="Describe what you're looking for (product type, quantity, budget, etc.)"
                     rows={4}
                     required
-                    data-ocid="inquiry.requirement_textarea"
+                    data-ocid="inquiry.textarea"
                   />
                 </div>
                 <Button
@@ -128,7 +129,19 @@ export default function Contact() {
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   data-ocid="inquiry.submit_button"
                 >
-                  {mutation.isPending ? "Sending..." : "Send Inquiry"}
+                  {mutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : isConnecting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Connecting...
+                    </>
+                  ) : (
+                    "Send Inquiry"
+                  )}
                 </Button>
               </form>
             </div>
@@ -144,14 +157,19 @@ export default function Contact() {
                     {
                       icon: "📍",
                       label: "Address",
-                      value: "Jewellery District, Mumbai, Maharashtra, India",
+                      value:
+                        "B 66 MAA Hinglaj Nagar, Gandhi Path West, Vaishali Nagar, Jaipur 302021",
                     },
                     {
                       icon: "📧",
                       label: "Email",
-                      value: "info@gemoraglobal.com",
+                      value: "globalgemora@gmail.com",
                     },
-                    { icon: "📱", label: "Phone", value: "+91 99999 99999" },
+                    {
+                      icon: "📱",
+                      label: "Phone / WhatsApp",
+                      value: "+91 7976341419",
+                    },
                     {
                       icon: "🕐",
                       label: "Business Hours",
@@ -172,7 +190,7 @@ export default function Contact() {
               </div>
 
               <a
-                href="https://wa.me/919999999999?text=Hi%2C%20I%27m%20interested%20in%20wholesale%20jewellery."
+                href="https://wa.me/917976341419?text=Hi%2C%20I%27m%20interested%20in%20wholesale%20jewellery."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-lg transition-colors w-fit"
@@ -191,14 +209,14 @@ export default function Contact() {
 
               <div className="rounded-xl overflow-hidden border border-border">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.11609823055!2d72.74109995709657!3d19.08204865000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c6306644edc1%3A0x5da4ed8f8d648c69!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1703000000000!5m2!1sen!2sin"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3557.4!2d75.7384!3d26.9124!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396db5e3e4b0b4b7%3A0x0!2sVaishali+Nagar%2C+Jaipur%2C+Rajasthan+302021!5e0!3m2!1sen!2sin!4v1703000000000!5m2!1sen!2sin"
                   width="100%"
                   height="250"
                   style={{ border: 0 }}
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Gemora Global Location"
+                  title="Gemora Global Location - Vaishali Nagar, Jaipur"
                 />
               </div>
             </div>

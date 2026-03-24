@@ -22,7 +22,7 @@ export default function Navbar() {
       <div className="container flex items-center justify-between h-16">
         <Link to="/" className="flex items-center">
           <img
-            src="/assets/uploads/logo-removebg-preview-1.png"
+            src="/assets/uploads/logo-removebg-preview-1-1.png"
             alt="Gemora Global"
             style={{ height: "56px", width: "auto", objectFit: "contain" }}
           />

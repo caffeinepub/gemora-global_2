@@ -29,7 +29,7 @@ export default function About() {
                 Gemora Global is India's premier imitation jewellery
                 manufacturer, born from a passion for bringing the artistry of
                 Indian jewellery craftsmanship to the world. Founded in the
-                heart of Mumbai's jewellery district, we have grown into a
+                heart of Jaipur's jewellery district, we have grown into a
                 trusted export partner for wholesalers, boutiques, and
                 distributors across 50+ countries.
               </p>
@@ -40,10 +40,10 @@ export default function About() {
                 every retailer deserves a supplier they can trust.
               </p>
             </div>
-            <div className="rounded-xl overflow-hidden aspect-video bg-secondary flex items-center justify-center">
+            <div className="rounded-xl overflow-hidden aspect-video">
               <img
-                src="https://placehold.co/600x400/1a1a2e/c9a84c?text=Our+Workshop"
-                alt="Our Workshop"
+                src="/assets/generated/jewellery-bridal-hd.dim_800x800.jpg"
+                alt="Our Workshop - Gemora Global Jewellery Manufacturing"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -75,10 +75,10 @@ export default function About() {
 
           {/* Export Experience */}
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="rounded-xl overflow-hidden aspect-video bg-secondary">
+            <div className="rounded-xl overflow-hidden aspect-video">
               <img
-                src="https://placehold.co/600x400/1a1a2e/c9a84c?text=Global+Export"
-                alt="Global Export"
+                src="/assets/generated/jewellery-necklace-hd.dim_800x800.jpg"
+                alt="Global Export - Gemora Global worldwide jewellery distribution"
                 className="w-full h-full object-cover"
               />
             </div>

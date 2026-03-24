@@ -15,14 +15,21 @@ import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
 import Products from "./pages/Products";
 import Wholesale from "./pages/Wholesale";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminBlog from "./pages/admin/AdminBlog";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminContent from "./pages/admin/AdminContent";
+import AdminCustomers from "./pages/admin/AdminCustomers";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminGallery from "./pages/admin/AdminGallery";
 import AdminInquiries from "./pages/admin/AdminInquiries";
 import AdminLogin from "./pages/admin/AdminLogin";
+import AdminOrders from "./pages/admin/AdminOrders";
 import AdminProducts from "./pages/admin/AdminProducts";
+import AdminSystemSettings from "./pages/admin/AdminSystemSettings";
 import AdminTestimonials from "./pages/admin/AdminTestimonials";
+import AdminWebsiteSettings from "./pages/admin/AdminWebsiteSettings";
+import AdminWhatsAppLeads from "./pages/admin/AdminWhatsAppLeads";
 
 function VisitTracker() {
   const { actor } = useActor();
@@ -102,6 +109,62 @@ export default function App() {
           element={
             <AdminGuard>
               <AdminContent />
+            </AdminGuard>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <AdminGuard>
+              <AdminOrders />
+            </AdminGuard>
+          }
+        />
+        <Route
+          path="/admin/customers"
+          element={
+            <AdminGuard>
+              <AdminCustomers />
+            </AdminGuard>
+          }
+        />
+        <Route
+          path="/admin/analytics"
+          element={
+            <AdminGuard>
+              <AdminAnalytics />
+            </AdminGuard>
+          }
+        />
+        <Route
+          path="/admin/whatsapp-leads"
+          element={
+            <AdminGuard>
+              <AdminWhatsAppLeads />
+            </AdminGuard>
+          }
+        />
+        <Route
+          path="/admin/website-settings"
+          element={
+            <AdminGuard>
+              <AdminWebsiteSettings />
+            </AdminGuard>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <AdminGuard>
+              <AdminSystemSettings />
+            </AdminGuard>
+          }
+        />
+        <Route
+          path="/admin/blog"
+          element={
+            <AdminGuard>
+              <AdminBlog />
             </AdminGuard>
           }
         />

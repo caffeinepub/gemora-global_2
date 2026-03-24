@@ -127,6 +127,11 @@ const STATS = [
   { value: "10,000+", label: "Happy Clients" },
 ];
 
+const DEFAULT_HERO_TITLE =
+  "India's Leading Imitation\nJewellery Manufacturer & Global Exporter";
+const DEFAULT_HERO_SUBTITLE =
+  "Premium handcrafted designs for wholesalers, boutiques & distributors worldwide.";
+
 export default function Home() {
   const { actor } = useActor();
 
@@ -148,6 +153,25 @@ export default function Home() {
     enabled: !!actor,
   });
 
+  const { data: heroTitleRaw } = useQuery({
+    queryKey: ["content", "hero_title"],
+    queryFn: () => actor!.getContent("hero_title"),
+    enabled: !!actor,
+  });
+
+  const { data: heroSubtitleRaw } = useQuery({
+    queryKey: ["content", "hero_subtitle"],
+    queryFn: () => actor!.getContent("hero_subtitle"),
+    enabled: !!actor,
+  });
+
+  const heroTitle =
+    (heroTitleRaw && heroTitleRaw.length > 0 ? heroTitleRaw : null) ??
+    DEFAULT_HERO_TITLE;
+  const heroSubtitle =
+    (heroSubtitleRaw && heroSubtitleRaw.length > 0 ? heroSubtitleRaw : null) ??
+    DEFAULT_HERO_SUBTITLE;
+
   const displayCategories =
     categories && categories.length > 0 ? categories : SAMPLE_CATEGORIES;
   const displayTestimonials =
@@ -160,6 +184,9 @@ export default function Home() {
       return cat.imageUrl;
     return CATEGORY_IMAGES[cat.name] || FALLBACK_IMAGE;
   };
+
+  // Split hero title on newlines for display
+  const heroLines = heroTitle.split("\n");
 
   return (
     <div className="min-h-screen bg-background">
@@ -187,14 +214,43 @@ export default function Home() {
             INDIA'S FINEST JEWELLERY EXPORTER
           </Badge>
           <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight mb-6">
-            India's Leading Imitation
-            <br />
-            <span className="text-primary">Jewellery Manufacturer</span>
-            <br />& Global Exporter
+            {heroLines.length > 1 ? (
+              <>
+                {heroLines[0]}
+                <br />
+                <span className="text-primary">{heroLines[1]}</span>
+                {heroLines[2] && (
+                  <>
+                    <br />
+                    {heroLines[2]}
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                India's Leading Imitation
+                <br />
+                <span className="text-primary">Jewellery Manufacturer</span>
+                <br />& Global Exporter
+              </>
+            )}
           </h1>
           <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-8">
-            Premium handcrafted designs for wholesalers, boutiques &
-            distributors worldwide.
+            {heroSubtitle.includes("wholesale") ? (
+              <>
+                Premium handcrafted{" "}
+                <Link to="/products" className="text-primary hover:underline">
+                  imitation jewellery
+                </Link>{" "}
+                for wholesalers, boutiques & distributors worldwide. Explore our{" "}
+                <Link to="/wholesale" className="text-primary hover:underline">
+                  wholesale pricing
+                </Link>{" "}
+                and bulk export options.
+              </>
+            ) : (
+              heroSubtitle
+            )}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -244,7 +300,11 @@ export default function Home() {
             Our Collections
           </h2>
           <p className="text-muted-foreground">
-            Explore our curated jewellery categories
+            Explore our curated{" "}
+            <Link to="/products" className="text-primary hover:underline">
+              jewellery categories
+            </Link>{" "}
+            — from bridal sets to everyday minimal designs
           </p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -256,7 +316,7 @@ export default function Home() {
             >
               <img
                 src={getCategoryImage(cat)}
-                alt={cat.name}
+                alt={`${cat.name} - handcrafted imitation jewellery by Gemora Global`}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
@@ -288,7 +348,13 @@ export default function Home() {
                 Featured Products
               </h2>
               <p className="text-muted-foreground">
-                Bestselling designs loved by buyers worldwide
+                Bestselling designs loved by{" "}
+                <Link
+                  to="/global-markets"
+                  className="text-primary hover:underline"
+                >
+                  buyers worldwide
+                </Link>
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -298,7 +364,7 @@ export default function Home() {
                     <div className="aspect-square overflow-hidden">
                       <img
                         src={product.imageUrls[0] || FALLBACK_IMAGE}
-                        alt={product.name}
+                        alt={`${product.name} - imitation jewellery by Gemora Global`}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
@@ -322,10 +388,14 @@ export default function Home() {
       <section className="container py-16">
         <div className="text-center mb-10">
           <h2 className="font-serif text-3xl font-bold mb-3">
-            Trusted by Buyers In
+            Global Markets We Serve
           </h2>
           <p className="text-muted-foreground">
-            Supplying premium jewellery to wholesalers across the globe
+            Supplying premium{" "}
+            <Link to="/wholesale" className="text-primary hover:underline">
+              wholesale jewellery
+            </Link>{" "}
+            to buyers across the globe
           </p>
         </div>
         <div className="flex flex-wrap justify-center gap-6">
@@ -366,11 +436,17 @@ export default function Home() {
         <div className="container">
           <div className="text-center mb-10">
             <h2 className="font-serif text-3xl md:text-4xl font-bold mb-3">
-              Why Choose Gemora Global?
+              Why Choose Gemora Global
             </h2>
             <p className="text-muted-foreground">
-              The preferred wholesale jewellery supplier for international
-              buyers
+              The preferred{" "}
+              <Link
+                to="/why-choose-us"
+                className="text-primary hover:underline"
+              >
+                wholesale jewellery supplier
+              </Link>{" "}
+              for international buyers
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -379,7 +455,9 @@ export default function Home() {
                 key={item.title}
                 className="text-center p-6 rounded-lg bg-background border border-border hover:border-primary/50 transition-colors"
               >
-                <div className="text-4xl mb-4">{item.icon}</div>
+                <div className="text-4xl mb-4" aria-hidden="true">
+                  {item.icon}
+                </div>
                 <h3 className="font-serif font-semibold mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
               </div>
@@ -402,12 +480,16 @@ export default function Home() {
               className="p-6 bg-card border-border hover:border-primary/40 transition-colors"
             >
               <CardContent className="p-0">
-                <div className="flex gap-1 mb-3">
+                <div
+                  className="flex gap-1 mb-3"
+                  aria-label={`${Number(t.rating)} out of 5 stars`}
+                >
                   {Array.from({ length: Number(t.rating) }, (_, n) => n).map(
                     (n) => (
                       <span
                         key={`${String(t.id)}-star-${n}`}
                         className="text-primary"
+                        aria-hidden="true"
                       >
                         ★
                       </span>
@@ -440,24 +522,42 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
             {[
-              "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg",
-              "/assets/generated/jewellery-earrings-hd.dim_800x800.jpg",
-              "/assets/generated/jewellery-bracelets-hd.dim_800x800.jpg",
-              "/assets/generated/jewellery-rings-hd.dim_800x800.jpg",
-              "/assets/generated/jewellery-bridal-hd.dim_800x800.jpg",
-              "/assets/generated/jewellery-minimal-hd.dim_800x800.jpg",
-            ].map((src, i) => (
+              {
+                src: "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg",
+                label: "Gold necklace set by Gemora Global",
+              },
+              {
+                src: "/assets/generated/jewellery-earrings-hd.dim_800x800.jpg",
+                label: "Handcrafted earrings collection",
+              },
+              {
+                src: "/assets/generated/jewellery-bracelets-hd.dim_800x800.jpg",
+                label: "Imitation bracelets for export",
+              },
+              {
+                src: "/assets/generated/jewellery-rings-hd.dim_800x800.jpg",
+                label: "Fashion rings wholesale",
+              },
+              {
+                src: "/assets/generated/jewellery-bridal-hd.dim_800x800.jpg",
+                label: "Bridal jewellery set",
+              },
+              {
+                src: "/assets/generated/jewellery-minimal-hd.dim_800x800.jpg",
+                label: "Minimal fashion jewellery",
+              },
+            ].map((item) => (
               <a
-                key={src}
+                key={item.src}
                 href="https://instagram.com/gemoraglobal"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`View Instagram post ${i + 1}`}
+                aria-label={`${item.label} - view on Instagram`}
                 className="aspect-square overflow-hidden rounded-lg border border-border hover:border-primary/50 transition-colors group block"
               >
                 <img
-                  src={src}
-                  alt={`Gemora jewellery ${i + 1}`}
+                  src={item.src}
+                  alt={item.label}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </a>
@@ -483,8 +583,15 @@ export default function Home() {
             Ready to Start Wholesale?
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto mb-8">
-            Download our catalogue or contact us for pricing, MOQ details, and
-            latest designs.
+            Download our{" "}
+            <Link to="/gallery" className="text-primary hover:underline">
+              product catalogue
+            </Link>{" "}
+            or{" "}
+            <Link to="/contact" className="text-primary hover:underline">
+              contact us
+            </Link>{" "}
+            for pricing, MOQ details, and latest designs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button

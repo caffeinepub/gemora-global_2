@@ -11,12 +11,12 @@ const EXPORT_FEATURES = [
   },
   {
     icon: "🏭",
-    title: "Bulk Supply",
+    title: "Bulk Artificial Jewellery Manufacturer India",
     desc: "Our factory is equipped to fulfil bulk orders of thousands of pieces per month. We maintain a ready-stock inventory for fastest dispatch on popular designs.",
   },
   {
     icon: "🎨",
-    title: "Private Label & Custom Branding",
+    title: "Private Label Jewellery Manufacturer India",
     desc: "Launch your own jewellery brand with our OEM/ODM services. We create custom designs, apply your branding, and deliver retail-ready products under your label.",
   },
   {
@@ -81,11 +81,18 @@ export default function Wholesale() {
           />
           <div className="container relative z-10">
             <h1 className="font-serif text-4xl md:text-5xl font-bold mb-4">
-              Wholesale & <span className="text-primary">Export Services</span>
+              Best Imitation Jewellery Exporter in India
             </h1>
+            <h2 className="font-serif text-xl md:text-2xl font-medium text-primary mb-4">
+              Global Jewellery Wholesale Distributor — Wholesale &amp; Export
+              Services
+            </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
-              Partner with India's most trusted imitation jewellery exporter.
-              Flexible MOQs, private label options, and worldwide delivery.
+              Partner with India's most trusted{" "}
+              <strong className="text-foreground">
+                premium imitation jewellery supplier for export
+              </strong>
+              . Flexible MOQs, private label options, and worldwide delivery.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -111,10 +118,11 @@ export default function Wholesale() {
         <section className="container py-16">
           <div className="text-center mb-10">
             <h2 className="font-serif text-3xl md:text-4xl font-bold mb-3">
-              What We Offer
+              Wholesale Fashion Jewellery Suppliers for Boutiques
             </h2>
             <p className="text-muted-foreground">
-              Everything you need to build a successful jewellery business
+              Everything you need to build a successful jewellery business —
+              from MOQ orders to private label branding
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -138,7 +146,7 @@ export default function Wholesale() {
           <div className="container">
             <div className="text-center mb-10">
               <h2 className="font-serif text-3xl md:text-4xl font-bold mb-3">
-                How It Works
+                How to Order from India's Best Artificial Jewellery Exporter
               </h2>
               <p className="text-muted-foreground">
                 Simple 6-step process from inquiry to delivery
@@ -160,8 +168,37 @@ export default function Wholesale() {
           </div>
         </section>
 
+        {/* Indian costume jewellery for USA market section */}
+        <section className="container py-12">
+          <div className="bg-primary/5 border border-primary/20 rounded-xl p-8">
+            <h2 className="font-serif text-2xl font-bold mb-4">
+              Indian Costume Jewellery Exporters for USA Market
+            </h2>
+            <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+              Are you sourcing{" "}
+              <strong>
+                Indian costume jewellery for the USA, UK or European market
+              </strong>
+              ? Gemora Global is a leading{" "}
+              <strong>global jewellery wholesale distributor India</strong>,
+              supplying boutiques, department stores, and online retailers
+              across North America, Europe, and the Middle East.
+            </p>
+            <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+              Our <strong>export quality artificial jewellery wholesale</strong>{" "}
+              catalogue includes 500+ designs in necklaces, earrings, bracelets,
+              rings, and bridal sets — all available for{" "}
+              <strong>private label jewellery manufacturing</strong> under your
+              brand.
+            </p>
+            <Button asChild className="bg-primary text-primary-foreground">
+              <Link to="/contact">Get a Free Quote</Link>
+            </Button>
+          </div>
+        </section>
+
         {/* Global Reach */}
-        <section className="container py-16">
+        <section className="container py-8">
           <div className="text-center mb-10">
             <h2 className="font-serif text-3xl font-bold mb-3">
               We Ship Worldwide
@@ -201,7 +238,7 @@ export default function Wholesale() {
           <div className="container">
             <div className="text-center mb-10">
               <h2 className="font-serif text-3xl font-bold mb-3">
-                Why Partner With Gemora?
+                Why Choose Gemora as Your Jewellery Export Partner?
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -257,7 +294,7 @@ export default function Wholesale() {
               <Link to="/contact">Send Wholesale Inquiry</Link>
             </Button>
             <a
-              href="https://wa.me/919999999999?text=Hi%2C%20I%20want%20wholesale%20jewellery%20from%20Gemora%20Global"
+              href="https://wa.me/917976341419?text=Hi%2C%20I%20want%20wholesale%20jewellery%20from%20Gemora%20Global"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg text-sm font-medium transition-colors"

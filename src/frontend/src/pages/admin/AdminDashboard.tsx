@@ -1,90 +1,321 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { toast } from "sonner";
+import type { Inquiry, Product } from "../../backend";
 import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
 
+const BOX = {
+  background: "#111",
+  border: "1px solid #222",
+  borderRadius: 12,
+  padding: 20,
+} as const;
+
+const CARD = {
+  background: "linear-gradient(145deg, #1a1a1a, #111)",
+  border: "1px solid #222",
+  borderRadius: 12,
+  padding: 20,
+} as const;
+
+const monthlyData = [
+  { month: "Jan", enquiries: 18 },
+  { month: "Feb", enquiries: 24 },
+  { month: "Mar", enquiries: 31 },
+  { month: "Apr", enquiries: 27 },
+  { month: "May", enquiries: 42 },
+  { month: "Jun", enquiries: 38 },
+];
+
 export default function AdminDashboard() {
   const { actor } = useActor();
+  const qc = useQueryClient();
 
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: () => actor!.getDashboardStats(),
     enabled: !!actor,
   });
 
+  const { data: inquiries } = useQuery<Inquiry[]>({
+    queryKey: ["inquiries"],
+    queryFn: () => actor!.getInquiries(),
+    enabled: !!actor,
+  });
+
+  const { data: products } = useQuery<Product[]>({
+    queryKey: ["products", null],
+    queryFn: () => actor!.getProducts(null),
+    enabled: !!actor,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: bigint) => actor!.deleteProduct(id),
+    onSuccess: () => {
+      toast.success("Product deleted");
+      qc.invalidateQueries({ queryKey: ["products"] });
+    },
+    onError: () => toast.error("Failed to delete product"),
+  });
+
   const statCards = [
-    {
-      label: "Total Inquiries",
-      value: stats ? String(stats.totalInquiries) : "-",
-      to: "/admin/inquiries",
-    },
-    {
-      label: "New Inquiries",
-      value: stats ? String(stats.newInquiries) : "-",
-      to: "/admin/inquiries",
-    },
+    { label: "Total Orders", value: "1,245" },
+    { label: "Export Countries", value: "25" },
     {
       label: "Total Products",
-      value: stats ? String(stats.totalProducts) : "-",
-      to: "/admin/products",
+      value: stats ? String(stats.totalProducts) : "—",
     },
     {
-      label: "Total Visits",
-      value: stats ? String(stats.totalVisits) : "-",
-      to: null,
+      label: "New Enquiries",
+      value: stats ? String(stats.newInquiries) : "—",
     },
   ];
 
+  const recentInquiries = (inquiries ?? []).slice(0, 5);
+
   return (
     <AdminLayout>
-      <h1 className="font-serif text-2xl font-bold mb-6">Dashboard</h1>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* Stats Cards */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: 15,
+          marginBottom: 20,
+        }}
+      >
         {statCards.map((card) => (
-          <Card key={card.label} className="border-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {card.label}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <Skeleton className="h-8 w-16" />
-              ) : (
-                <div className="text-3xl font-bold text-primary">
-                  {card.value}
-                </div>
-              )}
-              {card.to && (
-                <Link
-                  to={card.to}
-                  className="text-xs text-muted-foreground hover:text-primary"
-                >
-                  View &rarr;
-                </Link>
-              )}
-            </CardContent>
-          </Card>
+          <div key={card.label} style={CARD}>
+            <p style={{ color: "#aaa", fontSize: 13, marginBottom: 8 }}>
+              {card.label}
+            </p>
+            <p style={{ color: "gold", fontSize: 24, fontWeight: 700 }}>
+              {card.value}
+            </p>
+          </div>
         ))}
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {[
-          { label: "Manage Products", to: "/admin/products" },
-          { label: "Manage Categories", to: "/admin/categories" },
-          { label: "View Inquiries", to: "/admin/inquiries" },
-          { label: "Manage Gallery", to: "/admin/gallery" },
-          { label: "Edit Content", to: "/admin/content" },
-          { label: "Testimonials", to: "/admin/testimonials" },
-        ].map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            className="p-4 rounded-lg bg-card border border-border hover:border-primary/50 text-sm font-medium transition-colors"
-          >
-            {item.label} &rarr;
-          </Link>
-        ))}
+
+      {/* Analytics + Enquiries */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 1fr",
+          gap: 20,
+          marginBottom: 20,
+        }}
+      >
+        {/* Chart */}
+        <div style={BOX}>
+          <h3 style={{ color: "#fff", marginBottom: 16, fontWeight: 600 }}>
+            Analytics — Monthly Enquiries
+          </h3>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={monthlyData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+              <XAxis
+                dataKey="month"
+                stroke="#666"
+                tick={{ fill: "#aaa", fontSize: 12 }}
+              />
+              <YAxis stroke="#666" tick={{ fill: "#aaa", fontSize: 12 }} />
+              <Tooltip
+                contentStyle={{
+                  background: "#1a1a1a",
+                  border: "1px solid #333",
+                  borderRadius: 8,
+                  color: "#fff",
+                }}
+              />
+              <Bar dataKey="enquiries" fill="gold" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Recent Enquiries */}
+        <div style={BOX}>
+          <h3 style={{ color: "#fff", marginBottom: 12, fontWeight: 600 }}>
+            Recent Enquiries
+          </h3>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                {["Name", "Country", "Status"].map((h) => (
+                  <th
+                    key={h}
+                    style={{
+                      textAlign: "left",
+                      padding: "6px 8px",
+                      color: "#666",
+                      fontSize: 11,
+                      fontWeight: 600,
+                      textTransform: "uppercase",
+                      borderBottom: "1px solid #222",
+                    }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {recentInquiries.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={3}
+                    style={{ color: "#555", padding: "12px 8px", fontSize: 13 }}
+                    data-ocid="admin.inquiries.empty_state"
+                  >
+                    No enquiries yet
+                  </td>
+                </tr>
+              )}
+              {recentInquiries.map((inq) => (
+                <tr
+                  key={String(inq.id)}
+                  style={{ borderBottom: "1px solid #1a1a1a" }}
+                >
+                  <td style={{ padding: "8px", fontSize: 13, color: "#ddd" }}>
+                    {inq.name}
+                  </td>
+                  <td style={{ padding: "8px", fontSize: 12, color: "#aaa" }}>
+                    {inq.country}
+                  </td>
+                  <td style={{ padding: "8px" }}>
+                    <span
+                      style={{
+                        background:
+                          inq.status === "new"
+                            ? "rgba(255,200,0,0.15)"
+                            : "rgba(100,200,100,0.15)",
+                        color: inq.status === "new" ? "gold" : "#6fcf97",
+                        fontSize: 11,
+                        padding: "2px 7px",
+                        borderRadius: 20,
+                        fontWeight: 600,
+                      }}
+                    >
+                      {inq.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Products Table */}
+      <div style={BOX}>
+        <h3 style={{ color: "#fff", marginBottom: 16, fontWeight: 600 }}>
+          Manage Products
+        </h3>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              {["Name", "Category", "MOQ / Price", "Actions"].map((h) => (
+                <th
+                  key={h}
+                  style={{
+                    textAlign: "left",
+                    padding: "8px 10px",
+                    color: "#666",
+                    fontSize: 11,
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                    borderBottom: "1px solid #222",
+                  }}
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {(products ?? []).length === 0 && (
+              <tr>
+                <td
+                  colSpan={4}
+                  style={{ color: "#555", padding: "16px 10px", fontSize: 13 }}
+                  data-ocid="admin.products.empty_state"
+                >
+                  No products yet
+                </td>
+              </tr>
+            )}
+            {(products ?? []).map((p, i) => (
+              <tr
+                key={String(p.id)}
+                style={{ borderBottom: "1px solid #1a1a1a" }}
+                data-ocid={`admin.products.item.${i + 1}`}
+              >
+                <td
+                  style={{
+                    padding: "10px",
+                    fontSize: 14,
+                    color: "#ddd",
+                    fontWeight: 500,
+                  }}
+                >
+                  {p.name}
+                </td>
+                <td style={{ padding: "10px", fontSize: 13, color: "#888" }}>
+                  {String(p.categoryId)}
+                </td>
+                <td style={{ padding: "10px", fontSize: 13, color: "#aaa" }}>
+                  {p.moq}
+                </td>
+                <td style={{ padding: "10px" }}>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <a
+                      href="/admin/products"
+                      style={{
+                        background: "gold",
+                        color: "#111",
+                        border: "none",
+                        borderRadius: 6,
+                        padding: "4px 12px",
+                        fontSize: 12,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        textDecoration: "none",
+                      }}
+                      data-ocid={`admin.products.edit_button.${i + 1}`}
+                    >
+                      Edit
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => deleteMutation.mutate(p.id)}
+                      style={{
+                        background: "crimson",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 6,
+                        padding: "4px 12px",
+                        fontSize: 12,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                      }}
+                      data-ocid={`admin.products.delete_button.${i + 1}`}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </AdminLayout>
   );

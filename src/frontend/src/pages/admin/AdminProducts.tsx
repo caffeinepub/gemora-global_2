@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -27,26 +28,31 @@ import {
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { Upload, X } from "lucide-react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Category, Product } from "../../backend";
 import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
+import { useStorageUpload } from "../../hooks/useStorageUpload";
 
 type ProductForm = {
   categoryId: string;
   name: string;
   description: string;
   moq: string;
-  imageUrls: string;
+  imageUrls: string[];
+  manualUrls: string;
   featured: boolean;
 };
+
 const EMPTY: ProductForm = {
   categoryId: "",
   name: "",
   description: "",
   moq: "",
-  imageUrls: "",
+  imageUrls: [],
+  manualUrls: "",
   featured: false,
 };
 
@@ -56,6 +62,8 @@ export default function AdminProducts() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState<ProductForm>(EMPTY);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { uploadFile, uploading, progress } = useStorageUpload();
 
   const { data: products } = useQuery<Product[]>({
     queryKey: ["products", null],
@@ -68,9 +76,15 @@ export default function AdminProducts() {
     enabled: !!actor,
   });
 
-  const invalidate = () => {
-    qc.invalidateQueries({ queryKey: ["products"] });
-  };
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["products"] });
+
+  const allImageUrls = () => [
+    ...form.imageUrls,
+    ...form.manualUrls
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean),
+  ];
 
   const createMutation = useMutation({
     mutationFn: () =>
@@ -79,10 +93,7 @@ export default function AdminProducts() {
         form.name,
         form.description,
         form.moq,
-        form.imageUrls
-          .split("\n")
-          .map((s) => s.trim())
-          .filter(Boolean),
+        allImageUrls(),
         form.featured,
       ),
     onSuccess: () => {
@@ -101,10 +112,7 @@ export default function AdminProducts() {
         form.name,
         form.description,
         form.moq,
-        form.imageUrls
-          .split("\n")
-          .map((s) => s.trim())
-          .filter(Boolean),
+        allImageUrls(),
         form.featured,
       ),
     onSuccess: () => {
@@ -131,16 +139,39 @@ export default function AdminProducts() {
   };
   const openEdit = (p: Product) => {
     setEditing(p);
-    const cat = categories?.find((c) => c.id === p.categoryId);
     setForm({
-      categoryId: cat ? String(cat.id) : "",
+      categoryId: String(p.categoryId),
       name: p.name,
       description: p.description,
       moq: p.moq,
-      imageUrls: p.imageUrls.join("\n"),
+      imageUrls: p.imageUrls,
+      manualUrls: "",
       featured: p.featured,
     });
     setOpen(true);
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    const urls: string[] = [];
+    for (const file of files) {
+      try {
+        const url = await uploadFile(file);
+        urls.push(url);
+      } catch {
+        toast.error(`Failed to upload ${file.name}`);
+      }
+    }
+    setForm((f) => ({ ...f, imageUrls: [...f.imageUrls, ...urls] }));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeUploadedUrl = (idx: number) => {
+    setForm((f) => ({
+      ...f,
+      imageUrls: f.imageUrls.filter((_, i) => i !== idx),
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -162,7 +193,7 @@ export default function AdminProducts() {
               Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editing ? "Edit Product" : "Add Product"}
@@ -197,6 +228,7 @@ export default function AdminProducts() {
                     setForm((f) => ({ ...f, name: e.target.value }))
                   }
                   required
+                  data-ocid="admin.products.input"
                 />
               </div>
               <div>
@@ -210,26 +242,120 @@ export default function AdminProducts() {
                 />
               </div>
               <div>
-                <Label>MOQ</Label>
+                <Label>Wholesale Price / MOQ</Label>
                 <Input
                   value={form.moq}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, moq: e.target.value }))
                   }
-                  placeholder="e.g. 50 pieces"
+                  placeholder="e.g. $5 / 50 pieces min"
                 />
               </div>
+
+              {/* File Upload */}
               <div>
-                <Label>Image URLs (one per line)</Label>
+                <Label>Upload Product Images</Label>
+                <div
+                  className="mt-1 border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors"
+                  style={{
+                    borderColor: uploading ? "gold" : "#333",
+                    background: "#111",
+                  }}
+                  onClick={() => fileInputRef.current?.click()}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ")
+                      fileInputRef.current?.click();
+                  }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={async (e) => {
+                    e.preventDefault();
+                    const files = Array.from(e.dataTransfer.files).filter((f) =>
+                      f.type.startsWith("image/"),
+                    );
+                    if (!files.length) return;
+                    const urls: string[] = [];
+                    for (const file of files) {
+                      try {
+                        const url = await uploadFile(file);
+                        urls.push(url);
+                      } catch {
+                        toast.error(`Failed to upload ${file.name}`);
+                      }
+                    }
+                    setForm((f) => ({
+                      ...f,
+                      imageUrls: [...f.imageUrls, ...urls],
+                    }));
+                  }}
+                  data-ocid="admin.products.dropzone"
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  <Upload
+                    className="mx-auto mb-2 text-muted-foreground"
+                    size={24}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Drag & drop images or{" "}
+                    <span style={{ color: "gold" }}>click to browse</span>
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    PNG, JPG, WEBP supported
+                  </p>
+                </div>
+                {uploading && (
+                  <div
+                    className="mt-2"
+                    data-ocid="admin.products.loading_state"
+                  >
+                    <Progress value={progress} className="h-2" />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Uploading... {progress}%
+                    </p>
+                  </div>
+                )}
+                {form.imageUrls.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {form.imageUrls.map((url, i) => (
+                      <div key={url} className="relative group">
+                        <img
+                          src={url}
+                          alt="Preview"
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeUploadedUrl(i)}
+                          className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
+                          style={{ background: "crimson" }}
+                        >
+                          <X size={10} color="#fff" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Manual URL fallback */}
+              <div>
+                <Label>Or enter image URLs manually (one per line)</Label>
                 <Textarea
-                  value={form.imageUrls}
+                  value={form.manualUrls}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, imageUrls: e.target.value }))
+                    setForm((f) => ({ ...f, manualUrls: e.target.value }))
                   }
-                  rows={3}
+                  rows={2}
                   placeholder="https://..."
                 />
               </div>
+
               <div className="flex items-center gap-2">
                 <Switch
                   checked={form.featured}
@@ -242,7 +368,12 @@ export default function AdminProducts() {
               <Button
                 type="submit"
                 className="w-full bg-primary text-primary-foreground"
-                disabled={createMutation.isPending || updateMutation.isPending}
+                disabled={
+                  createMutation.isPending ||
+                  updateMutation.isPending ||
+                  uploading
+                }
+                data-ocid="admin.products.submit_button"
               >
                 {editing ? "Update" : "Create"}
               </Button>
@@ -251,18 +382,32 @@ export default function AdminProducts() {
         </Dialog>
       </div>
 
-      <Table data-ocid="admin.products_table">
+      <Table data-ocid="admin.products.table">
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead>MOQ</TableHead>
+            <TableHead>MOQ / Price</TableHead>
             <TableHead>Featured</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {products?.map((p, i) => (
-            <TableRow key={String(p.id)}>
+          {(products ?? []).length === 0 && (
+            <TableRow>
+              <TableCell
+                colSpan={4}
+                className="text-center text-muted-foreground py-8"
+                data-ocid="admin.products.empty_state"
+              >
+                No products yet. Add your first product.
+              </TableCell>
+            </TableRow>
+          )}
+          {(products ?? []).map((p, i) => (
+            <TableRow
+              key={String(p.id)}
+              data-ocid={`admin.products.item.${i + 1}`}
+            >
               <TableCell className="font-medium">{p.name}</TableCell>
               <TableCell className="text-muted-foreground text-sm">
                 {p.moq}
@@ -280,7 +425,7 @@ export default function AdminProducts() {
                     size="sm"
                     variant="outline"
                     onClick={() => openEdit(p)}
-                    data-ocid={`admin.edit_button.${i + 1}`}
+                    data-ocid={`admin.products.edit_button.${i + 1}`}
                   >
                     Edit
                   </Button>
@@ -288,7 +433,7 @@ export default function AdminProducts() {
                     size="sm"
                     variant="destructive"
                     onClick={() => deleteMutation.mutate(p.id)}
-                    data-ocid={`admin.delete_button.${i + 1}`}
+                    data-ocid={`admin.products.delete_button.${i + 1}`}
                   >
                     Delete
                   </Button>
