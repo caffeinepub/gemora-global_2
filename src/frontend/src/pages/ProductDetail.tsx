@@ -10,7 +10,7 @@ import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
 
 export default function ProductDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams() as { id: string };
   const { actor } = useActor();
   const [activeImg, setActiveImg] = useState(0);
 

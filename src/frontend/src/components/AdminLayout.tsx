@@ -6,7 +6,7 @@ const navItems = [
   { label: "Products", to: "/admin/products", icon: "📦" },
   { label: "Categories", to: "/admin/categories", icon: "📁" },
   { label: "Media", to: "/admin/gallery", icon: "🖼" },
-  { label: "Catalogue", to: "/admin/content", icon: "📑" },
+  { label: "Catalogue", to: "/admin/catalogue", icon: "📑" },
   { label: "Blog", to: "/admin/blog", icon: "✍️" },
   { label: "Orders", to: "/admin/orders", icon: "🌍" },
   { label: "Customers", to: "/admin/customers", icon: "👥" },

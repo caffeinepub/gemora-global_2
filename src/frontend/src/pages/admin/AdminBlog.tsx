@@ -1,56 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import AdminLayout from "../../components/AdminLayout";
-
-const defaultPosts = [
-  {
-    id: 1,
-    title: "Top Imitation Jewellery Trends to Watch in 2026",
-    category: "Trends",
-    author: "Priya Sharma",
-    date: "March 10, 2026",
-    status: "Published",
-  },
-  {
-    id: 2,
-    title: "How to Start a Jewellery Wholesale Import Business",
-    category: "Business Guide",
-    author: "Rahul Mehta",
-    date: "February 28, 2026",
-    status: "Published",
-  },
-  {
-    id: 3,
-    title: "Why Indian Imitation Jewellery Dominates Global Markets",
-    category: "Industry Insights",
-    author: "Neha Gupta",
-    date: "February 14, 2026",
-    status: "Published",
-  },
-  {
-    id: 4,
-    title: "Bridal Jewellery Collections: What International Buyers Want",
-    category: "Collections",
-    author: "Ananya Patel",
-    date: "January 30, 2026",
-    status: "Published",
-  },
-  {
-    id: 5,
-    title: "MOQ Explained: What Wholesale Jewellery Buyers Need to Know",
-    category: "Export Tips",
-    author: "Vikram Singh",
-    date: "January 15, 2026",
-    status: "Published",
-  },
-  {
-    id: 6,
-    title: "Anti-Tarnish Technology in Modern Fashion Jewellery",
-    category: "Product Care",
-    author: "Deepika Rao",
-    date: "December 20, 2025",
-    status: "Published",
-  },
-];
+import { useStorageUpload } from "../../hooks/useStorageUpload";
+import {
+  type BlogPost,
+  generateSlug,
+  getBlogPosts,
+  saveBlogPosts,
+} from "../../utils/blogStore";
 
 const categories = [
   "Trends",
@@ -71,6 +28,7 @@ const fieldStyle = {
   fontSize: 14,
   outline: "none",
 } as React.CSSProperties;
+
 const labelStyle = {
   color: "rgba(255,255,255,0.6)",
   fontSize: 12,
@@ -78,79 +36,108 @@ const labelStyle = {
   marginBottom: 6,
 } as React.CSSProperties;
 
+const EMPTY_FORM = {
+  title: "",
+  category: categories[0],
+  author: "",
+  date: "",
+  status: "Draft",
+  excerpt: "",
+  content: "",
+  image: "",
+};
+
 export default function AdminBlog() {
-  const [posts, setPosts] = useState(defaultPosts);
+  const [posts, setPosts] = useState<BlogPost[]>(() => getBlogPosts());
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
-  const [form, setForm] = useState({
-    title: "",
-    category: categories[0],
-    author: "",
-    date: "",
-    status: "Draft",
-    excerpt: "",
-    content: "",
-  });
+  const [form, setForm] = useState(EMPTY_FORM);
+  const { uploadFile, uploading } = useStorageUpload();
+  const imageFileRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
-    setForm({
-      title: "",
-      category: categories[0],
-      author: "",
-      date: "",
-      status: "Draft",
-      excerpt: "",
-      content: "",
-    });
+    setForm(EMPTY_FORM);
     setEditId(null);
     setShowForm(false);
   };
 
-  const handleEdit = (post: (typeof defaultPosts)[0]) => {
+  const handleEdit = (post: BlogPost) => {
     setForm({
       title: post.title,
       category: post.category,
       author: post.author,
       date: post.date,
       status: post.status,
-      excerpt: "",
-      content: "",
+      excerpt: post.excerpt,
+      content: post.content,
+      image: post.image,
     });
     setEditId(post.id);
     setShowForm(true);
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("Delete this blog post?")) {
-      setPosts((prev) => prev.filter((p) => p.id !== id));
+    if (!confirm("Delete this blog post?")) return;
+    const updated = posts.filter((p) => p.id !== id);
+    setPosts(updated);
+    saveBlogPosts(updated);
+    toast.success("Post deleted");
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const url = await uploadFile(file);
+      setForm((f) => ({ ...f, image: url }));
+      toast.success("Image uploaded");
+    } catch {
+      toast.error("Image upload failed");
     }
+    if (imageFileRef.current) imageFileRef.current.value = "";
   };
 
   const handleSave = () => {
-    if (!form.title || !form.author) return;
+    if (!form.title || !form.author) {
+      toast.error("Title and author are required");
+      return;
+    }
+    const now = new Date().toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    let updated: BlogPost[];
     if (editId !== null) {
-      setPosts((prev) =>
-        prev.map((p) => (p.id === editId ? { ...p, ...form } : p)),
+      updated = posts.map((p) =>
+        p.id === editId
+          ? {
+              ...p,
+              ...form,
+              slug: generateSlug(form.title),
+              readTime: `${Math.max(1, Math.ceil(form.content.split(" ").length / 200))} min read`,
+            }
+          : p,
       );
     } else {
-      setPosts((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          title: form.title,
-          category: form.category,
-          author: form.author,
-          date:
-            form.date ||
-            new Date().toLocaleDateString("en-GB", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            }),
-          status: form.status,
-        },
-      ]);
+      const newPost: BlogPost = {
+        id: Date.now(),
+        slug: generateSlug(form.title),
+        title: form.title,
+        category: form.category,
+        author: form.author,
+        date: form.date || now,
+        readTime: `${Math.max(1, Math.ceil(form.content.split(" ").length / 200))} min read`,
+        status: form.status,
+        excerpt: form.excerpt,
+        content: form.content,
+        image: form.image,
+      };
+      updated = [newPost, ...posts];
     }
+    setPosts(updated);
+    saveBlogPosts(updated);
+    toast.success(editId !== null ? "Post updated" : "Post published");
     resetForm();
   };
 
@@ -172,74 +159,78 @@ export default function AdminBlog() {
                 marginTop: 2,
               }}
             >
-              {posts.length} articles
+              {posts.filter((p) => p.status === "Published").length} published •{" "}
+              {posts.filter((p) => p.status === "Draft").length} drafts
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              resetForm();
-              setShowForm(true);
-            }}
-            style={{
-              background: "gold",
-              color: "#111",
-              border: "none",
-              borderRadius: 8,
-              padding: "10px 20px",
-              fontWeight: 600,
-              cursor: "pointer",
-              fontSize: 14,
-            }}
-          >
-            + New Post
-          </button>
+          {!showForm && (
+            <button
+              type="button"
+              onClick={() => setShowForm(true)}
+              style={{
+                background: "gold",
+                color: "#111",
+                border: "none",
+                borderRadius: 8,
+                padding: "8px 18px",
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: "pointer",
+              }}
+              data-ocid="admin.blog.open_modal_button"
+            >
+              + New Post
+            </button>
+          )}
         </div>
 
         {showForm && (
           <div
             style={{
               background: "#111",
-              border: "1px solid #333",
+              border: "1px solid #222",
               borderRadius: 12,
               padding: 24,
               marginBottom: 24,
             }}
           >
-            <h3 style={{ color: "gold", fontWeight: 600, marginBottom: 16 }}>
-              {editId ? "Edit Post" : "New Blog Post"}
+            <h3
+              style={{
+                color: "gold",
+                fontWeight: 600,
+                fontSize: 16,
+                marginBottom: 20,
+              }}
+            >
+              {editId !== null ? "Edit Post" : "New Blog Post"}
             </h3>
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
-                gap: 14,
-                marginBottom: 14,
+                gap: 16,
               }}
             >
               <div>
-                <label htmlFor="blog-title" style={labelStyle}>
-                  Title *
-                </label>
+                <p style={labelStyle}>Title *</p>
                 <input
-                  id="blog-title"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="Post title"
                   style={fieldStyle}
+                  value={form.title}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, title: e.target.value }))
+                  }
+                  placeholder="Enter blog title"
+                  data-ocid="admin.blog.input"
                 />
               </div>
               <div>
-                <label htmlFor="blog-category" style={labelStyle}>
-                  Category
-                </label>
+                <p style={labelStyle}>Category</p>
                 <select
-                  id="blog-category"
+                  style={fieldStyle}
                   value={form.category}
                   onChange={(e) =>
-                    setForm({ ...form, category: e.target.value })
+                    setForm((f) => ({ ...f, category: e.target.value }))
                   }
-                  style={fieldStyle}
                 >
                   {categories.map((c) => (
                     <option key={c} value={c}>
@@ -249,59 +240,107 @@ export default function AdminBlog() {
                 </select>
               </div>
               <div>
-                <label htmlFor="blog-author" style={labelStyle}>
-                  Author *
-                </label>
+                <p style={labelStyle}>Author *</p>
                 <input
-                  id="blog-author"
-                  value={form.author}
-                  onChange={(e) => setForm({ ...form, author: e.target.value })}
-                  placeholder="Author name"
                   style={fieldStyle}
+                  value={form.author}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, author: e.target.value }))
+                  }
+                  placeholder="Author name"
                 />
               </div>
               <div>
-                <label htmlFor="blog-status" style={labelStyle}>
-                  Status
-                </label>
-                <select
-                  id="blog-status"
-                  value={form.status}
-                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                <p style={labelStyle}>Date</p>
+                <input
                   style={fieldStyle}
+                  value={form.date}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, date: e.target.value }))
+                  }
+                  placeholder="e.g. March 10, 2026"
+                />
+              </div>
+              <div>
+                <p style={labelStyle}>Status</p>
+                <select
+                  style={fieldStyle}
+                  value={form.status}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, status: e.target.value }))
+                  }
                 >
                   <option value="Published">Published</option>
                   <option value="Draft">Draft</option>
                 </select>
               </div>
+              <div>
+                <p style={labelStyle}>Featured Image</p>
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <button
+                    type="button"
+                    onClick={() => imageFileRef.current?.click()}
+                    disabled={uploading}
+                    style={{
+                      background: uploading ? "#333" : "#1a1a1a",
+                      border: "1px dashed #555",
+                      borderRadius: 8,
+                      padding: "8px 14px",
+                      color: uploading ? "gold" : "#aaa",
+                      fontSize: 13,
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                    }}
+                    data-ocid="admin.blog.upload_button"
+                  >
+                    {uploading ? "Uploading..." : "📷 Upload Image"}
+                  </button>
+                  <input
+                    ref={imageFileRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                  />
+                  {form.image && (
+                    <img
+                      src={form.image}
+                      alt="preview"
+                      style={{
+                        height: 40,
+                        width: 60,
+                        objectFit: "cover",
+                        borderRadius: 6,
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
-            <div style={{ marginBottom: 14 }}>
-              <label htmlFor="blog-excerpt" style={labelStyle}>
-                Excerpt
-              </label>
+            <div style={{ marginTop: 16 }}>
+              <p style={labelStyle}>Excerpt</p>
               <textarea
-                id="blog-excerpt"
+                style={{ ...fieldStyle, minHeight: 60, resize: "vertical" }}
                 value={form.excerpt}
-                onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
-                placeholder="Short description for listing page..."
-                rows={2}
-                style={{ ...fieldStyle, resize: "vertical" }}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, excerpt: e.target.value }))
+                }
+                placeholder="Short summary of the post"
+                data-ocid="admin.blog.textarea"
               />
             </div>
-            <div style={{ marginBottom: 20 }}>
-              <label htmlFor="blog-content" style={labelStyle}>
-                Content
-              </label>
+            <div style={{ marginTop: 16 }}>
+              <p style={labelStyle}>Content</p>
               <textarea
-                id="blog-content"
+                style={{ ...fieldStyle, minHeight: 160, resize: "vertical" }}
                 value={form.content}
-                onChange={(e) => setForm({ ...form, content: e.target.value })}
-                placeholder="Full post content..."
-                rows={6}
-                style={{ ...fieldStyle, resize: "vertical" }}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, content: e.target.value }))
+                }
+                placeholder="Full blog post content..."
               />
             </div>
-            <div className="flex gap-3">
+            <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
               <button
                 type="button"
                 onClick={handleSave}
@@ -310,24 +349,28 @@ export default function AdminBlog() {
                   color: "#111",
                   border: "none",
                   borderRadius: 8,
-                  padding: "10px 24px",
-                  fontWeight: 600,
+                  padding: "9px 24px",
+                  fontWeight: 700,
+                  fontSize: 14,
                   cursor: "pointer",
                 }}
+                data-ocid="admin.blog.save_button"
               >
-                Save Post
+                {editId !== null ? "Update Post" : "Publish Post"}
               </button>
               <button
                 type="button"
                 onClick={resetForm}
                 style={{
-                  background: "#222",
-                  color: "rgba(255,255,255,0.6)",
+                  background: "transparent",
+                  color: "#aaa",
                   border: "1px solid #333",
                   borderRadius: 8,
-                  padding: "10px 20px",
+                  padding: "9px 18px",
+                  fontSize: 14,
                   cursor: "pointer",
                 }}
+                data-ocid="admin.blog.cancel_button"
               >
                 Cancel
               </button>
@@ -343,10 +386,14 @@ export default function AdminBlog() {
             overflow: "hidden",
           }}
         >
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <table
+            style={{ width: "100%", borderCollapse: "collapse" }}
+            data-ocid="admin.blog.table"
+          >
             <thead>
-              <tr style={{ borderBottom: "1px solid #222" }}>
+              <tr>
                 {[
+                  "Image",
                   "Title",
                   "Category",
                   "Author",
@@ -357,13 +404,14 @@ export default function AdminBlog() {
                   <th
                     key={h}
                     style={{
-                      padding: "12px 16px",
                       textAlign: "left",
-                      color: "rgba(255,255,255,0.4)",
-                      fontSize: 12,
+                      padding: "12px 14px",
+                      color: "#666",
+                      fontSize: 11,
                       fontWeight: 600,
                       textTransform: "uppercase",
-                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #222",
+                      background: "#0f0f0f",
                     }}
                   >
                     {h}
@@ -375,68 +423,91 @@ export default function AdminBlog() {
               {posts.map((post, i) => (
                 <tr
                   key={post.id}
-                  style={{
-                    borderBottom:
-                      i < posts.length - 1 ? "1px solid #1a1a1a" : "none",
-                  }}
+                  style={{ borderBottom: "1px solid #1a1a1a" }}
+                  data-ocid={`admin.blog.item.${i + 1}`}
                 >
+                  <td style={{ padding: "10px 14px" }}>
+                    {post.image ? (
+                      <img
+                        src={post.image}
+                        alt={post.title}
+                        style={{
+                          width: 60,
+                          height: 40,
+                          objectFit: "cover",
+                          borderRadius: 6,
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: 60,
+                          height: 40,
+                          background: "#1a1a1a",
+                          borderRadius: 6,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 18,
+                        }}
+                      >
+                        📷
+                      </div>
+                    )}
+                  </td>
                   <td
                     style={{
-                      padding: "14px 16px",
-                      color: "#fff",
-                      fontSize: 14,
-                      maxWidth: 280,
+                      padding: "10px 14px",
+                      fontSize: 13,
+                      color: "#ddd",
+                      maxWidth: 200,
                     }}
                   >
-                    <span style={{ fontWeight: 500 }}>{post.title}</span>
-                  </td>
-                  <td style={{ padding: "14px 16px", fontSize: 13 }}>
-                    <span
-                      style={{
-                        background: "rgba(218,165,32,0.15)",
-                        color: "gold",
-                        borderRadius: 6,
-                        padding: "3px 10px",
-                        fontSize: 12,
-                      }}
-                    >
-                      {post.category}
-                    </span>
+                    {post.title}
                   </td>
                   <td
                     style={{
-                      padding: "14px 16px",
-                      color: "rgba(255,255,255,0.6)",
-                      fontSize: 13,
+                      padding: "10px 14px",
+                      fontSize: 12,
+                      color: "#888",
+                    }}
+                  >
+                    {post.category}
+                  </td>
+                  <td
+                    style={{
+                      padding: "10px 14px",
+                      fontSize: 12,
+                      color: "#888",
                     }}
                   >
                     {post.author}
                   </td>
                   <td
                     style={{
-                      padding: "14px 16px",
-                      color: "rgba(255,255,255,0.5)",
+                      padding: "10px 14px",
                       fontSize: 12,
+                      color: "#888",
                     }}
                   >
                     {post.date}
                   </td>
-                  <td style={{ padding: "14px 16px" }}>
+                  <td style={{ padding: "10px 14px" }}>
                     <span
                       style={{
-                        background: `${statusColor(post.status)}20`,
                         color: statusColor(post.status),
-                        borderRadius: 6,
+                        background: `${statusColor(post.status)}22`,
+                        fontSize: 11,
                         padding: "3px 10px",
-                        fontSize: 12,
-                        fontWeight: 500,
+                        borderRadius: 20,
+                        fontWeight: 600,
                       }}
                     >
                       {post.status}
                     </span>
                   </td>
-                  <td style={{ padding: "14px 16px" }}>
-                    <div className="flex gap-2">
+                  <td style={{ padding: "10px 14px" }}>
+                    <div style={{ display: "flex", gap: 6 }}>
                       <button
                         type="button"
                         onClick={() => handleEdit(post)}
@@ -445,11 +516,12 @@ export default function AdminBlog() {
                           color: "#111",
                           border: "none",
                           borderRadius: 6,
-                          padding: "6px 14px",
+                          padding: "5px 12px",
                           fontSize: 12,
                           fontWeight: 600,
                           cursor: "pointer",
                         }}
+                        data-ocid={`admin.blog.edit_button.${i + 1}`}
                       >
                         Edit
                       </button>
@@ -461,11 +533,12 @@ export default function AdminBlog() {
                           color: "#fff",
                           border: "none",
                           borderRadius: 6,
-                          padding: "6px 14px",
+                          padding: "5px 12px",
                           fontSize: 12,
                           fontWeight: 600,
                           cursor: "pointer",
                         }}
+                        data-ocid={`admin.blog.delete_button.${i + 1}`}
                       >
                         Delete
                       </button>
@@ -475,6 +548,19 @@ export default function AdminBlog() {
               ))}
             </tbody>
           </table>
+          {posts.length === 0 && (
+            <div
+              style={{
+                padding: 40,
+                textAlign: "center",
+                color: "#555",
+                fontSize: 14,
+              }}
+              data-ocid="admin.blog.empty_state"
+            >
+              No blog posts yet. Click "+ New Post" to create one.
+            </div>
+          )}
         </div>
       </div>
     </AdminLayout>

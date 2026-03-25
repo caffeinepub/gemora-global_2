@@ -45,10 +45,12 @@ export default function AdminWebsiteSettings() {
   const qc = useQueryClient();
   const { uploadFile, uploading } = useStorageUpload();
   const logoFileRef = useRef<HTMLInputElement>(null);
+  const heroFileRef = useRef<HTMLInputElement>(null);
 
   const keys = [
     "hero_title",
     "hero_subtitle",
+    "hero_image",
     "whatsapp_number",
     "contact_email",
     "contact_phone",
@@ -171,7 +173,66 @@ export default function AdminWebsiteSettings() {
             }}
             data-ocid="admin.websettings.hero_subtitle.textarea"
           />
-          <SaveBtn k="hero_subtitle" />
+          <SaveBtn k="hero_subtitle" />{" "}
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <Label style={{ color: "#aaa" }}>Hero Background Image</Label>
+          <div
+            style={{
+              marginTop: 8,
+              border: "2px dashed #333",
+              borderRadius: 8,
+              padding: "16px",
+              textAlign: "center",
+              cursor: "pointer",
+              background: "#1a1a1a",
+            }}
+            onClick={() => heroFileRef.current?.click()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ")
+                heroFileRef.current?.click();
+            }}
+            data-ocid="admin.websettings.hero_image.dropzone"
+          >
+            <input
+              ref={heroFileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                try {
+                  const url = await uploadFile(file);
+                  await actor!.setContent("hero_image", url);
+                  toast.success("Hero image updated");
+                  qc.invalidateQueries({ queryKey: ["content-all"] });
+                  qc.invalidateQueries({ queryKey: ["content", "hero_image"] });
+                } catch {
+                  toast.error("Failed to upload hero image");
+                }
+                if (heroFileRef.current) heroFileRef.current.value = "";
+              }}
+            />
+            <p style={{ color: uploading ? "gold" : "#888", fontSize: 13 }}>
+              {uploading
+                ? "Uploading..."
+                : "Click to upload hero background image"}
+            </p>
+          </div>
+          {getValue("hero_image") && (
+            <img
+              src={getValue("hero_image")}
+              alt="Hero preview"
+              style={{
+                width: "100%",
+                maxHeight: 140,
+                objectFit: "cover",
+                borderRadius: 8,
+                marginTop: 8,
+              }}
+            />
+          )}
         </div>
       </SettingCard>
 

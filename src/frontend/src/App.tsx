@@ -17,6 +17,7 @@ import Products from "./pages/Products";
 import Wholesale from "./pages/Wholesale";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminBlog from "./pages/admin/AdminBlog";
+import AdminCatalogue from "./pages/admin/AdminCatalogue";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminCustomers from "./pages/admin/AdminCustomers";
@@ -165,6 +166,14 @@ export default function App() {
           element={
             <AdminGuard>
               <AdminBlog />
+            </AdminGuard>
+          }
+        />
+        <Route
+          path="/admin/catalogue"
+          element={
+            <AdminGuard>
+              <AdminCatalogue />
             </AdminGuard>
           }
         />

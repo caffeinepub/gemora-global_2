@@ -274,7 +274,7 @@ export default function Products() {
             <Button
               variant={!activeCatId ? "default" : "outline"}
               size="sm"
-              onClick={() => setSearchParams({})}
+              onClick={() => setSearchParams(new URLSearchParams())}
               className={
                 !activeCatId ? "bg-primary text-primary-foreground" : ""
               }
@@ -286,7 +286,11 @@ export default function Products() {
                 key={String(cat.id)}
                 variant={activeCatId === String(cat.id) ? "default" : "outline"}
                 size="sm"
-                onClick={() => setSearchParams({ category: String(cat.id) })}
+                onClick={() =>
+                  setSearchParams(
+                    new URLSearchParams({ category: String(cat.id) }),
+                  )
+                }
                 className={
                   activeCatId === String(cat.id)
                     ? "bg-primary text-primary-foreground"
@@ -312,7 +316,9 @@ export default function Products() {
                       key={String(cat.id)}
                       type="button"
                       onClick={() =>
-                        setSearchParams({ category: String(cat.id) })
+                        setSearchParams(
+                          new URLSearchParams({ category: String(cat.id) }),
+                        )
                       }
                       className="group relative overflow-hidden rounded-xl aspect-square cursor-pointer border border-border hover:border-primary/50 transition-all"
                     >

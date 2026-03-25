@@ -17,11 +17,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Category } from "../../backend";
 import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
+import { useStorageUpload } from "../../hooks/useStorageUpload";
 
 type CatForm = {
   name: string;
@@ -39,6 +40,8 @@ const EMPTY: CatForm = {
 export default function AdminCategories() {
   const { actor } = useActor();
   const qc = useQueryClient();
+  const { uploadFile, uploading } = useStorageUpload();
+  const imageFileRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
   const [form, setForm] = useState<CatForm>(EMPTY);
@@ -154,8 +157,42 @@ export default function AdminCategories() {
                 />
               </div>
               <div>
-                <Label>Image URL</Label>
+                <Label>Category Image</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <button
+                    type="button"
+                    onClick={() => imageFileRef.current?.click()}
+                    disabled={uploading}
+                    className="px-3 py-2 text-xs rounded-md border border-dashed border-muted-foreground/50 text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                  >
+                    {uploading ? "Uploading..." : "📷 Upload Image"}
+                  </button>
+                  <input
+                    ref={imageFileRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      try {
+                        const url = await uploadFile(file);
+                        setForm((f) => ({ ...f, imageUrl: url }));
+                      } catch {}
+                      if (imageFileRef.current) imageFileRef.current.value = "";
+                    }}
+                  />
+                  {form.imageUrl && (
+                    <img
+                      src={form.imageUrl}
+                      alt="preview"
+                      className="h-10 w-14 object-cover rounded"
+                    />
+                  )}
+                </div>
                 <Input
+                  className="mt-2"
+                  placeholder="or paste image URL"
                   value={form.imageUrl}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, imageUrl: e.target.value }))

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import {
   Bar,
   BarChart,
@@ -37,6 +38,7 @@ const monthlyData = [
 ];
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const { actor } = useActor();
   const qc = useQueryClient();
 
@@ -68,15 +70,17 @@ export default function AdminDashboard() {
   });
 
   const statCards = [
-    { label: "Total Orders", value: "1,245" },
-    { label: "Export Countries", value: "25" },
+    { label: "Total Orders", value: "1,245", link: "/admin/orders" },
+    { label: "Export Countries", value: "25", link: "/admin/analytics" },
     {
       label: "Total Products",
       value: stats ? String(stats.totalProducts) : "—",
+      link: "/admin/products",
     },
     {
       label: "New Enquiries",
       value: stats ? String(stats.newInquiries) : "—",
+      link: "/admin/inquiries",
     },
   ];
 
@@ -94,14 +98,32 @@ export default function AdminDashboard() {
         }}
       >
         {statCards.map((card) => (
-          <div key={card.label} style={CARD}>
+          <button
+            key={card.label}
+            type="button"
+            style={{
+              ...CARD,
+              cursor: "pointer",
+              transition: "border-color 0.2s",
+              textAlign: "left",
+              width: "100%",
+            }}
+            onClick={() => navigate(card.link)}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "gold";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "#222";
+            }}
+            data-ocid="admin.dashboard.card"
+          >
             <p style={{ color: "#aaa", fontSize: 13, marginBottom: 8 }}>
               {card.label}
             </p>
             <p style={{ color: "gold", fontSize: 24, fontWeight: 700 }}>
               {card.value}
             </p>
-          </div>
+          </button>
         ))}
       </div>
 

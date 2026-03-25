@@ -128,7 +128,7 @@ const STATS = [
 ];
 
 const DEFAULT_HERO_TITLE =
-  "India's Leading Imitation\nJewellery Manufacturer & Global Exporter";
+  "Best Imitation Jewellery Exporter in India\nPremium Manufacturer & Global Supplier";
 const DEFAULT_HERO_SUBTITLE =
   "Premium handcrafted designs for wholesalers, boutiques & distributors worldwide.";
 
@@ -172,6 +172,15 @@ export default function Home() {
     (heroSubtitleRaw && heroSubtitleRaw.length > 0 ? heroSubtitleRaw : null) ??
     DEFAULT_HERO_SUBTITLE;
 
+  const { data: heroImageRaw } = useQuery({
+    queryKey: ["content", "hero_image"],
+    queryFn: () => actor!.getContent("hero_image"),
+    enabled: !!actor,
+  });
+  const heroImage =
+    (heroImageRaw && heroImageRaw.length > 0 ? heroImageRaw : null) ??
+    "/assets/generated/hero-jewellery-banner.dim_1600x700.jpg";
+
   const displayCategories =
     categories && categories.length > 0 ? categories : SAMPLE_CATEGORIES;
   const displayTestimonials =
@@ -196,8 +205,7 @@ export default function Home() {
       <section
         className="relative min-h-[90vh] flex items-center justify-center pt-16"
         style={{
-          backgroundImage:
-            "url('/assets/generated/hero-jewellery-banner.dim_1600x700.jpg')",
+          backgroundImage: `url('${heroImage}')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -213,7 +221,10 @@ export default function Home() {
           <Badge className="mb-6 bg-primary/20 text-primary border-primary/30 text-xs tracking-widest">
             INDIA'S FINEST JEWELLERY EXPORTER
           </Badge>
-          <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight mb-6">
+          <h1
+            aria-label={heroTitle.replace(/\n/g, " ")}
+            className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight mb-6"
+          >
             {heroLines.length > 1 ? (
               <>
                 {heroLines[0]}
@@ -228,10 +239,10 @@ export default function Home() {
               </>
             ) : (
               <>
-                India's Leading Imitation
+                Best Imitation Jewellery
                 <br />
-                <span className="text-primary">Jewellery Manufacturer</span>
-                <br />& Global Exporter
+                <span className="text-primary">Exporter in India</span>
+                <br />& Premium Manufacturer
               </>
             )}
           </h1>

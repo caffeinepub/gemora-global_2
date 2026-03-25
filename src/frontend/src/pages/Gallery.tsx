@@ -6,6 +6,7 @@ import type { GalleryItem } from "../backend";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
+import { getCatalogues } from "../utils/catalogueStore";
 
 const SAMPLE_GALLERY: GalleryItem[] = [
   {
@@ -62,6 +63,7 @@ const FILTER_TYPES = [
 export default function Gallery() {
   const { actor } = useActor();
   const [filter, setFilter] = useState("");
+  const catalogues = getCatalogues();
 
   const { data: items, isLoading } = useQuery<GalleryItem[]>({
     queryKey: ["gallery", filter],
@@ -90,25 +92,10 @@ export default function Gallery() {
                 </p>
               </div>
               <a
-                href="/catalogue.pdf"
-                download
+                href="/contact"
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-lg text-sm font-medium transition-colors w-fit"
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                  />
-                </svg>
-                Download Catalogue
+                Request Catalogue
               </a>
             </div>
           </div>
@@ -159,6 +146,75 @@ export default function Gallery() {
                     </div>
                   )}
                 </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      {/* Catalogues Download Section */}
+      <div className="bg-card border-t border-border py-12">
+        <div className="container">
+          <h2 className="font-serif text-2xl font-bold mb-2">
+            Download Catalogues
+          </h2>
+          <p className="text-muted-foreground mb-8">
+            Download our latest product catalogues to explore our full range.
+          </p>
+          {catalogues.length === 0 ? (
+            <a
+              href="/catalogue.pdf"
+              download
+              className="inline-flex items-center gap-3 bg-primary/10 border border-primary/30 hover:bg-primary/20 px-6 py-4 rounded-xl text-sm font-medium transition-colors"
+            >
+              <svg
+                className="w-5 h-5 text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+              <div>
+                <div className="font-semibold">Gemora Global Catalogue</div>
+                <div className="text-muted-foreground text-xs mt-0.5">
+                  PDF Download
+                </div>
+              </div>
+            </a>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {catalogues.map((cat) => (
+                <a
+                  key={cat.id}
+                  href={cat.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download={cat.fileName}
+                  className="flex items-center gap-4 bg-background border border-border hover:border-primary/50 hover:bg-primary/5 px-5 py-4 rounded-xl transition-all group"
+                >
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl group-hover:bg-primary/20 transition-colors">
+                    📄
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold text-sm truncate">
+                      {cat.title}
+                    </div>
+                    {cat.description && (
+                      <div className="text-muted-foreground text-xs mt-0.5 line-clamp-2">
+                        {cat.description}
+                      </div>
+                    )}
+                    <div className="text-primary text-xs mt-1 font-medium">
+                      Click to Download →
+                    </div>
+                  </div>
+                </a>
               ))}
             </div>
           )}

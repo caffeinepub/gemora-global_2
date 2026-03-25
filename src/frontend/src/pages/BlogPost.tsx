@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import { blogPosts } from "./Blog";
+import { getBlogPosts } from "../utils/blogStore";
 
 const categoryColors: Record<string, string> = {
   Trends: "bg-amber-500/20 text-amber-400 border-amber-500/30",
@@ -15,12 +15,13 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function BlogPost() {
-  const { slug } = useParams<{ slug: string }>();
-  const post = blogPosts.find((p) => p.slug === slug);
+  const { slug } = useParams() as { slug: string };
+  const allPosts = getBlogPosts();
+  const post = allPosts.find((p) => p.slug === slug);
 
   if (!post) return <Navigate to="/blog" replace />;
 
-  const related = blogPosts.filter((p) => p.slug !== slug).slice(0, 3);
+  const related = allPosts.filter((p) => p.slug !== slug).slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -78,7 +79,10 @@ export default function BlogPost() {
             </div>
 
             <div className="prose prose-invert max-w-none space-y-5">
-              {post.content.map((para, paraIndex) => (
+              {(Array.isArray(post.content)
+                ? post.content
+                : post.content.split("\n\n").filter(Boolean)
+              ).map((para, paraIndex) => (
                 <motion.p
                   key={para.slice(0, 40)}
                   initial={{ opacity: 0, y: 12 }}
