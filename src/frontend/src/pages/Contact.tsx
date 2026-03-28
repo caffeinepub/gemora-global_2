@@ -4,14 +4,43 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
+import { usePageSEO } from "../hooks/usePageSEO";
 
 export default function Contact() {
+  usePageSEO({
+    title:
+      "Contact Gemora Global — Wholesale Jewellery Enquiries | India Exporter",
+    description:
+      "Get in touch with Gemora Global for wholesale imitation jewellery pricing, catalogue requests, and export enquiries. We respond to all wholesale inquiries within 24 hours.",
+    canonical: "https://gemoraglobal-tje.caffeine.xyz/contact",
+    ogTitle:
+      "Contact Gemora Global — Wholesale Jewellery Enquiries | India Exporter",
+    ogImage: "https://gemoraglobal-tje.caffeine.xyz/images/og-contact.jpg",
+    schema: {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      name: "Gemora Global",
+      telephone: "+91-7976341419",
+      email: "globalgemora@gmail.com",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress:
+          "B 66 MAA Hinglaj Nagar, Gandhi Path West, Vaishali Nagar",
+        addressLocality: "Jaipur",
+        addressRegion: "Rajasthan",
+        postalCode: "302021",
+        addressCountry: "IN",
+      },
+      openingHours: "Mo-Sa 10:00-18:30",
+      priceRange: "$$",
+    },
+  });
   const { actor, isFetching } = useActor();
   const [searchParams] = useSearchParams();
   const productId = searchParams.get("product");
@@ -22,6 +51,55 @@ export default function Contact() {
     whatsapp: "",
     requirement: "",
   });
+
+  useEffect(() => {
+    document.title =
+      "Contact Gemora Global — Wholesale Jewellery Enquiries | India Exporter";
+    let metaDesc = document.querySelector(
+      'meta[name="description"]',
+    ) as HTMLMetaElement | null;
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.setAttribute("name", "description");
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute(
+      "content",
+      "Get in touch with Gemora Global for wholesale imitation jewellery pricing, catalogue requests, and export enquiries. We respond to all wholesale inquiries within 24 hours.",
+    );
+
+    const existingScript = document.getElementById("page-schema");
+    if (existingScript) existingScript.remove();
+    const script = document.createElement("script");
+    script.id = "page-schema";
+    script.type = "application/ld+json";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      name: "Gemora Global",
+      telephone: "+91-7976341419",
+      email: "globalgemora@gmail.com",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress:
+          "B 66 MAA Hinglaj Nagar, Gandhi Path West, Vaishali Nagar",
+        addressLocality: "Jaipur",
+        addressRegion: "Rajasthan",
+        postalCode: "302021",
+        addressCountry: "IN",
+      },
+      openingHours: "Mo-Sa 10:00-18:30",
+      priceRange: "$$",
+    });
+    document.head.appendChild(script);
+
+    return () => {
+      document.title =
+        "Imitation Jewellery Exporter & Manufacturer in India | Gemora Global";
+      const s = document.getElementById("page-schema");
+      if (s) s.remove();
+    };
+  }, []);
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -57,10 +135,23 @@ export default function Contact() {
         <div className="bg-card border-b border-border py-12">
           <div className="container">
             <h1 className="font-serif text-4xl font-bold mb-2">
-              Contact & Inquiry
+              Contact Us — Wholesale Enquiries Answered Within 24 Hours
             </h1>
-            <p className="text-muted-foreground">
-              Get in touch for wholesale pricing and catalogue
+            <p className="text-muted-foreground max-w-2xl">
+              Whether you are placing your first order or scaling an existing
+              buying relationship, our team is ready to assist. Browse our{" "}
+              <Link to="/products" className="text-primary hover:underline">
+                product range
+              </Link>{" "}
+              or{" "}
+              <Link to="/gallery" className="text-primary hover:underline">
+                download our catalogue
+              </Link>{" "}
+              before reaching out. We respond to all{" "}
+              <Link to="/wholesale" className="text-primary hover:underline">
+                wholesale enquiries
+              </Link>{" "}
+              within one business day.
             </p>
           </div>
         </div>
@@ -68,9 +159,15 @@ export default function Contact() {
           <div className="grid md:grid-cols-2 gap-12">
             {/* Form */}
             <div>
-              <h2 className="font-serif text-2xl font-bold mb-6">
-                Send Inquiry
+              <h2 className="font-serif text-2xl font-bold mb-2">
+                Send an Enquiry
               </h2>
+              <p className="text-muted-foreground text-sm mb-6">
+                To help us give you the best quote quickly, please include: the
+                product categories you are interested in, your target quantity
+                per design, your destination country, your preferred delivery
+                timeline, and any specific design requirements.
+              </p>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="name">Your Name *</Label>
@@ -150,7 +247,7 @@ export default function Contact() {
             <div className="space-y-6">
               <div>
                 <h2 className="font-serif text-2xl font-bold mb-6">
-                  Get In Touch
+                  Contact Details
                 </h2>
                 <div className="space-y-4">
                   {[
@@ -173,7 +270,7 @@ export default function Contact() {
                     {
                       icon: "🕐",
                       label: "Business Hours",
-                      value: "Mon–Sat: 10AM – 7PM IST",
+                      value: "Mon–Sat: 10:00 AM – 6:30 PM IST",
                     },
                   ].map((item) => (
                     <div key={item.label} className="flex gap-3">
@@ -186,6 +283,28 @@ export default function Contact() {
                       </div>
                     </div>
                   ))}
+                </div>
+
+                <div className="mt-6 p-4 bg-card border border-border rounded-xl">
+                  <h3 className="font-semibold text-sm mb-2">
+                    What to Include in Your Message
+                  </h3>
+                  <ul className="space-y-1">
+                    {[
+                      "Product categories you are interested in",
+                      "Target quantity per design",
+                      "Destination country",
+                      "Preferred delivery timeline",
+                      "Any specific design requirements",
+                    ].map((item) => (
+                      <li
+                        key={item}
+                        className="flex items-center gap-2 text-xs text-muted-foreground"
+                      >
+                        <span className="text-primary">•</span> {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
 

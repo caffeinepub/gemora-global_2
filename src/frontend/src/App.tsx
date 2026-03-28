@@ -1,6 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { useEffect } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminGuard from "./components/AdminGuard";
 import ScrollToTop from "./components/ScrollToTop";
 import WhatsAppButton from "./components/WhatsAppButton";
@@ -12,9 +12,11 @@ import Contact from "./pages/Contact";
 import ExportMarkets from "./pages/ExportMarkets";
 import Gallery from "./pages/Gallery";
 import Home from "./pages/Home";
+import NotFound from "./pages/NotFound";
 import ProductDetail from "./pages/ProductDetail";
 import Products from "./pages/Products";
 import Wholesale from "./pages/Wholesale";
+import WhyChooseUs from "./pages/WhyChooseUs";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminBlog from "./pages/admin/AdminBlog";
 import AdminCatalogue from "./pages/admin/AdminCatalogue";
@@ -52,10 +54,12 @@ export default function App() {
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/wholesale" element={<Wholesale />} />
         <Route path="/export" element={<ExportMarkets />} />
+        <Route path="/global-markets" element={<ExportMarkets />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/why-choose-us" element={<WhyChooseUs />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
           path="/admin"
@@ -177,7 +181,7 @@ export default function App() {
             </AdminGuard>
           }
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <WhatsAppButton />
       <Toaster />

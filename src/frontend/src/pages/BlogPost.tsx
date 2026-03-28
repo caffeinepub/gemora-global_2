@@ -27,12 +27,16 @@ export default function BlogPost() {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <main className="pt-16">
-        {/* Hero Image */}
+        {/* Hero Image — eager for LCP */}
         <div className="relative h-72 md:h-96 overflow-hidden">
           <img
             src={post.image}
             alt={post.title}
             className="w-full h-full object-cover"
+            loading="eager"
+            fetchPriority="high"
+            width={1200}
+            height={500}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         </div>
@@ -105,7 +109,15 @@ export default function BlogPost() {
             </h3>
             <p className="text-muted-foreground mb-6">
               Our export team is ready to assist with custom designs, bulk
-              pricing, and fast shipping.
+              pricing, and fast shipping. Browse our{" "}
+              <Link to="/products" className="text-primary hover:underline">
+                product catalogue
+              </Link>{" "}
+              or view our{" "}
+              <Link to="/wholesale" className="text-primary hover:underline">
+                wholesale guide
+              </Link>
+              .
             </p>
             <Link
               to="/contact"
@@ -138,6 +150,9 @@ export default function BlogPost() {
                       src={rp.image}
                       alt={rp.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                      width={600}
+                      height={338}
                     />
                     <span
                       className={`absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full border ${categoryColors[rp.category] ?? "bg-primary/20 text-primary border-primary/30"}`}

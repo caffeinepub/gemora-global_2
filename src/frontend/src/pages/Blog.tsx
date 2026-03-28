@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import { usePageSEO } from "../hooks/usePageSEO";
 import { type BlogPost, getBlogPosts } from "../utils/blogStore";
 
 const categoryColors: Record<string, string> = {
@@ -16,16 +17,71 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function Blog() {
+  usePageSEO({
+    title: "Jewellery Export Insights & Fashion Trends — Gemora Global Blog",
+    description:
+      "Read Gemora Global's blog for imitation jewellery sourcing guides, export tips, trend reports, and MOQ advice for wholesale buyers in UAE, France, USA, UK and Europe.",
+    canonical: "https://gemoraglobal-tje.caffeine.xyz/blog",
+    ogTitle: "Jewellery Export Insights & Fashion Trends — Gemora Global Blog",
+    ogImage: "https://gemoraglobal-tje.caffeine.xyz/images/og-blog.jpg",
+    schema: {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      name: "Gemora Global Jewellery Blog",
+      url: "https://gemoraglobal-tje.caffeine.xyz/blog",
+      inLanguage: "en",
+      publisher: { "@type": "Organization", name: "Gemora Global" },
+    },
+  });
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(() =>
     getBlogPosts().filter((p) => p.status === "Published"),
   );
 
   useEffect(() => {
+    document.title =
+      "Jewellery Export Insights & Fashion Trends — Gemora Global Blog";
+    let metaDesc = document.querySelector(
+      'meta[name="description"]',
+    ) as HTMLMetaElement | null;
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.setAttribute("name", "description");
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute(
+      "content",
+      "Read Gemora Global's blog for imitation jewellery sourcing guides, export tips, trend reports, and MOQ advice for wholesale buyers in UAE, France, USA, UK and Europe.",
+    );
+
+    const existingScript = document.getElementById("page-schema");
+    if (existingScript) existingScript.remove();
+    const script = document.createElement("script");
+    script.id = "page-schema";
+    script.type = "application/ld+json";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      name: "Gemora Global Jewellery Blog",
+      url: "https://gemoraglobal-tje.caffeine.xyz/blog",
+      inLanguage: "en",
+      description:
+        "Imitation jewellery sourcing guides, export tips, trend reports, and MOQ advice for wholesale buyers",
+      publisher: { "@type": "Organization", name: "Gemora Global" },
+    });
+    document.head.appendChild(script);
+
     const onStorage = () => {
       setBlogPosts(getBlogPosts().filter((p) => p.status === "Published"));
     };
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+
+    return () => {
+      document.title =
+        "Imitation Jewellery Exporter & Manufacturer in India | Gemora Global";
+      const s = document.getElementById("page-schema");
+      if (s) s.remove();
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   return (
@@ -50,23 +106,35 @@ export default function Blog() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="font-display text-4xl md:text-5xl font-bold text-foreground mb-5"
             >
-              Jewellery Insights, Export Tips &amp; Industry News
+              Jewellery Insights — Export Guides, Trend Reports &amp; Sourcing
+              Advice
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-muted-foreground max-w-xl mx-auto text-lg"
+              className="text-muted-foreground max-w-2xl mx-auto text-lg mb-6"
             >
-              Expert guidance on jewellery trends, wholesale sourcing, private
-              label manufacturing, and global export markets — from India's best
-              imitation jewellery exporter.
+              The Gemora Global blog covers imitation jewellery sourcing guides,
+              export tips, trend reports, and MOQ advice for wholesale buyers in
+              UAE, France, USA, UK and Europe. Browse our{" "}
+              <Link to="/products" className="text-primary hover:underline">
+                product catalogue
+              </Link>{" "}
+              or read our{" "}
+              <Link to="/wholesale" className="text-primary hover:underline">
+                wholesale guide
+              </Link>{" "}
+              to get started.
             </motion.p>
           </div>
         </section>
 
         {/* Posts Grid */}
         <section className="container pb-24" data-ocid="blog.section">
+          <h2 className="font-serif text-2xl font-bold mb-8">
+            Export Guides &amp; Industry Insights
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {blogPosts.map((post, i) => (
               <motion.article
@@ -78,73 +146,61 @@ export default function Blog() {
                 className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-colors duration-300"
               >
                 <Link to={`/blog/${post.slug}`}>
-                  <div className="relative overflow-hidden aspect-[4/3]">
-                    <img
-                      src={post.image}
-                      alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                    <span
-                      className={`absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-full border ${categoryColors[post.category] ?? "bg-primary/20 text-primary border-primary/30"}`}
-                    >
-                      {post.category}
-                    </span>
+                  {post.image && (
+                    <div className="aspect-video overflow-hidden">
+                      <img
+                        src={post.image}
+                        alt={`${post.title} — Gemora Global jewellery export blog`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                        width={600}
+                        height={338}
+                      />
+                    </div>
+                  )}
+                  <div className="p-5">
+                    {post.category && (
+                      <span
+                        className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full border mb-3 ${
+                          categoryColors[post.category] ??
+                          "bg-primary/20 text-primary border-primary/30"
+                        }`}
+                      >
+                        {post.category}
+                      </span>
+                    )}
+                    <h3 className="font-bold text-lg text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                      {post.title}
+                    </h3>
+                    {post.excerpt && (
+                      <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
+                        {post.excerpt}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      {post.author && (
+                        <span className="flex items-center gap-1">
+                          <User className="w-3 h-3" />
+                          {post.author}
+                        </span>
+                      )}
+                      {post.date && (
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {post.date}
+                        </span>
+                      )}
+                      {post.readTime && (
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {post.readTime}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </Link>
-                <div className="p-5">
-                  <Link to={`/blog/${post.slug}`}>
-                    <h2 className="font-display text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                      {post.title}
-                    </h2>
-                  </Link>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
-                    {post.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border pt-3">
-                    <span className="flex items-center gap-1">
-                      <User className="w-3 h-3" />
-                      {post.author}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      {post.date}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {post.readTime}
-                    </span>
-                  </div>
-                  <Link
-                    to={`/blog/${post.slug}`}
-                    data-ocid={`blog.link.${i + 1}`}
-                    className="inline-block mt-4 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-                  >
-                    Read More →
-                  </Link>
-                </div>
               </motion.article>
             ))}
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="bg-card border-t border-border py-16">
-          <div className="container text-center">
-            <h3 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-3">
-              Ready to Source from India's Best Artificial Jewellery Exporter?
-            </h3>
-            <p className="text-muted-foreground mb-7 max-w-md mx-auto">
-              Connect with our export team for wholesale pricing, custom
-              designs, and bulk order inquiries.
-            </p>
-            <Link
-              to="/contact"
-              data-ocid="blog.primary_button"
-              className="inline-flex items-center bg-primary text-primary-foreground font-semibold px-7 py-3 rounded-full hover:bg-primary/90 transition-colors"
-            >
-              Get a Wholesale Quote
-            </Link>
           </div>
         </section>
       </main>

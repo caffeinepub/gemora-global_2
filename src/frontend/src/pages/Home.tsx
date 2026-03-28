@@ -2,11 +2,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import type { Category, Product, Testimonial } from "../backend";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
+import { usePageSEO } from "../hooks/usePageSEO";
 
 const CATEGORY_IMAGES: Record<string, string> = {
   Necklaces: "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg",
@@ -128,12 +130,103 @@ const STATS = [
 ];
 
 const DEFAULT_HERO_TITLE =
-  "Best Imitation Jewellery Exporter in India\nPremium Manufacturer & Global Supplier";
+  "India's Premier Imitation Jewellery Manufacturer & Global Exporter";
 const DEFAULT_HERO_SUBTITLE =
   "Premium handcrafted designs for wholesalers, boutiques & distributors worldwide.";
 
 export default function Home() {
   const { actor } = useActor();
+  usePageSEO({
+    title:
+      "Imitation Jewellery Exporter & Manufacturer in India | Gemora Global",
+    description:
+      "Gemora Global is India's leading imitation jewellery manufacturer and exporter. Premium handcrafted necklaces, earrings, bridal sets and more — MOQ-friendly wholesale pricing for global buyers in UAE, France, USA, UK and Europe.",
+    canonical: "https://gemoraglobal-tje.caffeine.xyz/",
+    ogTitle:
+      "Imitation Jewellery Exporter & Manufacturer in India | Gemora Global",
+    ogDescription:
+      "India's leading imitation jewellery manufacturer and exporter. Premium wholesale pricing for global buyers in UAE, France, USA, UK and Europe.",
+    ogImage: "https://gemoraglobal-tje.caffeine.xyz/images/og-homepage.jpg",
+    schema: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "Gemora Global",
+        url: "https://gemoraglobal-tje.caffeine.xyz",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://gemoraglobal-tje.caffeine.xyz/assets/uploads/logo-removebg-preview-1.png",
+          width: 300,
+          height: 60,
+        },
+        description:
+          "India's leading imitation jewellery manufacturer and exporter.",
+        foundingDate: "2013",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Jaipur",
+          addressRegion: "Rajasthan",
+          addressCountry: "IN",
+          postalCode: "302021",
+        },
+        contactPoint: [
+          {
+            "@type": "ContactPoint",
+            telephone: "+91-7976341419",
+            contactType: "sales",
+            email: "globalgemora@gmail.com",
+            availableLanguage: ["English", "Hindi"],
+            areaServed: "Worldwide",
+          },
+        ],
+        sameAs: [
+          "https://www.instagram.com/gemoraglobal",
+          "https://www.indiamart.com/gemora-global",
+          "https://wa.me/917976341419",
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "Gemora Global",
+        url: "https://gemoraglobal-tje.caffeine.xyz",
+      },
+    ],
+  });
+
+  useEffect(() => {
+    const existingScript = document.getElementById("page-schema");
+    if (existingScript) existingScript.remove();
+    const script = document.createElement("script");
+    script.id = "page-schema";
+    script.type = "application/ld+json";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Gemora Global",
+      description:
+        "India's leading imitation jewellery manufacturer and exporter",
+      url: "https://gemoraglobal-tje.caffeine.xyz",
+      logo: "https://gemoraglobal-tje.caffeine.xyz/assets/uploads/logo-removebg-preview-1.png",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Jaipur",
+        addressRegion: "Rajasthan",
+        addressCountry: "IN",
+      },
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "sales",
+        areaServed: "Worldwide",
+      },
+      sameAs: ["https://www.indiamart.com/gemora-global"],
+    });
+    document.head.appendChild(script);
+    return () => {
+      const s = document.getElementById("page-schema");
+      if (s) s.remove();
+    };
+  }, []);
 
   const { data: categories } = useQuery<Category[]>({
     queryKey: ["categories"],
@@ -194,22 +287,23 @@ export default function Home() {
     return CATEGORY_IMAGES[cat.name] || FALLBACK_IMAGE;
   };
 
-  // Split hero title on newlines for display
   const heroLines = heroTitle.split("\n");
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero */}
-      <section
-        className="relative min-h-[90vh] flex items-center justify-center pt-16"
-        style={{
-          backgroundImage: `url('${heroImage}')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
+      {/* Hero — img tag for LCP optimisation */}
+      <section className="relative min-h-[90vh] flex items-center justify-center pt-16 overflow-hidden">
+        <img
+          src={heroImage}
+          alt="Gemora Global — India's Premier Imitation Jewellery Manufacturer & Exporter"
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="eager"
+          fetchPriority="high"
+          width={1600}
+          height={900}
+        />
         <div
           className="absolute inset-0"
           style={{
@@ -242,7 +336,8 @@ export default function Home() {
                 Best Imitation Jewellery
                 <br />
                 <span className="text-primary">Exporter in India</span>
-                <br />& Premium Manufacturer
+                <br />
+                &amp; Premium Manufacturer
               </>
             )}
           </h1>
@@ -253,7 +348,8 @@ export default function Home() {
                 <Link to="/products" className="text-primary hover:underline">
                   imitation jewellery
                 </Link>{" "}
-                for wholesalers, boutiques & distributors worldwide. Explore our{" "}
+                for wholesalers, boutiques &amp; distributors worldwide. Explore
+                our{" "}
                 <Link to="/wholesale" className="text-primary hover:underline">
                   wholesale pricing
                 </Link>{" "}
@@ -304,6 +400,49 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SEO Body Copy */}
+      <section className="container py-14">
+        <h2 className="font-serif text-3xl md:text-4xl font-bold mb-6 text-center">
+          Handcrafted Jewellery, Global Reach
+        </h2>
+        <div className="max-w-3xl mx-auto space-y-4 text-muted-foreground leading-relaxed text-center">
+          <p>
+            Gemora Global is one of India's most trusted{" "}
+            <Link to="/about" className="text-primary hover:underline">
+              imitation jewellery manufacturers and exporters
+            </Link>
+            , supplying premium handcrafted designs to wholesalers, boutiques,
+            and distributors across more than 15 countries. Based in India's
+            jewellery manufacturing heartland, we combine traditional Indian
+            craftsmanship with modern anti-tarnish finishing techniques to
+            produce fashion jewellery that retails beautifully in international
+            markets.
+          </p>
+          <p>
+            Our{" "}
+            <Link to="/products" className="text-primary hover:underline">
+              collections
+            </Link>{" "}
+            span necklaces, earrings, bangles, bracelets, rings, maang tikkas,
+            and complete bridal jewellery sets. Every piece is crafted under
+            strict quality control and finished with anti-tarnish coating to
+            ensure long-lasting brilliance — a quality standard that our
+            international buyers rely on season after season.
+          </p>
+          <p>
+            With over 10 years of export experience, factory-direct pricing, and
+            a catalogue of 500+ seasonal designs, Gemora Global makes it easy
+            for overseas buyers to source imitation jewellery at competitive{" "}
+            <Link to="/wholesale" className="text-primary hover:underline">
+              wholesale prices
+            </Link>
+            . We offer low MOQs, flexible packaging, and reliable global
+            shipping to France, UAE, USA, UK, Europe, Canada, Australia, and
+            Singapore.
+          </p>
+        </div>
+      </section>
+
       {/* Categories */}
       <section className="container py-16">
         <div className="text-center mb-10">
@@ -329,6 +468,9 @@ export default function Home() {
                 src={getCategoryImage(cat)}
                 alt={`${cat.name} - handcrafted imitation jewellery by Gemora Global`}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+                width={400}
+                height={400}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-3">
@@ -377,6 +519,9 @@ export default function Home() {
                         src={product.imageUrls[0] || FALLBACK_IMAGE}
                         alt={`${product.name} - imitation jewellery by Gemora Global`}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                        width={400}
+                        height={400}
                       />
                     </div>
                     <CardContent className="p-3">
@@ -437,7 +582,7 @@ export default function Home() {
             variant="outline"
             className="border-primary text-primary hover:bg-primary/10"
           >
-            <Link to="/export">View All Markets</Link>
+            <Link to="/global-markets">View All Markets</Link>
           </Button>
         </div>
       </section>
@@ -473,6 +618,14 @@ export default function Home() {
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
               </div>
             ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link
+              to="/why-choose-us"
+              className="text-primary hover:underline text-sm font-medium"
+            >
+              Learn why buyers trust us →
+            </Link>
           </div>
         </div>
       </section>
@@ -570,6 +723,9 @@ export default function Home() {
                   src={item.src}
                   alt={item.label}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                  width={300}
+                  height={300}
                 />
               </a>
             ))}
@@ -584,6 +740,63 @@ export default function Home() {
               View on Instagram →
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* Blog Teaser */}
+      <section className="container py-16">
+        <div className="text-center mb-6">
+          <h2 className="font-serif text-3xl font-bold mb-3">
+            Jewellery Export Insights
+          </h2>
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            Sourcing guides, trend reports, and MOQ advice for wholesale buyers.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              title: "How to Source Imitation Jewellery from India",
+              excerpt:
+                "A complete guide for overseas buyers on MOQ, pricing, and supplier selection.",
+              category: "Business Guide",
+            },
+            {
+              title:
+                "Top Imitation Jewellery Trends for Export Markets in 2026",
+              excerpt:
+                "What boutiques in UAE, France, and UK are buying this season.",
+              category: "Trends",
+            },
+            {
+              title:
+                "Anti-Tarnish Jewellery: Why It Matters for International Retail",
+              excerpt:
+                "How anti-tarnish coating reduces returns and builds buyer trust.",
+              category: "Industry Insights",
+            },
+          ].map((post) => (
+            <div
+              key={post.title}
+              className="bg-card border border-border rounded-xl p-5 hover:border-primary/50 transition-colors"
+            >
+              <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full">
+                {post.category}
+              </span>
+              <h3 className="font-serif font-semibold mt-3 mb-2 text-sm leading-snug">
+                {post.title}
+              </h3>
+              <p className="text-xs text-muted-foreground">{post.excerpt}</p>
+            </div>
+          ))}
+        </div>
+        <div className="text-center mt-8">
+          <Link
+            to="/blog"
+            className="text-primary hover:underline text-sm font-medium"
+          >
+            Read all export insights →
+          </Link>
         </div>
       </section>
 

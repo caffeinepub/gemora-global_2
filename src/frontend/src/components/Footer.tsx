@@ -26,6 +26,18 @@ function InstagramIcon() {
   );
 }
 
+const QUICK_LINKS = [
+  { label: "Home", to: "/" },
+  { label: "About Us", to: "/about" },
+  { label: "Products", to: "/products" },
+  { label: "Wholesale & Export", to: "/wholesale" },
+  { label: "Why Choose Us", to: "/why-choose-us" },
+  { label: "Global Markets", to: "/global-markets" },
+  { label: "Gallery", to: "/gallery" },
+  { label: "Blog", to: "/blog" },
+  { label: "Contact", to: "/contact" },
+];
+
 export default function Footer() {
   return (
     <footer className="bg-card border-t border-border mt-16">
@@ -98,8 +110,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/export" className="hover:text-primary">
-                Export Markets
+              <Link to="/global-markets" className="hover:text-primary">
+                Global Markets
               </Link>
             </li>
             <li>
@@ -137,9 +149,41 @@ export default function Footer() {
           </ul>
         </div>
       </div>
+
+      {/* Quick Links sitemap row */}
+      <div className="border-t border-border">
+        <div className="container py-6">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-4">
+            Quick Links
+          </h4>
+          <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2">
+            {QUICK_LINKS.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="text-xs text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div className="border-t border-border">
         <div className="container py-4 flex justify-between items-center text-xs text-muted-foreground">
-          <span>© 2024 Gemora Global. All rights reserved.</span>
+          <span>
+            &copy; {new Date().getFullYear()} Gemora Global. Built with{" "}
+            <span aria-hidden="true">&#10084;</span> using{" "}
+            <a
+              href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary"
+            >
+              caffeine.ai
+            </a>
+          </span>
           <Link to="/admin" className="hover:text-primary">
             Admin
           </Link>

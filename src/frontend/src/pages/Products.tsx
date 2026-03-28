@@ -11,13 +11,14 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import type { Category, Product } from "../backend";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
+import { usePageSEO } from "../hooks/usePageSEO";
 
 const CATEGORY_IMAGES: Record<string, string> = {
   Necklaces: "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg",
@@ -199,11 +200,129 @@ function InquiryModal({ product, open, onClose }: InquiryModalProps) {
 }
 
 export default function Products() {
+  usePageSEO({
+    title:
+      "Wholesale Imitation Jewellery Products — Necklaces, Earrings, Bridal Sets | Gemora Global",
+    description:
+      "Browse Gemora Global's wholesale imitation jewellery range — necklaces, earrings, bangles, bracelets, rings, maang tikkas, and bridal jewellery sets. 500+ designs, anti-tarnish finish, MOQ-friendly pricing.",
+    canonical: "https://gemoraglobal-tje.caffeine.xyz/products",
+    ogTitle:
+      "Wholesale Imitation Jewellery — Necklaces, Earrings, Bridal Sets | Gemora Global",
+    ogImage: "https://gemoraglobal-tje.caffeine.xyz/images/og-products.jpg",
+    schema: {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      url: "https://gemoraglobal-tje.caffeine.xyz/products",
+      name: "Wholesale Imitation Jewellery Products",
+      description:
+        "500+ wholesale imitation jewellery designs including necklaces, earrings, bangles, bracelets, rings and bridal sets.",
+      mainEntity: {
+        "@type": "ItemList",
+        name: "Gemora Global Product Categories",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            item: {
+              "@type": "Product",
+              name: "Wholesale Necklace Sets",
+              brand: { "@type": "Brand", name: "Gemora Global" },
+              offers: {
+                "@type": "AggregateOffer",
+                availability: "https://schema.org/InStock",
+              },
+            },
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            item: {
+              "@type": "Product",
+              name: "Wholesale Earrings",
+              brand: { "@type": "Brand", name: "Gemora Global" },
+              offers: {
+                "@type": "AggregateOffer",
+                availability: "https://schema.org/InStock",
+              },
+            },
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            item: {
+              "@type": "Product",
+              name: "Bridal Jewellery Sets",
+              brand: { "@type": "Brand", name: "Gemora Global" },
+              offers: {
+                "@type": "AggregateOffer",
+                availability: "https://schema.org/InStock",
+              },
+            },
+          },
+        ],
+      },
+    },
+  });
   const { actor } = useActor();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCatId = searchParams.get("category");
   const [inquiryProduct, setInquiryProduct] = useState<Product | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    document.title =
+      "Wholesale Imitation Jewellery Products — Necklaces, Earrings, Bridal Sets | Gemora Global";
+    let metaDesc = document.querySelector(
+      'meta[name="description"]',
+    ) as HTMLMetaElement | null;
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.setAttribute("name", "description");
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute(
+      "content",
+      "Browse Gemora Global's wholesale imitation jewellery range — necklaces, earrings, bangles, bracelets, rings, maang tikkas, and bridal jewellery sets. 500+ designs, anti-tarnish finish, MOQ-friendly pricing.",
+    );
+    const existingScript = document.getElementById("page-schema");
+    if (existingScript) existingScript.remove();
+    const script = document.createElement("script");
+    script.id = "page-schema";
+    script.type = "application/ld+json";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "Gemora Global Jewellery Categories",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          item: {
+            "@type": "Product",
+            name: "Wholesale Necklace Sets",
+            brand: { "@type": "Brand", name: "Gemora Global" },
+          },
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          item: { "@type": "Product", name: "Wholesale Earrings" },
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          item: { "@type": "Product", name: "Bridal Jewellery Sets" },
+        },
+      ],
+    });
+    document.head.appendChild(script);
+    return () => {
+      document.title =
+        "Imitation Jewellery Exporter & Manufacturer in India | Gemora Global";
+      const s = document.getElementById("page-schema");
+      if (s) s.remove();
+    };
+  }, []);
 
   const { data: categories, isLoading: catsLoading } = useQuery<Category[]>({
     queryKey: ["categories"],
@@ -242,7 +361,7 @@ export default function Products() {
         <div className="bg-card border-b border-border py-12">
           <div className="container">
             <h1 className="font-serif text-4xl font-bold mb-2">
-              Export Quality Artificial Jewellery Wholesale
+              Wholesale Imitation Jewellery — 500+ Designs Across All Categories
             </h1>
             <p className="text-muted-foreground max-w-2xl">
               Bulk artificial jewellery manufacturer India — browse our complete
@@ -326,6 +445,9 @@ export default function Products() {
                         src={getCategoryImage(cat)}
                         alt={`${cat.name} - wholesale imitation jewellery by Gemora Global`}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                        width={400}
+                        height={400}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-4 text-left">
@@ -343,7 +465,7 @@ export default function Products() {
                 {/* SEO keyword section */}
                 <div className="bg-card border border-border rounded-xl p-6 mb-8">
                   <h2 className="font-serif text-xl font-bold mb-3">
-                    Premium Imitation Jewellery Supplier for Export
+                    Why Choose Us as Your Jewellery Export Partner
                   </h2>
                   <p className="text-muted-foreground text-sm leading-relaxed mb-3">
                     Gemora Global is India's best imitation jewellery exporter,
@@ -398,6 +520,9 @@ export default function Products() {
                         }
                         alt={`${product.name} - export quality artificial jewellery by Gemora Global`}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                        width={400}
+                        height={400}
                       />
                     </div>
                     <div className="p-3">

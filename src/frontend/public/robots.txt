@@ -1,3 +1,28 @@
+# robots.txt — gemoraglobal-tje.caffeine.xyz
+# Generated: March 2026
+
 User-agent: *
 Allow: /
+
+# Block internal/utility paths that should not be indexed
+Disallow: /admin/
+Disallow: /login/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /account/
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /cdn-cgi/
+
+# Allow all major search engine crawlers explicitly
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Sitemap location — always include this
 Sitemap: https://gemoraglobal-tje.caffeine.xyz/sitemap.xml
