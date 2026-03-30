@@ -1,119 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Homepage -->
+  <!-- Main Pages -->
   <url>
     <loc>https://gemoraglobal-tje.caffeine.xyz/</loc>
-    <lastmod>2026-03-28</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-
-  <!-- About Us -->
   <url>
     <loc>https://gemoraglobal-tje.caffeine.xyz/about</loc>
-    <lastmod>2026-03-28</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
-
-  <!-- Products -->
   <url>
     <loc>https://gemoraglobal-tje.caffeine.xyz/products</loc>
-    <lastmod>2026-03-28</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
-
-  <!-- Wholesale & Export -->
   <url>
     <loc>https://gemoraglobal-tje.caffeine.xyz/wholesale</loc>
-    <lastmod>2026-03-28</lastmod>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/why-choose-us</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/global-markets</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/gallery</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/blog</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/contact</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- SEO Landing Pages -->
+  <url>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/imitation-jewellery-exporter-india</loc>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
-
-  <!-- Why Choose Us -->
   <url>
-    <loc>https://gemoraglobal-tje.caffeine.xyz/why-choose-us</loc>
-    <lastmod>2026-03-28</lastmod>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/wholesale-imitation-jewellery</loc>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.9</priority>
   </url>
-
-  <!-- Global Markets -->
   <url>
-    <loc>https://gemoraglobal-tje.caffeine.xyz/global-markets</loc>
-    <lastmod>2026-03-28</lastmod>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/bridal-jewellery-wholesale</loc>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- Gallery -->
   <url>
-    <loc>https://gemoraglobal-tje.caffeine.xyz/gallery</loc>
-    <lastmod>2026-03-28</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/fashion-jewellery-exporter</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- Blog Index -->
   <url>
-    <loc>https://gemoraglobal-tje.caffeine.xyz/blog</loc>
-    <lastmod>2026-03-28</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/custom-jewellery-manufacturer</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- Contact -->
   <url>
-    <loc>https://gemoraglobal-tje.caffeine.xyz/contact</loc>
-    <lastmod>2026-03-28</lastmod>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/wholesale-imitation-jewellery-india</loc>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
-
-  <!-- Blog Posts -->
   <url>
-    <loc>https://gemoraglobal-tje.caffeine.xyz/blog/top-imitation-jewellery-trends-2026</loc>
-    <lastmod>2026-03-28</lastmod>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/fashion-jewellery-manufacturer-india</loc>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
-
   <url>
-    <loc>https://gemoraglobal-tje.caffeine.xyz/blog/how-to-start-jewellery-wholesale-import-business</loc>
-    <lastmod>2026-03-28</lastmod>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/bridal-imitation-jewellery-wholesale</loc>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
-
   <url>
-    <loc>https://gemoraglobal-tje.caffeine.xyz/blog/why-indian-imitation-jewellery-dominates-global-markets</loc>
-    <lastmod>2026-03-28</lastmod>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/bulk-jewellery-supplier</loc>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
-
   <url>
-    <loc>https://gemoraglobal-tje.caffeine.xyz/blog/bridal-jewellery-collections-international-buyers</loc>
-    <lastmod>2026-03-28</lastmod>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/jewellery-exporter-to-usa</loc>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
-
   <url>
-    <loc>https://gemoraglobal-tje.caffeine.xyz/blog/moq-explained-wholesale-jewellery-buyers</loc>
-    <lastmod>2026-03-28</lastmod>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/jewellery-supplier-uk</loc>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
-
   <url>
-    <loc>https://gemoraglobal-tje.caffeine.xyz/blog/anti-tarnish-technology-fashion-jewellery</loc>
-    <lastmod>2026-03-28</lastmod>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/jewellery-exporter-uae</loc>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gemoraglobal-tje.caffeine.xyz/private-label-jewellery-india</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 
 </urlset>

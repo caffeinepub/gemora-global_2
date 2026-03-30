@@ -33,6 +33,19 @@ import AdminSystemSettings from "./pages/admin/AdminSystemSettings";
 import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import AdminWebsiteSettings from "./pages/admin/AdminWebsiteSettings";
 import AdminWhatsAppLeads from "./pages/admin/AdminWhatsAppLeads";
+import BridalImitationJewelleryWholesale from "./pages/seo/BridalImitationJewelleryWholesale";
+import BridalJewelleryWholesale from "./pages/seo/BridalJewelleryWholesale";
+import BulkJewellerySupplier from "./pages/seo/BulkJewellerySupplier";
+import CustomJewelleryManufacturer from "./pages/seo/CustomJewelleryManufacturer";
+import FashionJewelleryExporter from "./pages/seo/FashionJewelleryExporter";
+import FashionJewelleryManufacturerIndia from "./pages/seo/FashionJewelleryManufacturerIndia";
+import ImitationJewelleryExporterIndia from "./pages/seo/ImitationJewelleryExporterIndia";
+import JewelleryExporterToUSA from "./pages/seo/JewelleryExporterToUSA";
+import JewelleryExporterUAE from "./pages/seo/JewelleryExporterUAE";
+import JewellerySupplierUK from "./pages/seo/JewellerySupplierUK";
+import PrivateLabelJewelleryIndia from "./pages/seo/PrivateLabelJewelleryIndia";
+import WholesaleImitationJewellery from "./pages/seo/WholesaleImitationJewellery";
+import WholesaleImitationJewelleryIndia from "./pages/seo/WholesaleImitationJewelleryIndia";
 
 function VisitTracker() {
   const { actor } = useActor();
@@ -180,6 +193,58 @@ export default function App() {
               <AdminCatalogue />
             </AdminGuard>
           }
+        />
+        <Route
+          path="/imitation-jewellery-exporter-india"
+          element={<ImitationJewelleryExporterIndia />}
+        />
+        <Route
+          path="/wholesale-imitation-jewellery"
+          element={<WholesaleImitationJewellery />}
+        />
+        <Route
+          path="/bridal-jewellery-wholesale"
+          element={<BridalJewelleryWholesale />}
+        />
+        <Route
+          path="/fashion-jewellery-exporter"
+          element={<FashionJewelleryExporter />}
+        />
+        <Route
+          path="/custom-jewellery-manufacturer"
+          element={<CustomJewelleryManufacturer />}
+        />
+        <Route
+          path="/wholesale-imitation-jewellery-india"
+          element={<WholesaleImitationJewelleryIndia />}
+        />
+        <Route
+          path="/fashion-jewellery-manufacturer-india"
+          element={<FashionJewelleryManufacturerIndia />}
+        />
+        <Route
+          path="/bridal-imitation-jewellery-wholesale"
+          element={<BridalImitationJewelleryWholesale />}
+        />
+        <Route
+          path="/bulk-jewellery-supplier"
+          element={<BulkJewellerySupplier />}
+        />
+        <Route
+          path="/jewellery-exporter-to-usa"
+          element={<JewelleryExporterToUSA />}
+        />
+        <Route
+          path="/jewellery-supplier-uk"
+          element={<JewellerySupplierUK />}
+        />
+        <Route
+          path="/jewellery-exporter-uae"
+          element={<JewelleryExporterUAE />}
+        />
+        <Route
+          path="/private-label-jewellery-india"
+          element={<PrivateLabelJewelleryIndia />}
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
