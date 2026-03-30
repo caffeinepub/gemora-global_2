@@ -38,31 +38,6 @@ const QUICK_LINKS = [
   { label: "Contact", to: "/contact" },
 ];
 
-const SEO_LINKS = [
-  {
-    label: "Imitation Jewellery Exporter India",
-    to: "/imitation-jewellery-exporter-india",
-  },
-  {
-    label: "Wholesale Imitation Jewellery",
-    to: "/wholesale-imitation-jewellery",
-  },
-  { label: "Bridal Jewellery Wholesale", to: "/bridal-jewellery-wholesale" },
-  { label: "Fashion Jewellery Exporter", to: "/fashion-jewellery-exporter" },
-  {
-    label: "Custom Jewellery Manufacturer",
-    to: "/custom-jewellery-manufacturer",
-  },
-  { label: "Bulk Jewellery Supplier", to: "/bulk-jewellery-supplier" },
-  { label: "Jewellery Exporter to USA", to: "/jewellery-exporter-to-usa" },
-  { label: "Jewellery Supplier UK", to: "/jewellery-supplier-uk" },
-  { label: "Jewellery Exporter UAE", to: "/jewellery-exporter-uae" },
-  {
-    label: "Private Label Jewellery India",
-    to: "/private-label-jewellery-india",
-  },
-];
-
 export default function Footer() {
   return (
     <footer className="bg-card border-t border-border mt-16">
@@ -187,26 +162,6 @@ export default function Footer() {
                 key={link.to}
                 to={link.to}
                 className="text-xs text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* SEO Resource Links */}
-      <div className="border-t border-border">
-        <div className="container py-6">
-          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-4">
-            SEO Resources
-          </h4>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
-            {SEO_LINKS.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="text-xs text-muted-foreground hover:text-primary transition-colors"
               >
                 {link.label}
               </Link>
