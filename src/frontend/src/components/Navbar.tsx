@@ -15,6 +15,37 @@ const links = [
 ];
 
 const SERVICE_LINKS = [
+  { label: "Kundan Jewellery Wholesale", to: "/kundan-jewellery-wholesale" },
+  {
+    label: "Temple Jewellery Manufacturer",
+    to: "/temple-jewellery-manufacturer",
+  },
+  {
+    label: "Artificial Jewellery Exporter",
+    to: "/artificial-jewellery-exporter",
+  },
+  { label: "Bridal Imitation Jewellery", to: "/bridal-imitation-jewellery" },
+  {
+    label: "Oxidised Jewellery Wholesale",
+    to: "/oxidised-jewellery-wholesale",
+  },
+  {
+    label: "Imitation Jewellery Manufacturer India",
+    to: "/imitation-jewellery-manufacturer-india",
+  },
+  {
+    label: "Artificial Jewellery Wholesaler India",
+    to: "/artificial-jewellery-wholesaler-india",
+  },
+  {
+    label: "Fashion Jewellery Exporter India",
+    to: "/fashion-jewellery-exporter-india",
+  },
+  { label: "Oxidised Jewellery Supplier", to: "/oxidised-jewellery-supplier" },
+  {
+    label: "Imitation Jewellery Supplier USA",
+    to: "/imitation-jewellery-supplier-usa",
+  },
   {
     label: "Imitation Jewellery Exporter India",
     to: "/imitation-jewellery-exporter-india",
@@ -102,17 +133,19 @@ export default function Navbar() {
               />
             </button>
             {servicesHover && (
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-64 bg-background border border-border rounded-md shadow-lg z-50 py-1">
-                {SERVICE_LINKS.map((s) => (
-                  <Link
-                    key={s.to}
-                    to={s.to}
-                    className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
-                    onClick={() => setServicesHover(false)}
-                  >
-                    {s.label}
-                  </Link>
-                ))}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[520px] bg-background border border-border rounded-md shadow-lg z-50 py-2">
+                <div className="grid grid-cols-2">
+                  {SERVICE_LINKS.map((s) => (
+                    <Link
+                      key={s.to}
+                      to={s.to}
+                      className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
+                      onClick={() => setServicesHover(false)}
+                    >
+                      {s.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -187,7 +220,7 @@ export default function Navbar() {
               />
             </button>
             {mobileServicesOpen && (
-              <div className="pl-4 flex flex-col gap-2 mt-1">
+              <div className="pl-4 grid grid-cols-2 gap-x-2 mt-1">
                 {SERVICE_LINKS.map((s) => (
                   <Link
                     key={s.to}

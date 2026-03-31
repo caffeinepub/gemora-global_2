@@ -184,9 +184,6 @@ export default function Footer() {
               caffeine.ai
             </a>
           </span>
-          <Link to="/admin" className="hover:text-primary">
-            Admin
-          </Link>
         </div>
       </div>
     </footer>

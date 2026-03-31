@@ -33,17 +33,27 @@ import AdminSystemSettings from "./pages/admin/AdminSystemSettings";
 import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import AdminWebsiteSettings from "./pages/admin/AdminWebsiteSettings";
 import AdminWhatsAppLeads from "./pages/admin/AdminWhatsAppLeads";
+import ArtificialJewelleryExporter from "./pages/seo/ArtificialJewelleryExporter";
+import ArtificialJewelleryWholesalerIndia from "./pages/seo/ArtificialJewelleryWholesalerIndia";
+import BridalImitationJewellery from "./pages/seo/BridalImitationJewellery";
 import BridalImitationJewelleryWholesale from "./pages/seo/BridalImitationJewelleryWholesale";
 import BridalJewelleryWholesale from "./pages/seo/BridalJewelleryWholesale";
 import BulkJewellerySupplier from "./pages/seo/BulkJewellerySupplier";
 import CustomJewelleryManufacturer from "./pages/seo/CustomJewelleryManufacturer";
 import FashionJewelleryExporter from "./pages/seo/FashionJewelleryExporter";
+import FashionJewelleryExporterIndia from "./pages/seo/FashionJewelleryExporterIndia";
 import FashionJewelleryManufacturerIndia from "./pages/seo/FashionJewelleryManufacturerIndia";
 import ImitationJewelleryExporterIndia from "./pages/seo/ImitationJewelleryExporterIndia";
+import ImitationJewelleryManufacturerIndia from "./pages/seo/ImitationJewelleryManufacturerIndia";
+import ImitationJewellerySupplierUSA from "./pages/seo/ImitationJewellerySupplierUSA";
 import JewelleryExporterToUSA from "./pages/seo/JewelleryExporterToUSA";
 import JewelleryExporterUAE from "./pages/seo/JewelleryExporterUAE";
 import JewellerySupplierUK from "./pages/seo/JewellerySupplierUK";
+import KundanJewelleryWholesale from "./pages/seo/KundanJewelleryWholesale";
+import OxidisedJewellerySupplier from "./pages/seo/OxidisedJewellerySupplier";
+import OxidisedJewelleryWholesale from "./pages/seo/OxidisedJewelleryWholesale";
 import PrivateLabelJewelleryIndia from "./pages/seo/PrivateLabelJewelleryIndia";
+import TempleJewelleryManufacturer from "./pages/seo/TempleJewelleryManufacturer";
 import WholesaleImitationJewellery from "./pages/seo/WholesaleImitationJewellery";
 import WholesaleImitationJewelleryIndia from "./pages/seo/WholesaleImitationJewelleryIndia";
 
@@ -245,6 +255,46 @@ export default function App() {
         <Route
           path="/private-label-jewellery-india"
           element={<PrivateLabelJewelleryIndia />}
+        />
+        <Route
+          path="/kundan-jewellery-wholesale"
+          element={<KundanJewelleryWholesale />}
+        />
+        <Route
+          path="/temple-jewellery-manufacturer"
+          element={<TempleJewelleryManufacturer />}
+        />
+        <Route
+          path="/artificial-jewellery-exporter"
+          element={<ArtificialJewelleryExporter />}
+        />
+        <Route
+          path="/bridal-imitation-jewellery"
+          element={<BridalImitationJewellery />}
+        />
+        <Route
+          path="/oxidised-jewellery-wholesale"
+          element={<OxidisedJewelleryWholesale />}
+        />
+        <Route
+          path="/imitation-jewellery-manufacturer-india"
+          element={<ImitationJewelleryManufacturerIndia />}
+        />
+        <Route
+          path="/artificial-jewellery-wholesaler-india"
+          element={<ArtificialJewelleryWholesalerIndia />}
+        />
+        <Route
+          path="/fashion-jewellery-exporter-india"
+          element={<FashionJewelleryExporterIndia />}
+        />
+        <Route
+          path="/oxidised-jewellery-supplier"
+          element={<OxidisedJewellerySupplier />}
+        />
+        <Route
+          path="/imitation-jewellery-supplier-usa"
+          element={<ImitationJewellerySupplierUSA />}
         />
         <Route path="*" element={<NotFound />} />
       </Routes>

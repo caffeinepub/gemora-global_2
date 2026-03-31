@@ -222,6 +222,49 @@ export default function Home() {
       sameAs: ["https://www.indiamart.com/gemora-global"],
     });
     document.head.appendChild(script);
+    // FAQPage schema for AEO
+    const faqScript = document.createElement("script");
+    faqScript.id = "faq-schema";
+    faqScript.type = "application/ld+json";
+    faqScript.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "What is imitation jewellery?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Imitation jewellery is artificial jewellery made from materials like brass, copper, and synthetic stones designed to replicate real gold and diamond jewellery at affordable prices.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Who is the best imitation jewellery supplier in India?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Gemora Global is one of India2019s best imitation jewellery suppliers, offering high-quality designs, bulk pricing, anti-tarnish finish, and global export services from Jaipur.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Where can I buy imitation jewellery wholesale?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "You can buy imitation jewellery wholesale directly from manufacturers and exporters in India. Gemora Global provides bulk pricing, custom designs, and global shipping.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is imitation jewellery good for business?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes, imitation jewellery is a highly profitable business due to low investment and high demand. Profit margins range from 30% to 70% for boutique and resale businesses.",
+          },
+        },
+      ],
+    });
+    document.head.appendChild(faqScript);
     return () => {
       const s = document.getElementById("page-schema");
       if (s) s.remove();
@@ -846,6 +889,45 @@ export default function Home() {
               </svg>
               Download Catalogue
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* AEO: People Also Ask Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <h2 className="text-2xl font-serif font-bold text-primary mb-8 text-center">
+            People Also Ask
+          </h2>
+          <div className="space-y-4">
+            {[
+              {
+                q: "What is imitation jewellery?",
+                a: "Imitation jewellery is artificial jewellery made from materials like brass, copper, and synthetic stones designed to replicate real gold and diamond jewellery at affordable prices. It is widely used for fashion, bridal wear, and resale businesses.",
+              },
+              {
+                q: "Who is the best imitation jewellery supplier in India?",
+                a: "India has many suppliers, but the best imitation jewellery supplier offers high-quality designs, bulk pricing, and export services. Gemora Global focuses on wholesale and international buyers with trending jewellery collections from Jaipur.",
+              },
+              {
+                q: "Where can I buy imitation jewellery wholesale?",
+                a: "You can buy imitation jewellery wholesale directly from manufacturers and exporters in India. Wholesale suppliers provide bulk pricing, custom designs, and global shipping for resellers and boutique owners.",
+              },
+              {
+                q: "Is imitation jewellery good for business?",
+                a: "Yes, imitation jewellery is a highly profitable business due to low investment and high demand. It is ideal for resellers, boutiques, and online sellers targeting fashion and bridal markets.",
+              },
+            ].map((item) => (
+              <details
+                key={item.q}
+                className="bg-background border border-border rounded-lg p-4"
+              >
+                <summary className="font-semibold cursor-pointer text-foreground">
+                  {item.q}
+                </summary>
+                <p className="mt-2 text-sm text-muted-foreground">{item.a}</p>
+              </details>
+            ))}
           </div>
         </div>
       </section>

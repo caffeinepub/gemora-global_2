@@ -328,7 +328,7 @@ export default function Contact() {
 
               <div className="rounded-xl overflow-hidden border border-border">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3557.4!2d75.7384!3d26.9124!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396db5e3e4b0b4b7%3A0x0!2sVaishali+Nagar%2C+Jaipur%2C+Rajasthan+302021!5e0!3m2!1sen!2sin!4v1703000000000!5m2!1sen!2sin"
+                  src="https://maps.google.com/maps?q=Maa+Hinglaj+Nagar+Jaipur+Rajasthan+302021+India&output=embed"
                   width="100%"
                   height="250"
                   style={{ border: 0 }}
