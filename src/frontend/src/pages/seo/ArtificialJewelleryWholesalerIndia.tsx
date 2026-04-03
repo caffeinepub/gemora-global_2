@@ -4,10 +4,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function ArtificialJewelleryWholesalerIndia() {
   return (
     <SeoLandingPage
-      title="Artificial Jewellery Wholesaler India | Bulk Fashion Jewellery Supplier | Gemora Global"
+      title="Artificial Jewellery Wholesaler India | Gemora Global"
       metaDescription="Top artificial jewellery wholesaler in India. Bulk imitation necklaces, earrings & sets at factory prices. Low MOQ, pan-India supply & global export."
       canonical="https://gemoraglobal-tje.caffeine.xyz/artificial-jewellery-wholesaler-india"
-      h1="Artificial Jewellery Wholesaler in India — Bulk Supplier at Factory Prices"
+      h1="Artificial Jewellery Wholesaler India | Bulk Prices"
       targetKeyword="artificial jewellery wholesaler india"
       heroSubtitle="Gemora Global is one of India's most trusted artificial jewellery wholesalers, supplying boutiques, retailers, and distributors across India and globally. Direct factory pricing, 500+ designs, anti-tarnish finish."
       bodyContent={

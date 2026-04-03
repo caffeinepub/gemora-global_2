@@ -4,10 +4,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function TempleJewelleryManufacturer() {
   return (
     <SeoLandingPage
-      title="Temple Jewellery Manufacturer India | Wholesale Temple Sets | Gemora Global"
+      title="Temple Jewellery Manufacturer India | Gemora Global"
       metaDescription="Leading temple jewellery manufacturer in India. Wholesale temple necklaces, earrings & bridal sets in gold finish. Bulk supply with worldwide export."
       canonical="https://gemoraglobal-tje.caffeine.xyz/temple-jewellery-manufacturer"
-      h1="Temple Jewellery Manufacturer in India — Wholesale Supplier for Global Buyers"
+      h1="Temple Jewellery Manufacturer India | Wholesale"
       targetKeyword="temple jewellery manufacturer"
       heroSubtitle="Gemora Global manufactures and exports authentic temple jewellery in bulk to wholesalers, boutiques, and distributors worldwide. Gold-finish temple sets with intricate deity motifs — factory-direct pricing from Jaipur, India."
       bodyContent={

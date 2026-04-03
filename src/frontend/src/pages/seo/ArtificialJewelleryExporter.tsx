@@ -4,10 +4,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function ArtificialJewelleryExporter() {
   return (
     <SeoLandingPage
-      title="Artificial Jewellery Exporter from India | Wholesale Supplier | Gemora Global"
+      title="Artificial Jewellery Exporter India | Gemora Global"
       metaDescription="Trusted artificial jewellery exporter from India. Wholesale imitation necklaces, earrings & bridal sets. Factory-direct pricing, MOQ 50 units, global shipping."
       canonical="https://gemoraglobal-tje.caffeine.xyz/artificial-jewellery-exporter"
-      h1="Artificial Jewellery Exporter from India — Factory-Direct Wholesale Supply"
+      h1="Artificial Jewellery Exporter India | Factory Direct"
       targetKeyword="artificial jewellery exporter"
       heroSubtitle="Gemora Global is India's trusted artificial jewellery exporter, supplying wholesale fashion jewellery to buyers in USA, UK, UAE, Canada, and 15+ countries. Direct from factory in Jaipur — best pricing, anti-tarnish finish, MOQ from 50 units."
       bodyContent={

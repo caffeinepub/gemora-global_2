@@ -3,10 +3,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function WholesaleImitationJewelleryIndia() {
   return (
     <SeoLandingPage
-      title="Wholesale Imitation Jewellery India | Anti-Tarnish Jewellery Supplier | Gemora Global"
+      title="Wholesale Imitation Jewellery India | Anti-Tarnish"
       metaDescription="Wholesale imitation jewellery from India with anti-tarnish finish. 500+ designs, factory-direct prices, global shipping. Trusted by 200+ buyers worldwide."
       canonical="https://gemoraglobal-tje.caffeine.xyz/wholesale-imitation-jewellery-india"
-      h1="Wholesale Imitation Jewellery India — Anti-Tarnish Quality, Factory Prices"
+      h1="Anti-Tarnish Imitation Jewellery Wholesale India"
       targetKeyword="imitation jewellery wholesale india"
       heroSubtitle="India's most trusted wholesale imitation jewellery source. Factory-direct pricing, anti-tarnish finishing, 500+ designs. Trusted by 200+ wholesale buyers across 15 countries."
       bodyContent={

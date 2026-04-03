@@ -8,6 +8,7 @@ import type { Product } from "../backend";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
+import { usePageSEO } from "../hooks/usePageSEO";
 
 export default function ProductDetail() {
   const { id } = useParams() as { id: string };
@@ -18,6 +19,17 @@ export default function ProductDetail() {
     queryKey: ["product", id],
     queryFn: () => actor!.getProduct(BigInt(id!)),
     enabled: !!actor && !!id,
+  });
+
+  // Always call hooks unconditionally before any conditional return
+  usePageSEO({
+    title: product
+      ? `${product.name} Wholesale Supplier India | Gemora Global`
+      : "Imitation Jewellery Products | Gemora Global",
+    description: product
+      ? `${product.description.slice(0, 150)} Wholesale supplier from India.`
+      : "Browse imitation jewellery products from Gemora Global.",
+    canonical: `https://gemoraglobal-tje.caffeine.xyz/products/${id}`,
   });
 
   if (isLoading) {

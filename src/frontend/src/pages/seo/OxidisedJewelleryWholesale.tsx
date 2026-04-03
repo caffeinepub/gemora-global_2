@@ -4,10 +4,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function OxidisedJewelleryWholesale() {
   return (
     <SeoLandingPage
-      title="Oxidised Jewellery Wholesale Supplier India | Antique Silver Jewellery | Gemora Global"
+      title="Oxidised Jewellery Wholesale India | Gemora Global"
       metaDescription="Premium oxidised jewellery wholesale from India. Antique silver-finish necklaces, earrings & bracelets in bulk. Low MOQ, worldwide export from Jaipur."
       canonical="https://gemoraglobal-tje.caffeine.xyz/oxidised-jewellery-wholesale"
-      h1="Oxidised Jewellery Wholesale Supplier — Antique Silver Finish Jewellery from India"
+      h1="Oxidised Jewellery Wholesale Supplier India"
       targetKeyword="oxidised jewellery wholesale"
       heroSubtitle="Gemora Global is a leading oxidised jewellery wholesale supplier from Jaipur, India. Antique silver-finish earrings, necklaces, bracelets, rings and sets for boutiques and international buyers. MOQ from 50 units."
       bodyContent={

@@ -3,10 +3,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function BridalJewelleryWholesale() {
   return (
     <SeoLandingPage
-      title="Bridal Jewellery Wholesale Supplier India | Bridal Sets | Gemora Global"
+      title="Bridal Jewellery Wholesale Supplier India | Gemora"
       metaDescription="Wholesale bridal jewellery sets from India. Kundan, polki, zircon bridal sets for boutiques, wedding markets. MOQ-friendly pricing, global export."
       canonical="https://gemoraglobal-tje.caffeine.xyz/bridal-jewellery-wholesale"
-      h1="Bridal Jewellery Wholesale — Complete Sets Wholesale Supplier India"
+      h1="Bridal Jewellery Wholesale — Complete Sets from India"
       targetKeyword="bridal imitation jewellery wholesale"
       heroSubtitle="India's trusted wholesale supplier for complete bridal jewellery sets. Kundan, polki, and zircon bridal sets for boutiques serving wedding markets in UK, UAE, USA, and beyond."
       bodyContent={

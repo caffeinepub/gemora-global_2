@@ -4,10 +4,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function OxidisedJewellerySupplier() {
   return (
     <SeoLandingPage
-      title="Oxidised Jewellery Supplier India | Antique Silver Jewellery Wholesale | Gemora Global"
+      title="Oxidised Jewellery Supplier India | Gemora Global"
       metaDescription="Reliable oxidised jewellery supplier in India. Wholesale antique silver earrings, necklaces, bangles for boutiques. Low MOQ, anti-tarnish, global export."
       canonical="https://gemoraglobal-tje.caffeine.xyz/oxidised-jewellery-supplier"
-      h1="Oxidised Jewellery Supplier India — Trusted Wholesale Partner for Boutiques"
+      h1="Oxidised Jewellery Supplier India | Trusted Wholesale"
       targetKeyword="oxidised jewellery supplier"
       heroSubtitle="Gemora Global is a trusted oxidised jewellery supplier from Jaipur, India. Wholesale antique silver-finish earrings, necklaces, bangles and sets for boutiques, retailers, and international buyers."
       bodyContent={

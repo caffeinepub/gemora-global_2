@@ -4,10 +4,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function ImitationJewellerySupplierUSA() {
   return (
     <SeoLandingPage
-      title="Imitation Jewellery Supplier USA | Wholesale Indian Jewellery for US Buyers | Gemora Global"
+      title="Imitation Jewellery Supplier USA | Gemora Global"
       metaDescription="Trusted imitation jewellery supplier for USA buyers. Wholesale Indian fashion jewellery shipped to all US states. MOQ 50 units, FedEx/DHL, full documentation."
       canonical="https://gemoraglobal-tje.caffeine.xyz/imitation-jewellery-supplier-usa"
-      h1="Imitation Jewellery Supplier USA — Wholesale Indian Fashion Jewellery for American Buyers"
+      h1="Imitation Jewellery Supplier USA | Indian Wholesale"
       targetKeyword="imitation jewellery supplier usa"
       heroSubtitle="Gemora Global is India's trusted imitation jewellery supplier for the USA market. Wholesale fashion jewellery shipped directly to all US states via FedEx and DHL. Factory-direct pricing in USD, MOQ from 50 units."
       bodyContent={

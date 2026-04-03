@@ -140,7 +140,7 @@ export default function Home() {
     title:
       "Imitation Jewellery Exporter & Manufacturer in India | Gemora Global",
     description:
-      "Gemora Global is India's leading imitation jewellery manufacturer and exporter. Premium handcrafted necklaces, earrings, bridal sets and more — MOQ-friendly wholesale pricing for global buyers in UAE, France, USA, UK and Europe.",
+      "India's leading imitation jewellery manufacturer & exporter. Wholesale fashion jewellery, bridal sets & 500+ designs. Shipping to UAE, USA, UK & worldwide.",
     canonical: "https://gemoraglobal-tje.caffeine.xyz/",
     ogTitle:
       "Imitation Jewellery Exporter & Manufacturer in India | Gemora Global",
@@ -889,6 +889,125 @@ export default function Home() {
               </svg>
               Download Catalogue
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Services — internal link hub for all SEO pages */}
+      <section className="py-16 px-4 bg-muted/20 border-t border-border">
+        <div className="container mx-auto max-w-5xl">
+          <h2 className="text-2xl font-serif font-bold text-primary mb-3 text-center">
+            Explore Our Specialised Services
+          </h2>
+          <p className="text-center text-muted-foreground text-sm mb-10">
+            Gemora Global offers end-to-end wholesale, manufacturing, and export
+            services for imitation jewellery worldwide.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              {
+                to: "/kundan-jewellery-wholesale",
+                label: "Kundan Jewellery Wholesale from India",
+              },
+              {
+                to: "/temple-jewellery-manufacturer",
+                label: "Temple Jewellery Manufacturer Jaipur",
+              },
+              {
+                to: "/artificial-jewellery-exporter",
+                label: "Artificial Jewellery Exporter India",
+              },
+              {
+                to: "/bridal-imitation-jewellery",
+                label: "Bridal Imitation Jewellery Sets Wholesale",
+              },
+              {
+                to: "/oxidised-jewellery-wholesale",
+                label: "Oxidised Jewellery Wholesale Supplier",
+              },
+              {
+                to: "/imitation-jewellery-manufacturer-india",
+                label: "Imitation Jewellery Manufacturer India",
+              },
+              {
+                to: "/artificial-jewellery-wholesaler-india",
+                label: "Artificial Jewellery Wholesaler India",
+              },
+              {
+                to: "/fashion-jewellery-exporter-india",
+                label: "Fashion Jewellery Exporter India",
+              },
+              {
+                to: "/oxidised-jewellery-supplier",
+                label: "Oxidised Jewellery Supplier India",
+              },
+              {
+                to: "/imitation-jewellery-supplier-usa",
+                label: "Imitation Jewellery Supplier USA",
+              },
+              {
+                to: "/imitation-jewellery-exporter-india",
+                label: "Imitation Jewellery Exporter India",
+              },
+              {
+                to: "/wholesale-imitation-jewellery",
+                label: "Wholesale Imitation Jewellery Supplier",
+              },
+              {
+                to: "/bridal-jewellery-wholesale",
+                label: "Bridal Jewellery Wholesale India",
+              },
+              {
+                to: "/fashion-jewellery-exporter",
+                label: "Fashion Jewellery Exporter Worldwide",
+              },
+              {
+                to: "/custom-jewellery-manufacturer",
+                label: "Custom Jewellery Manufacturer India",
+              },
+              {
+                to: "/wholesale-imitation-jewellery-india",
+                label: "Wholesale Imitation Jewellery India",
+              },
+              {
+                to: "/fashion-jewellery-manufacturer-india",
+                label: "Fashion Jewellery Manufacturer India",
+              },
+              {
+                to: "/bridal-imitation-jewellery-wholesale",
+                label: "Bridal Imitation Jewellery Wholesale",
+              },
+              {
+                to: "/bulk-jewellery-supplier",
+                label: "Bulk Jewellery Supplier India",
+              },
+              {
+                to: "/jewellery-exporter-to-usa",
+                label: "Jewellery Exporter to USA",
+              },
+              {
+                to: "/jewellery-supplier-uk",
+                label: "Wholesale Jewellery Supplier UK",
+              },
+              {
+                to: "/jewellery-exporter-uae",
+                label: "Jewellery Exporter UAE Dubai",
+              },
+              {
+                to: "/private-label-jewellery-india",
+                label: "Private Label Jewellery India",
+              },
+            ].map((s) => (
+              <Link
+                key={s.to}
+                to={s.to}
+                className="flex items-center gap-2 px-4 py-3 rounded-lg border border-border hover:border-yellow-600/50 hover:bg-yellow-600/5 text-sm text-muted-foreground hover:text-primary transition-colors"
+                data-ocid="home.link"
+              >
+                <span className="text-yellow-500">&rsaquo;</span>
+                {s.label}
+              </Link>
+            ))}
           </div>
         </div>
       </section>

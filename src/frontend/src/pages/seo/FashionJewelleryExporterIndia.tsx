@@ -4,10 +4,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function FashionJewelleryExporterIndia() {
   return (
     <SeoLandingPage
-      title="Fashion Jewellery Exporter India | Wholesale Fashion Jewellery Export | Gemora Global"
+      title="Fashion Jewellery Export India | Wholesale Supplier"
       metaDescription="Top fashion jewellery exporter from India. Wholesale trendy necklaces, earrings & sets exported worldwide. Anti-tarnish, MOQ 50 units, global shipping."
       canonical="https://gemoraglobal-tje.caffeine.xyz/fashion-jewellery-exporter-india"
-      h1="Fashion Jewellery Exporter India — Wholesale Trendy Jewellery for Global Buyers"
+      h1="Fashion Jewellery Exporter India | Global Wholesale"
       targetKeyword="fashion jewellery exporter india"
       heroSubtitle="Gemora Global exports premium fashion jewellery worldwide from India. Trendy 2026 designs in necklaces, earrings, bracelets, rings and sets. Factory-direct pricing, anti-tarnish finish, worldwide shipping."
       bodyContent={

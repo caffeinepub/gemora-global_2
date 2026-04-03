@@ -3,10 +3,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function BulkJewellerySupplier() {
   return (
     <SeoLandingPage
-      title="Bulk Jewellery Supplier India | Wholesale Jewellery for Resellers | Gemora Global"
+      title="Bulk Jewellery Supplier India | Gemora Global"
       metaDescription="India's trusted bulk jewellery supplier. Wholesale fashion jewellery for resellers, boutiques, distributors. MOQ from 50 units, global shipping."
       canonical="https://gemoraglobal-tje.caffeine.xyz/bulk-jewellery-supplier"
-      h1="Bulk Jewellery Supplier India — Wholesale Prices for Resellers & Boutiques"
+      h1="Bulk Jewellery Supplier India | Wholesale Prices"
       targetKeyword="bulk fashion jewellery supplier"
       heroSubtitle="India's most reliable bulk jewellery supplier for resellers, boutiques, and distributors. MOQ from 50 units, wholesale pricing, global shipping. Your growth is our business."
       bodyContent={

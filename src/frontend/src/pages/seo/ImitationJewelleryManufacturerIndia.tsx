@@ -4,10 +4,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function ImitationJewelleryManufacturerIndia() {
   return (
     <SeoLandingPage
-      title="Imitation Jewellery Manufacturer India | Direct Factory Supplier | Gemora Global"
+      title="Imitation Jewellery Manufacturer India | Gemora Global"
       metaDescription="Leading imitation jewellery manufacturer in India. Direct factory supply of wholesale fashion jewellery. 500+ designs, anti-tarnish finish, global export."
       canonical="https://gemoraglobal-tje.caffeine.xyz/imitation-jewellery-manufacturer-india"
-      h1="Imitation Jewellery Manufacturer in India — Direct Factory Supply for Wholesale Buyers"
+      h1="Buy Imitation Jewellery Wholesale Direct from India"
       targetKeyword="imitation jewellery manufacturer india"
       heroSubtitle="Gemora Global is a leading imitation jewellery manufacturer in India, operating from Jaipur — India's jewellery capital. Direct factory pricing, 500+ designs, anti-tarnish finish, and global export to 15+ countries. MOQ from 50 units."
       bodyContent={

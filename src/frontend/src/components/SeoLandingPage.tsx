@@ -139,7 +139,8 @@ export default function SeoLandingPage({
             {h1}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            {heroSubtitle}
+            <strong>{heroSubtitle.split(".")[0]}.</strong>{" "}
+            {heroSubtitle.split(".").slice(1).join(".").trim()}
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Button
@@ -215,6 +216,7 @@ export default function SeoLandingPage({
               <Link
                 key={cat.name}
                 to="/products"
+                title={`Buy ${cat.name} Wholesale from India`}
                 className="p-5 rounded-xl border border-yellow-600/20 bg-card hover:border-yellow-500/50 transition-colors group"
                 data-ocid="seo.link"
               >
@@ -471,35 +473,35 @@ export default function SeoLandingPage({
               to="/products"
               className="text-yellow-500 hover:underline mx-2"
             >
-              Products
+              Imitation Jewellery Products
             </Link>{" "}
             ·
             <Link
               to="/wholesale"
               className="text-yellow-500 hover:underline mx-2"
             >
-              Wholesale & Export
+              Wholesale Bulk Export Pricing
             </Link>{" "}
             ·
             <Link
               to="/why-choose-us"
               className="text-yellow-500 hover:underline mx-2"
             >
-              Why Choose Us
+              Why Choose Gemora Global
             </Link>{" "}
             ·
             <Link
               to="/global-markets"
               className="text-yellow-500 hover:underline mx-2"
             >
-              Global Markets
+              Global Export Markets
             </Link>{" "}
             ·
             <Link
               to="/contact"
               className="text-yellow-500 hover:underline mx-2"
             >
-              Contact Us
+              Send Wholesale Inquiry
             </Link>
           </p>
         </div>

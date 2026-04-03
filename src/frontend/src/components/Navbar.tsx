@@ -95,7 +95,7 @@ export default function Navbar() {
           <img
             src="/assets/uploads/logo-removebg-preview-1-1.png"
             alt="Gemora Global"
-            style={{ height: "56px", width: "auto", objectFit: "contain" }}
+            className="h-14 w-auto object-contain"
           />
         </Link>
         <div className="hidden md:flex items-center gap-5">

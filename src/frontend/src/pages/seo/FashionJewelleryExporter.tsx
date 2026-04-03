@@ -3,10 +3,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function FashionJewelleryExporter() {
   return (
     <SeoLandingPage
-      title="Fashion Jewellery Exporter India | Artificial Jewellery Wholesale | Gemora Global"
+      title="Fashion Jewellery Exporter India | Gemora Global"
       metaDescription="India's trusted fashion jewellery exporter. Trendy artificial jewellery wholesale for boutiques, fashion retailers in UAE, France, UK, USA."
       canonical="https://gemoraglobal-tje.caffeine.xyz/fashion-jewellery-exporter"
-      h1="Fashion Jewellery Exporter India — Trendy Designs for Global Retail"
+      h1="Fashion Jewellery Exporter India | Trendy Designs"
       targetKeyword="fashion jewellery exporter worldwide"
       heroSubtitle="Export-quality fashion jewellery from India. Seasonal trend-driven designs for boutiques and fashion retailers in UAE, France, UK, USA, and across the globe."
       bodyContent={

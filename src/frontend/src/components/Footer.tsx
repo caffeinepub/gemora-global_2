@@ -27,15 +27,15 @@ function InstagramIcon() {
 }
 
 const QUICK_LINKS = [
-  { label: "Home", to: "/" },
-  { label: "About Us", to: "/about" },
-  { label: "Products", to: "/products" },
-  { label: "Wholesale & Export", to: "/wholesale" },
-  { label: "Why Choose Us", to: "/why-choose-us" },
-  { label: "Global Markets", to: "/global-markets" },
-  { label: "Gallery", to: "/gallery" },
-  { label: "Blog", to: "/blog" },
-  { label: "Contact", to: "/contact" },
+  { label: "Gemora Global Home", to: "/" },
+  { label: "About Gemora Global", to: "/about" },
+  { label: "Imitation Jewellery Products", to: "/products" },
+  { label: "Wholesale & Bulk Export", to: "/wholesale" },
+  { label: "Why Choose Gemora Global", to: "/why-choose-us" },
+  { label: "Global Export Markets", to: "/global-markets" },
+  { label: "Jewellery Gallery & Catalogue", to: "/gallery" },
+  { label: "Jewellery Export Blog", to: "/blog" },
+  { label: "Contact for Wholesale Inquiry", to: "/contact" },
 ];
 
 export default function Footer() {
@@ -50,7 +50,7 @@ export default function Footer() {
             Global Jewellery. Indian Craftsmanship.
           </p>
           <p className="text-muted-foreground text-sm mt-2">
-            India's leading imitation jewellery manufacturer &amp; global
+            India&apos;s leading imitation jewellery manufacturer &amp; global
             exporter — fashion jewellery manufacturer, wholesale jewellery
             supplier, and imitation jewellery exporter serving boutiques &amp;
             distributors worldwide.
@@ -73,13 +73,9 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Follow on Instagram"
-              className="flex items-center gap-2 text-muted-foreground hover:text-primary text-sm font-medium transition-colors"
-              style={{ color: "#e1306c" }}
+              className="flex items-center gap-2 text-[#e1306c] hover:opacity-80 text-sm font-medium transition-colors"
             >
-              <span
-                className="flex items-center justify-center w-8 h-8 rounded-full"
-                style={{ background: "rgba(225,48,108,0.1)", color: "#e1306c" }}
-              >
+              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#e1306c]/10 text-[#e1306c]">
                 <InstagramIcon />
               </span>
               Instagram
@@ -91,42 +87,42 @@ export default function Footer() {
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li>
               <Link to="/" className="hover:text-primary">
-                Home
+                Gemora Global Home
               </Link>
             </li>
             <li>
               <Link to="/about" className="hover:text-primary">
-                About
+                About Gemora Global
               </Link>
             </li>
             <li>
               <Link to="/products" className="hover:text-primary">
-                Products
+                Imitation Jewellery Products
               </Link>
             </li>
             <li>
               <Link to="/wholesale" className="hover:text-primary">
-                Wholesale
+                Wholesale &amp; Bulk Export
               </Link>
             </li>
             <li>
               <Link to="/global-markets" className="hover:text-primary">
-                Global Markets
+                Global Export Markets
               </Link>
             </li>
             <li>
               <Link to="/gallery" className="hover:text-primary">
-                Gallery
+                Jewellery Gallery &amp; Catalogue
               </Link>
             </li>
             <li>
               <Link to="/blog" className="hover:text-primary">
-                Blog
+                Jewellery Export Blog
               </Link>
             </li>
             <li>
               <Link to="/contact" className="hover:text-primary">
-                Contact
+                Contact for Wholesale Inquiry
               </Link>
             </li>
           </ul>
@@ -161,7 +157,7 @@ export default function Footer() {
               <Link
                 key={link.to}
                 to={link.to}
-                className="text-xs text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
+                className="text-xs text-muted-foreground hover:text-primary transition-colors"
               >
                 {link.label}
               </Link>

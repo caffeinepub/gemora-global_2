@@ -3,10 +3,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function ImitationJewelleryExporterIndia() {
   return (
     <SeoLandingPage
-      title="Imitation Jewellery Exporter India | Wholesale Fashion Jewellery | Gemora Global"
+      title="Imitation Jewellery Exporter India | Gemora Global"
       metaDescription="Trusted imitation jewellery exporter from India. Wholesale necklaces, earrings, bridal sets with anti-tarnish finish. Low MOQ, global shipping."
       canonical="https://gemoraglobal-tje.caffeine.xyz/imitation-jewellery-exporter-india"
-      h1="Imitation Jewellery Exporter India — Wholesale Supplier to Global Buyers"
+      h1="Imitation Jewellery Exporter India | Global Wholesale"
       targetKeyword="imitation jewellery exporter india"
       heroSubtitle="Gemora Global is India's most trusted imitation jewellery exporter, supplying premium handcrafted designs to wholesalers, boutiques, and distributors across 15+ countries. Factory-direct pricing, anti-tarnish finish, MOQ from 50 units."
       bodyContent={

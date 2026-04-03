@@ -4,10 +4,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function KundanJewelleryWholesale() {
   return (
     <SeoLandingPage
-      title="Kundan Jewellery Wholesale Supplier India | Bulk Kundan Sets | Gemora Global"
-      metaDescription="Premium kundan jewellery wholesale supplier in India. Bulk kundan necklace sets, earrings & bridal jewellery. Low MOQ, worldwide export from Jaipur."
+      title="Kundan Jewellery Wholesale India | Gemora Global"
+      metaDescription="Buy kundan jewellery wholesale from Jaipur, India. Bulk kundan necklace sets, earrings & bridal sets. Low MOQ, worldwide export."
       canonical="https://gemoraglobal-tje.caffeine.xyz/kundan-jewellery-wholesale"
-      h1="Kundan Jewellery Wholesale Supplier in India — Bulk Orders for Global Buyers"
+      h1="Kundan Jewellery Wholesale Supplier India"
       targetKeyword="kundan jewellery wholesale"
       heroSubtitle="Gemora Global is a leading kundan jewellery wholesale supplier from Jaipur, India. Factory-direct pricing on kundan necklaces, earrings, maang tikkas, and full bridal sets. MOQ from 50 units with worldwide shipping."
       bodyContent={

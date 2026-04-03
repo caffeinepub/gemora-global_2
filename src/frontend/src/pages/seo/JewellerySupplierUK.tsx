@@ -3,10 +3,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function JewellerySupplierUK() {
   return (
     <SeoLandingPage
-      title="Jewellery Supplier UK | Indian Imitation Jewellery Wholesale UK | Gemora Global"
+      title="Jewellery Supplier UK | Indian Imitation Jewellery"
       metaDescription="Trusted jewellery supplier from India to UK. Wholesale imitation jewellery, bridal sets for UK boutiques. DHL delivery, HMRC documentation."
       canonical="https://gemoraglobal-tje.caffeine.xyz/jewellery-supplier-uk"
-      h1="Jewellery Supplier India to UK — Wholesale Imitation Jewellery for UK Boutiques"
+      h1="Indian Jewellery Supplier to UK | Wholesale Boutiques"
       targetKeyword="imitation jewellery supplier uk"
       heroSubtitle="India's trusted wholesale jewellery supplier to the United Kingdom. DHL Express delivery in 4–6 days, HMRC-compliant documentation, 500+ designs. Serving UK boutiques since 2013."
       bodyContent={

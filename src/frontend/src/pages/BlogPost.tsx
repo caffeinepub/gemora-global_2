@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import { usePageSEO } from "../hooks/usePageSEO";
 import { getBlogPosts } from "../utils/blogStore";
 
 const categoryColors: Record<string, string> = {
@@ -18,6 +19,17 @@ export default function BlogPost() {
   const { slug } = useParams() as { slug: string };
   const allPosts = getBlogPosts();
   const post = allPosts.find((p) => p.slug === slug);
+
+  // Always call hooks unconditionally before any early return
+  usePageSEO({
+    title: post ? `${post.title} | Gemora Global` : "Blog | Gemora Global",
+    description: post
+      ? post.excerpt.slice(0, 150)
+      : "Read the latest insights on imitation jewellery trends, wholesale sourcing, and export tips from Gemora Global.",
+    canonical: post
+      ? `https://gemoraglobal-tje.caffeine.xyz/blog/${post.slug}`
+      : "https://gemoraglobal-tje.caffeine.xyz/blog",
+  });
 
   if (!post) return <Navigate to="/blog" replace />;
 

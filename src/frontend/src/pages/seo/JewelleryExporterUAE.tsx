@@ -3,10 +3,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function JewelleryExporterUAE() {
   return (
     <SeoLandingPage
-      title="Jewellery Exporter UAE | Indian Imitation Jewellery Dubai | Gemora Global"
+      title="Jewellery Exporter UAE | Indian Imitation Jewellery"
       metaDescription="Export quality jewellery from India to UAE. Wholesale imitation jewellery for Dubai boutiques. Air freight 5-7 days, competitive wholesale pricing."
       canonical="https://gemoraglobal-tje.caffeine.xyz/jewellery-exporter-uae"
-      h1="Jewellery Exporter India to UAE — Wholesale Imitation Jewellery for Dubai & Middle East"
+      h1="Indian Jewellery Exporter to UAE | Dubai Wholesale"
       targetKeyword="imitation jewellery exporter uae"
       heroSubtitle="India's trusted jewellery exporter to UAE and the Middle East. Wholesale imitation jewellery for Dubai boutiques — air freight in 5–7 days, kundan & polki designs, competitive pricing."
       bodyContent={

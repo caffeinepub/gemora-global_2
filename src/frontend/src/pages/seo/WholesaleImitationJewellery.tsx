@@ -3,10 +3,10 @@ import SeoLandingPage from "../../components/SeoLandingPage";
 export default function WholesaleImitationJewellery() {
   return (
     <SeoLandingPage
-      title="Wholesale Imitation Jewellery Supplier India | Bulk Fashion Jewellery | Gemora Global"
+      title="Wholesale Imitation Jewellery India | Gemora Global"
       metaDescription="Buy wholesale imitation jewellery directly from India manufacturer. 500+ designs, anti-tarnish, MOQ from 50 units. Trusted supplier for boutiques & resellers."
       canonical="https://gemoraglobal-tje.caffeine.xyz/wholesale-imitation-jewellery"
-      h1="Wholesale Imitation Jewellery — Bulk Supplier Direct from India"
+      h1="Wholesale Imitation Jewellery — Bulk Supplier India"
       targetKeyword="wholesale imitation jewellery supplier"
       heroSubtitle="The most competitive wholesale imitation jewellery supplier in India. 500+ designs, factory-direct prices, MOQ from 50 units. Trusted by boutiques and resellers in 15+ countries."
       bodyContent={
