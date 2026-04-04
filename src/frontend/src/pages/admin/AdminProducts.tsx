@@ -42,7 +42,6 @@ type ProductForm = {
   description: string;
   moq: string;
   imageUrls: string[];
-  manualUrls: string;
   featured: boolean;
 };
 
@@ -52,7 +51,6 @@ const EMPTY: ProductForm = {
   description: "",
   moq: "",
   imageUrls: [],
-  manualUrls: "",
   featured: false,
 };
 
@@ -87,14 +85,6 @@ export default function AdminProducts() {
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["products"] });
 
-  const allImageUrls = () => [
-    ...form.imageUrls,
-    ...form.manualUrls
-      .split("\n")
-      .map((s) => s.trim())
-      .filter(Boolean),
-  ];
-
   const createMutation = useMutation({
     mutationFn: () =>
       actor!.createProduct(
@@ -102,7 +92,7 @@ export default function AdminProducts() {
         form.name,
         form.description,
         form.moq,
-        allImageUrls(),
+        form.imageUrls,
         form.featured,
       ),
     onSuccess: () => {
@@ -121,7 +111,7 @@ export default function AdminProducts() {
         form.name,
         form.description,
         form.moq,
-        allImageUrls(),
+        form.imageUrls,
         form.featured,
       ),
     onSuccess: () => {
@@ -154,7 +144,6 @@ export default function AdminProducts() {
       description: p.description,
       moq: p.moq,
       imageUrls: p.imageUrls,
-      manualUrls: "",
       featured: p.featured,
     });
     setOpen(true);
@@ -541,19 +530,6 @@ export default function AdminProducts() {
                       ))}
                     </div>
                   )}
-                </div>
-
-                {/* Manual URL fallback */}
-                <div>
-                  <Label>Or enter image URLs manually (one per line)</Label>
-                  <Textarea
-                    value={form.manualUrls}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, manualUrls: e.target.value }))
-                    }
-                    rows={2}
-                    placeholder="https://..."
-                  />
                 </div>
 
                 <div className="flex items-center gap-2">

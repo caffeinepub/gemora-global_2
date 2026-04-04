@@ -89,7 +89,7 @@ export default function Navbar() {
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 bg-background/90 backdrop-blur border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-40 bg-[#1A237E] border-b border-[#2a3a9e]">
       <div className="container flex items-center justify-between h-16">
         <Link to="/" className="flex items-center">
           <img
@@ -104,10 +104,10 @@ export default function Navbar() {
               key={l.to}
               to={l.to}
               data-ocid="nav.link"
-              className={`text-sm font-medium transition-colors hover:text-primary ${
+              className={`text-sm font-medium transition-colors ${
                 location.pathname === l.to
-                  ? "text-primary"
-                  : "text-muted-foreground"
+                  ? "text-[#42A5F5]"
+                  : "text-white/80 hover:text-[#42A5F5]"
               }`}
             >
               {l.label}
@@ -123,7 +123,7 @@ export default function Navbar() {
             <button
               type="button"
               data-ocid="nav.link"
-              className="flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
+              className="flex items-center gap-1 text-sm font-medium transition-colors text-white/80 hover:text-[#42A5F5]"
             >
               Our Services
               <ChevronDown
@@ -133,13 +133,13 @@ export default function Navbar() {
               />
             </button>
             {servicesHover && (
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[520px] bg-background border border-border rounded-md shadow-lg z-50 py-2">
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[520px] bg-[#1A237E] border border-[#2a3a9e] rounded-md shadow-lg z-50 py-2">
                 <div className="grid grid-cols-2">
                   {SERVICE_LINKS.map((s) => (
                     <Link
                       key={s.to}
                       to={s.to}
-                      className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
+                      className="block px-4 py-2 text-sm text-white/80 hover:bg-[#0d1857] hover:text-[#42A5F5] transition-colors"
                       onClick={() => setServicesHover(false)}
                     >
                       {s.label}
@@ -153,7 +153,7 @@ export default function Navbar() {
           <Button
             asChild
             size="sm"
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
+            className="bg-[#42A5F5] text-white hover:bg-[#3a95e5]"
           >
             <Link to="/contact" data-ocid="nav.primary_button">
               Get Quote
@@ -163,7 +163,7 @@ export default function Navbar() {
         <button
           type="button"
           aria-label="Toggle menu"
-          className="md:hidden p-2 text-foreground"
+          className="md:hidden p-2 text-white/80"
           onClick={() => setOpen(!open)}
         >
           <svg
@@ -192,13 +192,17 @@ export default function Navbar() {
         </button>
       </div>
       {open && (
-        <div className="md:hidden bg-background border-t border-border px-4 py-3 flex flex-col gap-3">
+        <div className="md:hidden bg-[#1A237E] border-t border-[#2a3a9e] px-4 py-3 flex flex-col gap-3">
           {links.map((l) => (
             <Link
               key={l.to}
               to={l.to}
               data-ocid="nav.link"
-              className="text-sm py-1"
+              className={`text-sm py-1 transition-colors ${
+                location.pathname === l.to
+                  ? "text-[#42A5F5]"
+                  : "text-white/80 hover:text-[#42A5F5]"
+              }`}
               onClick={() => setOpen(false)}
             >
               {l.label}
@@ -209,7 +213,7 @@ export default function Navbar() {
           <div>
             <button
               type="button"
-              className="flex items-center gap-1 text-sm py-1 w-full text-left"
+              className="flex items-center gap-1 text-sm py-1 w-full text-left text-white/80 hover:text-[#42A5F5] transition-colors"
               onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
             >
               Our Services
@@ -225,7 +229,7 @@ export default function Navbar() {
                   <Link
                     key={s.to}
                     to={s.to}
-                    className="text-sm text-muted-foreground hover:text-primary py-1"
+                    className="text-sm text-white/70 hover:text-[#42A5F5] py-1 transition-colors"
                     onClick={() => {
                       setOpen(false);
                       setMobileServicesOpen(false);
@@ -241,7 +245,7 @@ export default function Navbar() {
           <Button
             asChild
             size="sm"
-            className="bg-primary text-primary-foreground w-fit"
+            className="bg-[#42A5F5] text-white hover:bg-[#3a95e5] w-fit"
           >
             <Link to="/contact" onClick={() => setOpen(false)}>
               Get Quote

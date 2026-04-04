@@ -45,12 +45,17 @@ export default function AdminWebsiteSettings() {
   const qc = useQueryClient();
   const { uploadFile, uploading } = useStorageUpload();
   const logoFileRef = useRef<HTMLInputElement>(null);
-  const heroFileRef = useRef<HTMLInputElement>(null);
+  const heroFile1Ref = useRef<HTMLInputElement>(null);
+  const heroFile2Ref = useRef<HTMLInputElement>(null);
+  const heroFile3Ref = useRef<HTMLInputElement>(null);
 
   const keys = [
     "hero_title",
     "hero_subtitle",
     "hero_image",
+    "hero_image_1",
+    "hero_image_2",
+    "hero_image_3",
     "whatsapp_number",
     "contact_email",
     "contact_phone",
@@ -106,6 +111,36 @@ export default function AdminWebsiteSettings() {
     if (logoFileRef.current) logoFileRef.current.value = "";
   };
 
+  const handleHeroSlideUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    slotKey: string,
+    fileRef: React.RefObject<HTMLInputElement | null>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const url = await uploadFile(file);
+      await actor!.setContent(slotKey, url);
+      toast.success("Slide image updated");
+      qc.invalidateQueries({ queryKey: ["content-all"] });
+      qc.invalidateQueries({ queryKey: ["content", slotKey] });
+    } catch {
+      toast.error("Failed to upload slide image");
+    }
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const handleHeroSlideRemove = async (slotKey: string) => {
+    try {
+      await actor!.setContent(slotKey, "");
+      toast.success("Slide image removed");
+      qc.invalidateQueries({ queryKey: ["content-all"] });
+      qc.invalidateQueries({ queryKey: ["content", slotKey] });
+    } catch {
+      toast.error("Failed to remove slide image");
+    }
+  };
+
   const SaveBtn = ({ k }: { k: string }) => (
     <button
       type="button"
@@ -127,6 +162,12 @@ export default function AdminWebsiteSettings() {
       Save
     </button>
   );
+
+  const slotDefs = [
+    { key: "hero_image_1", label: "Slide 1", ref: heroFile1Ref },
+    { key: "hero_image_2", label: "Slide 2", ref: heroFile2Ref },
+    { key: "hero_image_3", label: "Slide 3", ref: heroFile3Ref },
+  ];
 
   return (
     <AdminLayout>
@@ -158,7 +199,7 @@ export default function AdminWebsiteSettings() {
           />
           <SaveBtn k="hero_title" />
         </div>
-        <div>
+        <div style={{ marginBottom: 14 }}>
           <Label style={{ color: "#555" }}>Hero Subtitle</Label>
           <Textarea
             value={getValue("hero_subtitle")}
@@ -173,66 +214,122 @@ export default function AdminWebsiteSettings() {
             }}
             data-ocid="admin.websettings.hero_subtitle.textarea"
           />
-          <SaveBtn k="hero_subtitle" />{" "}
+          <SaveBtn k="hero_subtitle" />
         </div>
-        <div style={{ marginTop: 12 }}>
-          <Label style={{ color: "#555" }}>Hero Background Image</Label>
+
+        {/* Hero Slider Images */}
+        <div style={{ marginTop: 4 }}>
+          <Label style={{ color: "#1A237E", fontWeight: 600, fontSize: 14 }}>
+            Hero Slider Images (up to 3)
+          </Label>
+          <p
+            style={{
+              color: "#888",
+              fontSize: 12,
+              marginBottom: 12,
+              marginTop: 2,
+            }}
+          >
+            Upload up to 3 images that will automatically slide in the hero
+            section.
+          </p>
           <div
             style={{
-              marginTop: 8,
-              border: "2px dashed #c5cae9",
-              borderRadius: 8,
-              padding: "16px",
-              textAlign: "center",
-              cursor: "pointer",
-              background: "#f5f7ff",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+              gap: 16,
             }}
-            onClick={() => heroFileRef.current?.click()}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ")
-                heroFileRef.current?.click();
-            }}
-            data-ocid="admin.websettings.hero_image.dropzone"
           >
-            <input
-              ref={heroFileRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                try {
-                  const url = await uploadFile(file);
-                  await actor!.setContent("hero_image", url);
-                  toast.success("Hero image updated");
-                  qc.invalidateQueries({ queryKey: ["content-all"] });
-                  qc.invalidateQueries({ queryKey: ["content", "hero_image"] });
-                } catch {
-                  toast.error("Failed to upload hero image");
-                }
-                if (heroFileRef.current) heroFileRef.current.value = "";
-              }}
-            />
-            <p style={{ color: uploading ? "#42A5F5" : "#888", fontSize: 13 }}>
-              {uploading
-                ? "Uploading..."
-                : "Click to upload hero background image"}
-            </p>
+            {slotDefs.map((slot) => (
+              <div
+                key={slot.key}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                }}
+              >
+                <Label style={{ color: "#555", fontWeight: 600, fontSize: 13 }}>
+                  {slot.label}
+                </Label>
+                {/* Upload box */}
+                <label
+                  htmlFor={`file-input-${slot.key}`}
+                  style={{
+                    border: "2px dashed #c5cae9",
+                    borderRadius: 8,
+                    padding: "14px 10px",
+                    textAlign: "center",
+                    cursor: uploading ? "not-allowed" : "pointer",
+                    background: "#f5f7ff",
+                    minHeight: 72,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  data-ocid={`admin.websettings.${slot.key}.dropzone`}
+                >
+                  <input
+                    id={`file-input-${slot.key}`}
+                    ref={slot.ref}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    data-slot={slot.key}
+                    disabled={uploading}
+                    onChange={(e) =>
+                      handleHeroSlideUpload(e, slot.key, slot.ref)
+                    }
+                  />
+                  <p
+                    style={{
+                      color: uploading ? "#42A5F5" : "#888",
+                      fontSize: 12,
+                    }}
+                  >
+                    {uploading ? "Uploading..." : "Click to upload"}
+                  </p>
+                </label>
+
+                {/* Preview */}
+                {getValue(slot.key) && (
+                  <div style={{ position: "relative" }}>
+                    <img
+                      src={getValue(slot.key)}
+                      alt={`${slot.label} preview`}
+                      style={{
+                        width: "100%",
+                        height: 100,
+                        objectFit: "cover",
+                        borderRadius: 6,
+                        border: "1px solid #c5cae9",
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleHeroSlideRemove(slot.key)}
+                      style={{
+                        position: "absolute",
+                        top: 4,
+                        right: 4,
+                        background: "rgba(0,0,0,0.6)",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 4,
+                        padding: "2px 7px",
+                        fontSize: 11,
+                        cursor: "pointer",
+                        fontWeight: 600,
+                      }}
+                      data-ocid={`admin.websettings.${slot.key}.delete_button`}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-          {getValue("hero_image") && (
-            <img
-              src={getValue("hero_image")}
-              alt="Hero preview"
-              style={{
-                width: "100%",
-                maxHeight: 140,
-                objectFit: "cover",
-                borderRadius: 8,
-                marginTop: 8,
-              }}
-            />
-          )}
         </div>
       </SettingCard>
 

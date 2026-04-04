@@ -1,32 +1,35 @@
-# Gemora Global — Admin Enhancements
+# Gemora Global
 
 ## Current State
-- **AdminGallery.tsx**: Has a single image upload via `useStorageUpload`. Only one image can be added per dialog session. No bulk/multi-image upload to the gallery itself.
-- **AdminProducts.tsx**: Has a product form with multi-image file upload (multiple files selectable at once) but no CSV/spreadsheet bulk product import. Products are added one at a time.
-- **Admin pages in general**: All CRUD pages work but some have rough edges — AdminOrders uses local mock data, AdminBlog uses localStorage, other pages use the backend actor. The admin panel navigation and layout is functional.
+- Navbar uses `bg-background/90 backdrop-blur` (semi-transparent, blurry)
+- Homepage hero and gallery have no entry animations
+- Admin product form has a "Manual Image URLs" textarea in addition to file upload
+- Admin product/category/gallery/blog forms allow pasting URLs — user wants file-upload only
+- Upload via `useStorageUpload` goes through `StorageClient.putFile` then `getDirectURL` — this is correct for blob-storage
+- The `useStorageUpload` hook needs better error logging to surface why uploads fail
+- Hero slider images: currently `hero_image_1/2/3` keys in admin; works correctly
 
 ## Requested Changes (Diff)
 
 ### Add
-1. **Gallery: Bulk image upload** — Allow admin to select and upload multiple images at once directly to the gallery (not just one image per form dialog). Each uploaded image becomes a separate gallery item automatically with a default caption that can be edited later.
-2. **Products: Bulk upload via CSV** — Add a CSV import button in AdminProducts that allows uploading a CSV file with columns: `name, description, moq, categoryId, imageUrl, featured`. Parse it client-side and batch-create products via the backend `createProduct` API.
-3. **Admin completeness fixes**:
-   - AdminOrders: Persist orders in localStorage so they survive page refresh (currently only in-memory MOCK_ORDERS). Add ability to update order status inline.
-   - AdminDashboard: Fix the Edit button in products table to open the AdminProducts page properly (currently it links to /admin/products but doesn't open the edit modal).
-   - AdminGallery: After bulk upload, show a success summary ("X images uploaded").
-   - AdminProducts: Show product images as thumbnails in the table row.
-   - All admin CRUD: Confirm dialogs before delete.
+- **Scroll/entry animations**: Add fade-in-up animations for section headings, cards, and key elements on the homepage and main public pages using CSS keyframes + IntersectionObserver (or Tailwind animate classes). Keep it subtle and professional.
+- **Hover animations**: Add smooth hover scale/lift effects on product cards, category cards, gallery items, and CTA buttons.
+- **Navbar transition**: Smooth transition when scrolling (optional: slight shadow appears on scroll).
 
 ### Modify
-- **AdminGallery.tsx**: Add a second "Bulk Upload" button/section that accepts `multiple` files and creates a gallery item for each uploaded file automatically.
-- **AdminProducts.tsx**: Add a CSV import section with a template download link and file upload input. After parsing and importing, show a summary toast.
+- **Navbar**: Change `bg-background/90 backdrop-blur` to `bg-[#1A237E]` (solid navy blue). Change link colors to white (`text-white`) with hover `text-[#42A5F5]`. Active link should be `text-[#42A5F5]`. "Get Quote" button should be `bg-[#42A5F5] text-white hover:bg-[#42A5F5]/90`. The "Our Services" dropdown background should be `bg-[#1A237E]` with white text, hover `bg-[#0d1857]`. Mobile menu also solid navy.
+- **Admin Products form**: Remove the `manualUrls` textarea ("Or paste image URLs...") entirely. The image section should only have the file upload button. Remove `manualUrls` from the `ProductForm` type and all references. The `allImageUrls()` function should just return `form.imageUrls`.
+- **Admin upload error handling**: In `useStorageUpload.ts`, wrap the upload in better try/catch and `console.error` the actual error so it's visible in browser console. Add a more descriptive toast message like "Upload failed — check your connection and try again".
+- **Admin image fields**: In AdminCategories, AdminGallery, AdminBlog — wherever there is a text Input for `imageUrl` that lets user type a URL, replace it with a file upload button (same pattern as other admin pages using `useStorageUpload`). The URL field should be read-only/hidden (only set programmatically after upload), with a preview shown if an image URL exists.
 
 ### Remove
-- Nothing removed.
+- `manualUrls` field from AdminProducts form
 
 ## Implementation Plan
-1. **AdminGallery** — Add a "Bulk Upload" tab or section in the page (not in the dialog). Use a file input with `multiple` and `accept="image/*"`. On file selection, iterate through files, upload each with `useStorageUpload`, call `createGalleryItem` for each with a default caption (filename minus extension). Show progress counter ("Uploading 3 of 8..."). On completion toast "8 images uploaded to gallery".
-2. **AdminProducts** — Add a "Bulk Import CSV" button next to "Add Product". On click, show a dialog with: download CSV template link, file upload input. On CSV file selected, parse with plain JS (split rows/columns), validate required fields, call `createProduct` for each row. Show progress and summary.
-3. **AdminOrders** — Move `orders` state to localStorage (read initial from localStorage or MOCK_ORDERS). Add inline status update using a Select in each row. Fix detail modal to update status.
-4. **AdminProducts table** — Add image thumbnail column (first imageUrl if available).
-5. **Validate** — Run lint + typecheck + build, fix all errors.
+1. **Navbar.tsx** — Change background to solid `#1A237E`, update all link/button colors to white/sky-blue, update dropdown styles.
+2. **AdminProducts.tsx** — Remove `manualUrls` from type + state + form reset + `allImageUrls()` + JSX textarea block.
+3. **AdminCategories.tsx** — Replace URL text input with file upload button + preview (using `useStorageUpload`).
+4. **AdminGallery.tsx** — Replace URL text input with file upload button + preview.
+5. **AdminBlog.tsx** — Replace URL text input with file upload button + preview.
+6. **useStorageUpload.ts** — Improve error logging/messaging.
+7. **Home.tsx + public pages** — Add subtle fade-in-up CSS animations via `@keyframes` in index.css + IntersectionObserver hook, applied to section titles, stat cards, category cards, testimonial cards.

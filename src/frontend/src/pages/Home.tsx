@@ -2,13 +2,35 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Category, Product, Testimonial } from "../backend";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
 import { usePageSEO } from "../hooks/usePageSEO";
+
+// Scroll reveal hook
+function useScrollReveal() {
+  const ref = useRef<HTMLElement | null>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.15 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return { ref, visible };
+}
 
 const CATEGORY_IMAGES: Record<string, string> = {
   Necklaces: "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg",
@@ -308,14 +330,62 @@ export default function Home() {
     (heroSubtitleRaw && heroSubtitleRaw.length > 0 ? heroSubtitleRaw : null) ??
     DEFAULT_HERO_SUBTITLE;
 
+  // Legacy hero_image (fallback)
   const { data: heroImageRaw } = useQuery({
     queryKey: ["content", "hero_image"],
     queryFn: () => actor!.getContent("hero_image"),
     enabled: !!actor,
   });
-  const heroImage =
+  const heroImageFallback =
     (heroImageRaw && heroImageRaw.length > 0 ? heroImageRaw : null) ??
     "/assets/generated/hero-jewellery-banner.dim_1600x700.jpg";
+
+  // Hero slider images
+  const { data: heroImage1Raw } = useQuery({
+    queryKey: ["content", "hero_image_1"],
+    queryFn: () => actor!.getContent("hero_image_1"),
+    enabled: !!actor,
+  });
+  const { data: heroImage2Raw } = useQuery({
+    queryKey: ["content", "hero_image_2"],
+    queryFn: () => actor!.getContent("hero_image_2"),
+    enabled: !!actor,
+  });
+  const { data: heroImage3Raw } = useQuery({
+    queryKey: ["content", "hero_image_3"],
+    queryFn: () => actor!.getContent("hero_image_3"),
+    enabled: !!actor,
+  });
+
+  const heroImage1 =
+    heroImage1Raw && heroImage1Raw.length > 0
+      ? heroImage1Raw
+      : heroImageFallback;
+  const heroImage2 =
+    heroImage2Raw && heroImage2Raw.length > 0 ? heroImage2Raw : null;
+  const heroImage3 =
+    heroImage3Raw && heroImage3Raw.length > 0 ? heroImage3Raw : null;
+
+  const heroImages = [heroImage1, heroImage2, heroImage3].filter(
+    Boolean,
+  ) as string[];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    if (heroImages.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [heroImages.length]);
+
+  const goToPrev = () =>
+    setCurrentSlide(
+      (prev) => (prev - 1 + heroImages.length) % heroImages.length,
+    );
+  const goToNext = () =>
+    setCurrentSlide((prev) => (prev + 1) % heroImages.length);
 
   const displayCategories =
     categories && categories.length > 0 ? categories : SAMPLE_CATEGORIES;
@@ -332,21 +402,36 @@ export default function Home() {
 
   const heroLines = heroTitle.split("\n");
 
+  // Scroll reveal refs
+  const statsReveal = useScrollReveal();
+  const categoriesReveal = useScrollReveal();
+  const whyReveal = useScrollReveal();
+  const testimonialsReveal = useScrollReveal();
+  const featuredReveal = useScrollReveal();
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero — img tag for LCP optimisation */}
+      {/* Hero Slider */}
       <section className="relative min-h-[90vh] flex items-center justify-center pt-16 overflow-hidden">
-        <img
-          src={heroImage}
-          alt="Gemora Global — India's Premier Imitation Jewellery Manufacturer & Exporter"
-          className="absolute inset-0 w-full h-full object-cover"
-          loading="eager"
-          fetchPriority="high"
-          width={1600}
-          height={900}
-        />
+        {/* Slide images */}
+        {heroImages.map((src, idx) => (
+          <img
+            key={src}
+            src={src}
+            alt={`Gemora Global — India's Premier Imitation Jewellery Manufacturer & Exporter slide ${idx + 1}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+              idx === currentSlide ? "opacity-100" : "opacity-0"
+            }`}
+            loading={idx === 0 ? "eager" : "lazy"}
+            fetchPriority={idx === 0 ? "high" : undefined}
+            width={1600}
+            height={900}
+          />
+        ))}
+
+        {/* Dark overlay */}
         <div
           className="absolute inset-0"
           style={{
@@ -354,6 +439,82 @@ export default function Home() {
               "linear-gradient(135deg, rgba(10,6,2,0.78) 0%, rgba(20,12,4,0.65) 50%, rgba(10,6,2,0.75) 100%)",
           }}
         />
+
+        {/* Left arrow */}
+        {heroImages.length > 1 && (
+          <button
+            type="button"
+            onClick={goToPrev}
+            aria-label="Previous slide"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white transition-colors border border-white/20"
+            data-ocid="hero.pagination_prev"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+        )}
+
+        {/* Right arrow */}
+        {heroImages.length > 1 && (
+          <button
+            type="button"
+            onClick={goToNext}
+            aria-label="Next slide"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white transition-colors border border-white/20"
+            data-ocid="hero.pagination_next"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        )}
+
+        {/* Dot indicators */}
+        {heroImages.length > 1 && (
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+            {heroImages.map((src, idx) => (
+              <button
+                key={src}
+                type="button"
+                onClick={() => setCurrentSlide(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`rounded-full transition-all duration-300 ${
+                  idx === currentSlide
+                    ? "w-4 h-4 bg-white opacity-100"
+                    : "w-2.5 h-2.5 bg-white opacity-50 hover:opacity-75"
+                }`}
+                data-ocid="hero.toggle"
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Hero content */}
         <div className="container text-center relative z-10 px-4">
           <Badge className="mb-6 bg-primary/20 text-primary border-primary/30 text-xs tracking-widest">
             INDIA'S FINEST JEWELLERY EXPORTER
@@ -406,7 +567,7 @@ export default function Home() {
             <Button
               asChild
               size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 px-8"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 transition-transform duration-200 hover:scale-[1.03] hover:-translate-y-1 hover:shadow-lg"
             >
               <Link to="/gallery">View Catalogue</Link>
             </Button>
@@ -414,7 +575,7 @@ export default function Home() {
               asChild
               size="lg"
               variant="outline"
-              className="border-primary text-primary hover:bg-primary/10 px-8"
+              className="border-primary text-primary hover:bg-primary/10 px-8 transition-transform duration-200 hover:scale-[1.03] hover:-translate-y-1 hover:shadow-lg"
             >
               <Link to="/contact">Contact for Wholesale</Link>
             </Button>
@@ -426,11 +587,21 @@ export default function Home() {
       </section>
 
       {/* Stats Bar */}
-      <section className="bg-primary/10 border-y border-primary/20 py-8">
+      <section
+        ref={statsReveal.ref as React.RefObject<HTMLElement>}
+        className="bg-primary/10 border-y border-primary/20 py-8"
+      >
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {STATS.map((s) => (
-              <div key={s.label}>
+            {STATS.map((s, i) => (
+              <div
+                key={s.label}
+                className={`${
+                  statsReveal.visible
+                    ? `animate-fade-in-up animate-delay-${(i + 1) * 100}`
+                    : "opacity-0"
+                }`}
+              >
                 <div className="font-serif text-3xl font-bold text-primary">
                   {s.value}
                 </div>
@@ -487,9 +658,16 @@ export default function Home() {
       </section>
 
       {/* Categories */}
-      <section className="container py-16">
+      <section
+        ref={categoriesReveal.ref as React.RefObject<HTMLElement>}
+        className="container py-16"
+      >
         <div className="text-center mb-10">
-          <h2 className="font-serif text-3xl md:text-4xl font-bold mb-3">
+          <h2
+            className={`font-serif text-3xl md:text-4xl font-bold mb-3 ${
+              categoriesReveal.visible ? "animate-fade-in-up" : "opacity-0"
+            }`}
+          >
             Our Collections
           </h2>
           <p className="text-muted-foreground">
@@ -501,11 +679,15 @@ export default function Home() {
           </p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {displayCategories.slice(0, 6).map((cat) => (
+          {displayCategories.slice(0, 6).map((cat, i) => (
             <Link
               key={String(cat.id)}
               to={`/products?category=${cat.id}`}
-              className="group relative overflow-hidden rounded-lg aspect-square cursor-pointer"
+              className={`group relative overflow-hidden rounded-lg aspect-square cursor-pointer transition-transform duration-200 hover:scale-[1.03] hover:-translate-y-1 hover:shadow-lg ${
+                categoriesReveal.visible
+                  ? `animate-fade-in-up animate-delay-${Math.min((i + 1) * 100, 400)}`
+                  : "opacity-0"
+              }`}
             >
               <img
                 src={getCategoryImage(cat)}
@@ -528,7 +710,7 @@ export default function Home() {
           <Button
             asChild
             variant="outline"
-            className="border-primary text-primary hover:bg-primary/10"
+            className="border-primary text-primary hover:bg-primary/10 transition-transform duration-200 hover:scale-[1.03]"
           >
             <Link to="/products">View All Collections</Link>
           </Button>
@@ -537,10 +719,17 @@ export default function Home() {
 
       {/* Featured Products */}
       {featured && featured.length > 0 && (
-        <section className="bg-card py-16">
+        <section
+          ref={featuredReveal.ref as React.RefObject<HTMLElement>}
+          className="bg-card py-16"
+        >
           <div className="container">
             <div className="text-center mb-10">
-              <h2 className="font-serif text-3xl md:text-4xl font-bold mb-3">
+              <h2
+                className={`font-serif text-3xl md:text-4xl font-bold mb-3 ${
+                  featuredReveal.visible ? "animate-fade-in-up" : "opacity-0"
+                }`}
+              >
                 Featured Products
               </h2>
               <p className="text-muted-foreground">
@@ -554,9 +743,17 @@ export default function Home() {
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {featured.slice(0, 8).map((product) => (
-                <Link key={String(product.id)} to={`/products/${product.id}`}>
-                  <Card className="overflow-hidden group hover:border-primary/50 transition-all">
+              {featured.slice(0, 8).map((product, i) => (
+                <Link
+                  key={String(product.id)}
+                  to={`/products/${product.id}`}
+                  className={`${
+                    featuredReveal.visible
+                      ? `animate-fade-in-up animate-delay-${Math.min((i + 1) * 100, 400)}`
+                      : "opacity-0"
+                  }`}
+                >
+                  <Card className="overflow-hidden group hover:border-primary/50 transition-all duration-200 hover:scale-[1.03] hover:-translate-y-1 hover:shadow-lg">
                     <div className="aspect-square overflow-hidden">
                       <img
                         src={product.imageUrls[0] || FALLBACK_IMAGE}
@@ -610,7 +807,7 @@ export default function Home() {
           ].map((m) => (
             <div
               key={m.country}
-              className="flex flex-col items-center gap-2 bg-card border border-border rounded-lg p-4 min-w-[80px] hover:border-primary/50 transition-colors"
+              className="flex flex-col items-center gap-2 bg-card border border-border rounded-lg p-4 min-w-[80px] hover:border-primary/50 transition-all duration-200 hover:scale-[1.05] hover:-translate-y-1 hover:shadow-md"
             >
               <span className="text-3xl">{m.flag}</span>
               <span className="text-xs font-medium text-muted-foreground">
@@ -623,7 +820,7 @@ export default function Home() {
           <Button
             asChild
             variant="outline"
-            className="border-primary text-primary hover:bg-primary/10"
+            className="border-primary text-primary hover:bg-primary/10 transition-transform duration-200 hover:scale-[1.03]"
           >
             <Link to="/global-markets">View All Markets</Link>
           </Button>
@@ -631,10 +828,17 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="bg-card py-16">
+      <section
+        ref={whyReveal.ref as React.RefObject<HTMLElement>}
+        className="bg-card py-16"
+      >
         <div className="container">
           <div className="text-center mb-10">
-            <h2 className="font-serif text-3xl md:text-4xl font-bold mb-3">
+            <h2
+              className={`font-serif text-3xl md:text-4xl font-bold mb-3 ${
+                whyReveal.visible ? "animate-fade-in-up" : "opacity-0"
+              }`}
+            >
               Why Choose Gemora Global
             </h2>
             <p className="text-muted-foreground">
@@ -649,10 +853,14 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {WHY_CHOOSE.map((item) => (
+            {WHY_CHOOSE.map((item, i) => (
               <div
                 key={item.title}
-                className="text-center p-6 rounded-lg bg-background border border-border hover:border-primary/50 transition-colors"
+                className={`text-center p-6 rounded-lg bg-background border border-border hover:border-primary/50 transition-all duration-200 hover:scale-[1.03] hover:-translate-y-1 hover:shadow-lg ${
+                  whyReveal.visible
+                    ? `animate-fade-in-up animate-delay-${(i + 1) * 100}`
+                    : "opacity-0"
+                }`}
               >
                 <div className="text-4xl mb-4" aria-hidden="true">
                   {item.icon}
@@ -674,17 +882,28 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="container py-16">
+      <section
+        ref={testimonialsReveal.ref as React.RefObject<HTMLElement>}
+        className="container py-16"
+      >
         <div className="text-center mb-10">
-          <h2 className="font-serif text-3xl md:text-4xl font-bold mb-3">
+          <h2
+            className={`font-serif text-3xl md:text-4xl font-bold mb-3 ${
+              testimonialsReveal.visible ? "animate-fade-in-up" : "opacity-0"
+            }`}
+          >
             What Buyers Say
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {displayTestimonials.slice(0, 3).map((t) => (
+          {displayTestimonials.slice(0, 3).map((t, i) => (
             <Card
               key={String(t.id)}
-              className="p-6 bg-card border-border hover:border-primary/40 transition-colors"
+              className={`p-6 bg-card border-border hover:border-primary/40 transition-all duration-200 hover:scale-[1.02] hover:shadow-md ${
+                testimonialsReveal.visible
+                  ? `animate-fade-in-up animate-delay-${(i + 1) * 100}`
+                  : "opacity-0"
+              }`}
             >
               <CardContent className="p-0">
                 <div
@@ -760,7 +979,7 @@ export default function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${item.label} - view on Instagram`}
-                className="aspect-square overflow-hidden rounded-lg border border-border hover:border-primary/50 transition-colors group block"
+                className="aspect-square overflow-hidden rounded-lg border border-border hover:border-primary/50 transition-all duration-200 hover:scale-[1.05] hover:-translate-y-0.5 hover:shadow-md group block"
               >
                 <img
                   src={item.src}
@@ -821,7 +1040,7 @@ export default function Home() {
           ].map((post) => (
             <div
               key={post.title}
-              className="bg-card border border-border rounded-xl p-5 hover:border-primary/50 transition-colors"
+              className="bg-card border border-border rounded-xl p-5 hover:border-primary/50 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-md"
             >
               <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full">
                 {post.category}
@@ -864,14 +1083,14 @@ export default function Home() {
             <Button
               asChild
               size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 px-10"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 px-10 transition-transform duration-200 hover:scale-[1.03] hover:-translate-y-1 hover:shadow-lg"
             >
               <Link to="/contact">Send Inquiry Now</Link>
             </Button>
             <a
               href="/catalogue.pdf"
               download
-              className="inline-flex items-center gap-2 border border-primary text-primary hover:bg-primary/10 px-8 py-3 rounded-lg text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 border border-primary text-primary hover:bg-primary/10 px-8 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-[1.03] hover:-translate-y-1 hover:shadow-lg"
             >
               <svg
                 className="w-4 h-4"

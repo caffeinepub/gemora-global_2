@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CloudUpload, Images, Upload } from "lucide-react";
+import { CloudUpload, Images, Upload, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import type { GalleryItem } from "../../backend";
@@ -121,8 +121,8 @@ export default function AdminGallery() {
       const url = await uploadFile(file);
       setForm((f) => ({ ...f, imageUrl: url }));
       toast.success("Image uploaded");
-    } catch {
-      toast.error("Upload failed");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed");
     }
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
@@ -221,8 +221,10 @@ export default function AdminGallery() {
                       const url = await uploadFile(file);
                       setForm((f) => ({ ...f, imageUrl: url }));
                       toast.success("Image uploaded");
-                    } catch {
-                      toast.error("Upload failed");
+                    } catch (err) {
+                      toast.error(
+                        err instanceof Error ? err.message : "Upload failed",
+                      );
                     }
                   }}
                   data-ocid="admin.gallery.dropzone"
@@ -239,8 +241,9 @@ export default function AdminGallery() {
                     size={20}
                   />
                   <p className="text-sm text-muted-foreground">
-                    Drag & drop or{" "}
-                    <span style={{ color: "#42A5F5" }}>click to browse</span>
+                    {uploading
+                      ? "Uploading..."
+                      : "Drag & drop or click to upload"}
                   </p>
                 </div>
                 {uploading && (
@@ -252,26 +255,25 @@ export default function AdminGallery() {
                   </div>
                 )}
                 {form.imageUrl && (
-                  <img
-                    src={form.imageUrl}
-                    alt="Preview"
-                    className="mt-2 w-full h-32 object-cover rounded-lg"
-                  />
+                  <div className="mt-2 relative inline-block">
+                    <img
+                      src={form.imageUrl}
+                      alt="Preview"
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, imageUrl: "" }))}
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center"
+                      style={{ background: "crimson" }}
+                      aria-label="Remove image"
+                    >
+                      <X size={10} color="#fff" />
+                    </button>
+                  </div>
                 )}
               </div>
 
-              {/* Fallback URL */}
-              <div>
-                <Label>Or enter image URL manually</Label>
-                <Input
-                  value={form.imageUrl}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, imageUrl: e.target.value }))
-                  }
-                  placeholder="https://..."
-                  data-ocid="admin.gallery.input"
-                />
-              </div>
               <div>
                 <Label>Caption</Label>
                 <Input

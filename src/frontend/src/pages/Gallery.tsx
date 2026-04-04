@@ -82,6 +82,7 @@ export default function Gallery() {
   });
   const { actor } = useActor();
   const [filter, setFilter] = useState("");
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const catalogues = getCatalogues();
 
   useEffect(() => {
@@ -122,6 +123,29 @@ export default function Gallery() {
     };
   }, []);
 
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (lightboxIdx === null) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        setLightboxIdx((prev) =>
+          prev === null
+            ? null
+            : (prev - 1 + displayItems.length) % displayItems.length,
+        );
+      } else if (e.key === "ArrowRight") {
+        setLightboxIdx((prev) =>
+          prev === null ? null : (prev + 1) % displayItems.length,
+        );
+      } else if (e.key === "Escape") {
+        setLightboxIdx(null);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lightboxIdx]);
+
   const { data: items, isLoading } = useQuery<GalleryItem[]>({
     queryKey: ["gallery", filter],
     queryFn: () => actor!.getGallery(filter || null),
@@ -132,6 +156,17 @@ export default function Gallery() {
     items && items.length > 0
       ? items
       : SAMPLE_GALLERY.filter((i) => !filter || i.itemType === filter);
+
+  const goLightboxPrev = () =>
+    setLightboxIdx((prev) =>
+      prev === null
+        ? null
+        : (prev - 1 + displayItems.length) % displayItems.length,
+    );
+  const goLightboxNext = () =>
+    setLightboxIdx((prev) =>
+      prev === null ? null : (prev + 1) % displayItems.length,
+    );
 
   return (
     <div className="min-h-screen bg-background">
@@ -200,9 +235,13 @@ export default function Gallery() {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {displayItems.map((item, idx) => (
-                <div
+                <button
                   key={String(item.id)}
-                  className="rounded-xl overflow-hidden border border-border hover:border-primary/50 transition-colors group"
+                  type="button"
+                  className="rounded-xl overflow-hidden border border-border hover:border-primary/50 transition-colors group cursor-pointer w-full text-left"
+                  onClick={() => setLightboxIdx(idx)}
+                  aria-label={`View ${item.caption || "image"} fullscreen`}
+                  data-ocid={`gallery.item.${idx + 1}`}
                 >
                   <div className="aspect-square overflow-hidden">
                     <img
@@ -224,12 +263,133 @@ export default function Gallery() {
                       </p>
                     </div>
                   )}
-                </div>
+                </button>
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {/* Lightbox */}
+      {lightboxIdx !== null && (
+        <dialog
+          open
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center m-0 p-0 w-full h-full max-w-none max-h-none border-0"
+          aria-label="Image lightbox"
+          data-ocid="gallery.modal"
+          style={{ background: "rgba(0,0,0,0.9)" }}
+          onClick={() => setLightboxIdx(null)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setLightboxIdx(null);
+          }}
+        >
+          {/* Centered image — stop propagation so clicking image doesn't close */}
+          <img
+            src={displayItems[lightboxIdx]?.imageUrl}
+            alt={
+              displayItems[lightboxIdx]?.caption || "Gemora Global jewellery"
+            }
+            className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          />
+
+          {/* Caption */}
+          {displayItems[lightboxIdx]?.caption && (
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-4 py-2 rounded-full pointer-events-none">
+              {displayItems[lightboxIdx].caption}
+            </div>
+          )}
+
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxIdx(null);
+            }}
+            aria-label="Close lightbox"
+            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 text-white border border-white/20 transition-colors"
+            data-ocid="gallery.close_button"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+
+          {/* Left arrow */}
+          {displayItems.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                goLightboxPrev();
+              }}
+              aria-label="Previous image"
+              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 text-white border border-white/20 transition-colors"
+              data-ocid="gallery.pagination_prev"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+          )}
+
+          {/* Right arrow */}
+          {displayItems.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                goLightboxNext();
+              }}
+              aria-label="Next image"
+              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 text-white border border-white/20 transition-colors"
+              data-ocid="gallery.pagination_next"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          )}
+        </dialog>
+      )}
 
       {/* Request Catalogue CTA */}
       <div className="bg-primary/10 border-y border-primary/20 py-12">

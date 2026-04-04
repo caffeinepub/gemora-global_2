@@ -26,6 +26,9 @@ export function useStorageUpload() {
       );
       const url = await storageClient.getDirectURL(hash);
       return url;
+    } catch (err) {
+      console.error("[useStorageUpload] Upload failed:", err);
+      throw new Error("Upload failed — check your connection and try again");
     } finally {
       setUploading(false);
     }

@@ -91,8 +91,8 @@ export default function AdminBlog() {
       const url = await uploadFile(file);
       setForm((f) => ({ ...f, image: url }));
       toast.success("Image uploaded");
-    } catch {
-      toast.error("Image upload failed");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Image upload failed");
     }
     if (imageFileRef.current) imageFileRef.current.value = "";
   };
@@ -276,25 +276,39 @@ export default function AdminBlog() {
               </div>
               <div>
                 <p style={labelStyle}>Featured Image</p>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <button
-                    type="button"
-                    onClick={() => imageFileRef.current?.click()}
-                    disabled={uploading}
-                    style={{
-                      background: uploading ? "#e8eaf6" : "#f5f7ff",
-                      border: "1px dashed #7986cb",
-                      borderRadius: 8,
-                      padding: "8px 14px",
-                      color: uploading ? "#42A5F5" : "#666",
-                      fontSize: 13,
-                      cursor: "pointer",
-                      whiteSpace: "nowrap",
-                    }}
-                    data-ocid="admin.blog.upload_button"
-                  >
-                    {uploading ? "Uploading..." : "📷 Upload Image"}
-                  </button>
+                {/* File upload area */}
+                <div
+                  style={{
+                    border: "2px dashed #c5cae9",
+                    borderRadius: 8,
+                    padding: "14px 12px",
+                    background: uploading ? "#e8f4fe" : "#f5f7ff",
+                    cursor: uploading ? "not-allowed" : "pointer",
+                    textAlign: "center",
+                    transition: "all 0.2s",
+                  }}
+                  onClick={() => !uploading && imageFileRef.current?.click()}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ")
+                      imageFileRef.current?.click();
+                  }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={async (e) => {
+                    e.preventDefault();
+                    const file = e.dataTransfer.files?.[0];
+                    if (!file || !file.type.startsWith("image/")) return;
+                    try {
+                      const url = await uploadFile(file);
+                      setForm((f) => ({ ...f, image: url }));
+                      toast.success("Image uploaded");
+                    } catch (err) {
+                      toast.error(
+                        err instanceof Error ? err.message : "Upload failed",
+                      );
+                    }
+                  }}
+                  data-ocid="admin.blog.dropzone"
+                >
                   <input
                     ref={imageFileRef}
                     type="file"
@@ -302,19 +316,63 @@ export default function AdminBlog() {
                     className="hidden"
                     onChange={handleImageUpload}
                   />
-                  {form.image && (
+                  <span style={{ fontSize: 20 }}>📷</span>
+                  <p
+                    style={{
+                      fontSize: 12,
+                      color: uploading ? "#42A5F5" : "#666",
+                      marginTop: 4,
+                    }}
+                  >
+                    {uploading ? "Uploading..." : "Click or drag to upload"}
+                  </p>
+                </div>
+                {form.image && (
+                  <div
+                    style={{
+                      marginTop: 8,
+                      position: "relative",
+                      display: "inline-block",
+                    }}
+                  >
                     <img
                       src={form.image}
                       alt="preview"
                       style={{
-                        height: 40,
-                        width: 60,
+                        height: 56,
+                        width: 80,
                         objectFit: "cover",
                         borderRadius: 6,
+                        border: "1px solid #c5cae9",
                       }}
                     />
-                  )}
-                </div>
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, image: "" }))}
+                      style={{
+                        position: "absolute",
+                        top: -6,
+                        right: -6,
+                        background: "crimson",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: 18,
+                        height: 18,
+                        color: "#fff",
+                        fontSize: 11,
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        lineHeight: 1,
+                      }}
+                      aria-label="Remove image"
+                      data-ocid="admin.blog.delete_button"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
             <div style={{ marginTop: 16 }}>
