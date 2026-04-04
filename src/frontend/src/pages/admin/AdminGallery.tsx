@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Upload } from "lucide-react";
+import { CloudUpload, Images, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import type { GalleryItem } from "../../backend";
@@ -45,7 +45,13 @@ export default function AdminGallery() {
   const [editing, setEditing] = useState<GalleryItem | null>(null);
   const [form, setForm] = useState<GForm>(EMPTY);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bulkInputRef = useRef<HTMLInputElement>(null);
   const { uploadFile, uploading, progress } = useStorageUpload();
+
+  // Bulk upload state
+  const [bulkUploading, setBulkUploading] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0 });
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const { data: items } = useQuery<GalleryItem[]>({
     queryKey: ["gallery", ""],
@@ -121,10 +127,52 @@ export default function AdminGallery() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const handleBulkUpload = async (files: FileList | File[]) => {
+    if (!actor) return;
+    const fileArr = Array.from(files).filter((f) =>
+      f.type.startsWith("image/"),
+    );
+    if (!fileArr.length) return;
+
+    setBulkUploading(true);
+    setBulkProgress({ current: 0, total: fileArr.length });
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (let i = 0; i < fileArr.length; i++) {
+      const file = fileArr[i];
+      setBulkProgress({ current: i + 1, total: fileArr.length });
+      try {
+        const url = await uploadFile(file);
+        const caption = file.name.replace(/\.[^/.]+$/, "");
+        await actor.createGalleryItem(url, caption, "lifestyle", BigInt(0));
+        successCount++;
+      } catch {
+        failCount++;
+      }
+    }
+
+    setBulkUploading(false);
+    setBulkProgress({ current: 0, total: 0 });
+    if (bulkInputRef.current) bulkInputRef.current.value = "";
+    invalidate();
+
+    if (failCount === 0) {
+      toast.success(
+        `${successCount} image${successCount !== 1 ? "s" : ""} uploaded to gallery`,
+      );
+    } else {
+      toast.success(`${successCount} uploaded, ${failCount} failed`);
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="font-serif text-2xl font-bold">Gallery / Media</h1>
+        <h1 className="font-serif text-2xl font-bold text-primary">
+          Gallery / Media
+        </h1>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button
@@ -156,8 +204,8 @@ export default function AdminGallery() {
                 <div
                   className="mt-1 border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-colors"
                   style={{
-                    borderColor: uploading ? "gold" : "#333",
-                    background: "#111",
+                    borderColor: uploading ? "#42A5F5" : "#c5cae9",
+                    background: "#f5f7ff",
                   }}
                   onClick={() => fileInputRef.current?.click()}
                   onKeyDown={(e) => {
@@ -192,7 +240,7 @@ export default function AdminGallery() {
                   />
                   <p className="text-sm text-muted-foreground">
                     Drag & drop or{" "}
-                    <span style={{ color: "gold" }}>click to browse</span>
+                    <span style={{ color: "#42A5F5" }}>click to browse</span>
                   </p>
                 </div>
                 {uploading && (
@@ -274,6 +322,115 @@ export default function AdminGallery() {
         </Dialog>
       </div>
 
+      {/* Bulk Upload Zone */}
+      <div
+        className="mb-6 rounded-xl border-2 border-dashed transition-all"
+        style={{
+          borderColor: isDragOver
+            ? "#42A5F5"
+            : bulkUploading
+              ? "#42A5F5"
+              : "#c5cae9",
+          background: isDragOver ? "#e8f4fe" : "#f5f7ff",
+          padding: "28px 24px",
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragOver(true);
+        }}
+        onDragLeave={() => setIsDragOver(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setIsDragOver(false);
+          if (!bulkUploading) handleBulkUpload(e.dataTransfer.files);
+        }}
+        data-ocid="admin.gallery.bulk_dropzone"
+      >
+        <div className="flex flex-col items-center gap-3">
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center"
+            style={{ background: "rgba(66,165,245,0.15)" }}
+          >
+            <Images size={24} style={{ color: "#42A5F5" }} />
+          </div>
+          <div className="text-center">
+            <p
+              className="font-semibold"
+              style={{ color: "#1A237E", fontSize: 15 }}
+            >
+              Bulk Upload Images
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Drag & drop multiple images here, or{" "}
+              <button
+                type="button"
+                className="underline font-medium"
+                style={{ color: "#42A5F5" }}
+                onClick={() => !bulkUploading && bulkInputRef.current?.click()}
+                data-ocid="admin.gallery.upload_button"
+              >
+                click to browse
+              </button>
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              PNG, JPG, WEBP — all selected files will be added to gallery
+            </p>
+          </div>
+
+          <input
+            ref={bulkInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files?.length) handleBulkUpload(e.target.files);
+            }}
+          />
+
+          {bulkUploading && (
+            <div
+              className="w-full max-w-sm"
+              data-ocid="admin.gallery.bulk_loading_state"
+            >
+              <div
+                className="flex justify-between text-xs mb-1"
+                style={{ color: "#1A237E" }}
+              >
+                <span>
+                  Uploading {bulkProgress.current} of {bulkProgress.total}...
+                </span>
+                <span>
+                  {Math.round(
+                    (bulkProgress.current / bulkProgress.total) * 100,
+                  )}
+                  %
+                </span>
+              </div>
+              <Progress
+                value={Math.round(
+                  (bulkProgress.current / bulkProgress.total) * 100,
+                )}
+                className="h-2"
+              />
+            </div>
+          )}
+
+          {!bulkUploading && (
+            <Button
+              variant="outline"
+              size="sm"
+              style={{ borderColor: "#42A5F5", color: "#42A5F5" }}
+              onClick={() => bulkInputRef.current?.click()}
+              data-ocid="admin.gallery.secondary_button"
+            >
+              <CloudUpload size={16} className="mr-2" />
+              Select Files
+            </Button>
+          )}
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {(items ?? []).map((item, i) => (
           <div
@@ -303,7 +460,11 @@ export default function AdminGallery() {
                 size="sm"
                 variant="destructive"
                 className="h-6 text-xs"
-                onClick={() => deleteMut.mutate(item.id)}
+                onClick={() => {
+                  if (confirm("Are you sure you want to delete this image?")) {
+                    deleteMut.mutate(item.id);
+                  }
+                }}
                 data-ocid={`admin.gallery.delete_button.${i + 1}`}
               >
                 Del

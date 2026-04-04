@@ -1001,10 +1001,10 @@ export default function Home() {
               <Link
                 key={s.to}
                 to={s.to}
-                className="flex items-center gap-2 px-4 py-3 rounded-lg border border-border hover:border-yellow-600/50 hover:bg-yellow-600/5 text-sm text-muted-foreground hover:text-primary transition-colors"
+                className="flex items-center gap-2 px-4 py-3 rounded-lg border border-border hover:border-blue-700/50 hover:bg-blue-700/5 text-sm text-muted-foreground hover:text-primary transition-colors"
                 data-ocid="home.link"
               >
-                <span className="text-yellow-500">&rsaquo;</span>
+                <span className="text-sky-500">&rsaquo;</span>
                 {s.label}
               </Link>
             ))}

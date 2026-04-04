@@ -22,9 +22,9 @@ import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
 
 const STATUS_COLORS: Record<string, string> = {
-  new: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  read: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  replied: "bg-green-500/20 text-green-400 border-green-500/30",
+  new: "bg-blue-500/20 text-blue-600 border-blue-500/30",
+  read: "bg-sky-500/20 text-sky-500 border-sky-500/30",
+  replied: "bg-green-500/20 text-green-600 border-green-500/30",
 };
 
 export default function AdminInquiries() {
@@ -49,7 +49,9 @@ export default function AdminInquiries() {
 
   return (
     <AdminLayout>
-      <h1 className="font-serif text-2xl font-bold mb-6">Inquiries</h1>
+      <h1 className="font-serif text-2xl font-bold mb-6 text-primary">
+        Inquiries
+      </h1>
       <Table data-ocid="admin.inquiries_table">
         <TableHeader>
           <TableRow>
@@ -98,7 +100,7 @@ export default function AdminInquiries() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="text-green-500 border-green-500/30 hover:bg-green-500/10 h-7 text-xs"
+                    className="text-green-600 border-green-500/30 hover:bg-green-500/10 h-7 text-xs"
                     asChild
                     data-ocid={`admin.whatsapp_button.${i + 1}`}
                   >

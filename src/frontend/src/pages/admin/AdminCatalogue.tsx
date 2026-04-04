@@ -10,17 +10,17 @@ import {
 
 const fieldStyle = {
   width: "100%",
-  background: "#1a1a1a",
-  border: "1px solid #333",
+  background: "#f5f7ff",
+  border: "1px solid #c5cae9",
   borderRadius: 8,
   padding: "10px 12px",
-  color: "#fff",
+  color: "#1A237E",
   fontSize: 14,
   outline: "none",
 } as React.CSSProperties;
 
 const labelStyle = {
-  color: "rgba(255,255,255,0.6)",
+  color: "#555",
   fontSize: 12,
   display: "block",
   marginBottom: 6,
@@ -119,7 +119,7 @@ export default function AdminCatalogue() {
           <div>
             <h2
               style={{
-                color: "gold",
+                color: "#1A237E",
                 fontSize: 22,
                 fontWeight: 600,
                 margin: 0,
@@ -129,7 +129,7 @@ export default function AdminCatalogue() {
             </h2>
             <p
               style={{
-                color: "rgba(255,255,255,0.5)",
+                color: "#666",
                 fontSize: 13,
                 marginTop: 4,
               }}
@@ -143,8 +143,8 @@ export default function AdminCatalogue() {
               type="button"
               onClick={() => setShowForm(true)}
               style={{
-                background: "gold",
-                color: "#000",
+                background: "#1A237E",
+                color: "#fff",
                 border: "none",
                 borderRadius: 8,
                 padding: "10px 20px",
@@ -161,14 +161,14 @@ export default function AdminCatalogue() {
         {showForm && (
           <div
             style={{
-              background: "#111",
-              border: "1px solid #333",
+              background: "#fff",
+              border: "1px solid #c5cae9",
               borderRadius: 12,
               padding: 24,
               marginBottom: 28,
             }}
           >
-            <h3 style={{ color: "gold", marginBottom: 20, fontSize: 16 }}>
+            <h3 style={{ color: "#1A237E", marginBottom: 20, fontSize: 16 }}>
               Upload New Catalogue
             </h3>
             <div style={{ display: "grid", gap: 16 }}>
@@ -207,12 +207,12 @@ export default function AdminCatalogue() {
                 <button
                   type="button"
                   style={{
-                    border: "2px dashed #444",
+                    border: "2px dashed #c5cae9",
                     borderRadius: 8,
                     padding: "20px 16px",
                     textAlign: "center",
                     cursor: "pointer",
-                    background: "#0b0b0d",
+                    background: "#f5f7ff",
                     width: "100%",
                   }}
                   onClick={() => fileRef.current?.click()}
@@ -227,17 +227,15 @@ export default function AdminCatalogue() {
                     onChange={handleFileChange}
                   />
                   {form.fileUrl ? (
-                    <div style={{ color: "#4ade80", fontSize: 14 }}>
+                    <div style={{ color: "#2e7d32", fontSize: 14 }}>
                       ✓ {form.fileName}
                     </div>
                   ) : isUploading ? (
-                    <div style={{ color: "gold", fontSize: 14 }}>
+                    <div style={{ color: "#42A5F5", fontSize: 14 }}>
                       Uploading... {progress > 0 ? `${progress}%` : ""}
                     </div>
                   ) : (
-                    <div
-                      style={{ color: "rgba(255,255,255,0.5)", fontSize: 14 }}
-                    >
+                    <div style={{ color: "#888", fontSize: 14 }}>
                       <div style={{ fontSize: 28, marginBottom: 6 }}>📄</div>
                       Click to upload PDF file
                     </div>
@@ -251,8 +249,8 @@ export default function AdminCatalogue() {
                 onClick={handleSave}
                 disabled={isUploading}
                 style={{
-                  background: isUploading ? "#555" : "gold",
-                  color: "#000",
+                  background: isUploading ? "#c5cae9" : "#1A237E",
+                  color: "#fff",
                   border: "none",
                   borderRadius: 8,
                   padding: "10px 24px",
@@ -268,8 +266,8 @@ export default function AdminCatalogue() {
                 onClick={resetForm}
                 style={{
                   background: "transparent",
-                  color: "rgba(255,255,255,0.6)",
-                  border: "1px solid #444",
+                  color: "#666",
+                  border: "1px solid #c5cae9",
                   borderRadius: 8,
                   padding: "10px 20px",
                   cursor: "pointer",
@@ -285,12 +283,12 @@ export default function AdminCatalogue() {
         {catalogues.length === 0 ? (
           <div
             style={{
-              background: "#111",
-              border: "1px solid #222",
+              background: "#fff",
+              border: "1px solid #e0e0e0",
               borderRadius: 12,
               padding: "48px 24px",
               textAlign: "center",
-              color: "rgba(255,255,255,0.4)",
+              color: "#aaa",
             }}
           >
             <div style={{ fontSize: 40, marginBottom: 12 }}>📁</div>
@@ -305,8 +303,8 @@ export default function AdminCatalogue() {
               <div
                 key={cat.id}
                 style={{
-                  background: "#111",
-                  border: "1px solid #222",
+                  background: "#fff",
+                  border: "1px solid #e0e0e0",
                   borderRadius: 12,
                   padding: "16px 20px",
                   display: "flex",
@@ -318,7 +316,7 @@ export default function AdminCatalogue() {
                   style={{
                     width: 48,
                     height: 48,
-                    background: "rgba(255,215,0,0.1)",
+                    background: "rgba(66,165,245,0.1)",
                     borderRadius: 8,
                     display: "flex",
                     alignItems: "center",
@@ -330,27 +328,17 @@ export default function AdminCatalogue() {
                   📄
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, color: "#fff", fontSize: 15 }}>
+                  <div
+                    style={{ fontWeight: 600, color: "#1A237E", fontSize: 15 }}
+                  >
                     {cat.title}
                   </div>
                   {cat.description && (
-                    <div
-                      style={{
-                        color: "rgba(255,255,255,0.5)",
-                        fontSize: 13,
-                        marginTop: 2,
-                      }}
-                    >
+                    <div style={{ color: "#666", fontSize: 13, marginTop: 2 }}>
                       {cat.description}
                     </div>
                   )}
-                  <div
-                    style={{
-                      color: "rgba(255,255,255,0.35)",
-                      fontSize: 12,
-                      marginTop: 4,
-                    }}
-                  >
+                  <div style={{ color: "#aaa", fontSize: 12, marginTop: 4 }}>
                     Uploaded {cat.uploadedAt} · {cat.fileName}
                   </div>
                 </div>
@@ -360,9 +348,9 @@ export default function AdminCatalogue() {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
-                      background: "rgba(255,215,0,0.15)",
-                      color: "gold",
-                      border: "1px solid rgba(255,215,0,0.3)",
+                      background: "rgba(66,165,245,0.15)",
+                      color: "#1A237E",
+                      border: "1px solid rgba(66,165,245,0.3)",
                       borderRadius: 6,
                       padding: "6px 12px",
                       fontSize: 13,
@@ -377,7 +365,7 @@ export default function AdminCatalogue() {
                     onClick={() => handleDelete(cat.id)}
                     style={{
                       background: "rgba(220,38,38,0.15)",
-                      color: "#f87171",
+                      color: "#c62828",
                       border: "1px solid rgba(220,38,38,0.3)",
                       borderRadius: 6,
                       padding: "6px 12px",

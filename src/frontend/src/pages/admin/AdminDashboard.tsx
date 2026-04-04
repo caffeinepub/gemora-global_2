@@ -15,15 +15,15 @@ import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
 
 const BOX = {
-  background: "#111",
-  border: "1px solid #222",
+  background: "#fff",
+  border: "1px solid #e0e0e0",
   borderRadius: 12,
   padding: 20,
 } as const;
 
 const CARD = {
-  background: "linear-gradient(145deg, #1a1a1a, #111)",
-  border: "1px solid #222",
+  background: "linear-gradient(145deg, #e8eaf6, #fff)",
+  border: "1px solid #c5cae9",
   borderRadius: 12,
   padding: 20,
 } as const;
@@ -110,17 +110,19 @@ export default function AdminDashboard() {
             }}
             onClick={() => navigate(card.link)}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "gold";
+              (e.currentTarget as HTMLButtonElement).style.borderColor =
+                "#42A5F5";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "#222";
+              (e.currentTarget as HTMLButtonElement).style.borderColor =
+                "#c5cae9";
             }}
             data-ocid="admin.dashboard.card"
           >
-            <p style={{ color: "#aaa", fontSize: 13, marginBottom: 8 }}>
+            <p style={{ color: "#666", fontSize: 13, marginBottom: 8 }}>
               {card.label}
             </p>
-            <p style={{ color: "gold", fontSize: 24, fontWeight: 700 }}>
+            <p style={{ color: "#1A237E", fontSize: 24, fontWeight: 700 }}>
               {card.value}
             </p>
           </button>
@@ -138,34 +140,34 @@ export default function AdminDashboard() {
       >
         {/* Chart */}
         <div style={BOX}>
-          <h3 style={{ color: "#fff", marginBottom: 16, fontWeight: 600 }}>
+          <h3 style={{ color: "#1A237E", marginBottom: 16, fontWeight: 600 }}>
             Analytics — Monthly Enquiries
           </h3>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
               <XAxis
                 dataKey="month"
-                stroke="#666"
-                tick={{ fill: "#aaa", fontSize: 12 }}
+                stroke="#999"
+                tick={{ fill: "#666", fontSize: 12 }}
               />
-              <YAxis stroke="#666" tick={{ fill: "#aaa", fontSize: 12 }} />
+              <YAxis stroke="#999" tick={{ fill: "#666", fontSize: 12 }} />
               <Tooltip
                 contentStyle={{
-                  background: "#1a1a1a",
-                  border: "1px solid #333",
+                  background: "#fff",
+                  border: "1px solid #c5cae9",
                   borderRadius: 8,
-                  color: "#fff",
+                  color: "#1A237E",
                 }}
               />
-              <Bar dataKey="enquiries" fill="gold" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="enquiries" fill="#42A5F5" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Recent Enquiries */}
         <div style={BOX}>
-          <h3 style={{ color: "#fff", marginBottom: 12, fontWeight: 600 }}>
+          <h3 style={{ color: "#1A237E", marginBottom: 12, fontWeight: 600 }}>
             Recent Enquiries
           </h3>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -177,11 +179,11 @@ export default function AdminDashboard() {
                     style={{
                       textAlign: "left",
                       padding: "6px 8px",
-                      color: "#666",
+                      color: "#999",
                       fontSize: 11,
                       fontWeight: 600,
                       textTransform: "uppercase",
-                      borderBottom: "1px solid #222",
+                      borderBottom: "1px solid #e0e0e0",
                     }}
                   >
                     {h}
@@ -194,7 +196,7 @@ export default function AdminDashboard() {
                 <tr>
                   <td
                     colSpan={3}
-                    style={{ color: "#555", padding: "12px 8px", fontSize: 13 }}
+                    style={{ color: "#aaa", padding: "12px 8px", fontSize: 13 }}
                     data-ocid="admin.inquiries.empty_state"
                   >
                     No enquiries yet
@@ -204,12 +206,12 @@ export default function AdminDashboard() {
               {recentInquiries.map((inq) => (
                 <tr
                   key={String(inq.id)}
-                  style={{ borderBottom: "1px solid #1a1a1a" }}
+                  style={{ borderBottom: "1px solid #f5f5f5" }}
                 >
-                  <td style={{ padding: "8px", fontSize: 13, color: "#ddd" }}>
+                  <td style={{ padding: "8px", fontSize: 13, color: "#333" }}>
                     {inq.name}
                   </td>
-                  <td style={{ padding: "8px", fontSize: 12, color: "#aaa" }}>
+                  <td style={{ padding: "8px", fontSize: 12, color: "#666" }}>
                     {inq.country}
                   </td>
                   <td style={{ padding: "8px" }}>
@@ -217,9 +219,9 @@ export default function AdminDashboard() {
                       style={{
                         background:
                           inq.status === "new"
-                            ? "rgba(255,200,0,0.15)"
+                            ? "rgba(66,165,245,0.15)"
                             : "rgba(100,200,100,0.15)",
-                        color: inq.status === "new" ? "gold" : "#6fcf97",
+                        color: inq.status === "new" ? "#1A237E" : "#2e7d32",
                         fontSize: 11,
                         padding: "2px 7px",
                         borderRadius: 20,
@@ -238,7 +240,7 @@ export default function AdminDashboard() {
 
       {/* Products Table */}
       <div style={BOX}>
-        <h3 style={{ color: "#fff", marginBottom: 16, fontWeight: 600 }}>
+        <h3 style={{ color: "#1A237E", marginBottom: 16, fontWeight: 600 }}>
           Manage Products
         </h3>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -250,11 +252,11 @@ export default function AdminDashboard() {
                   style={{
                     textAlign: "left",
                     padding: "8px 10px",
-                    color: "#666",
+                    color: "#999",
                     fontSize: 11,
                     fontWeight: 600,
                     textTransform: "uppercase",
-                    borderBottom: "1px solid #222",
+                    borderBottom: "1px solid #e0e0e0",
                   }}
                 >
                   {h}
@@ -267,7 +269,7 @@ export default function AdminDashboard() {
               <tr>
                 <td
                   colSpan={4}
-                  style={{ color: "#555", padding: "16px 10px", fontSize: 13 }}
+                  style={{ color: "#aaa", padding: "16px 10px", fontSize: 13 }}
                   data-ocid="admin.products.empty_state"
                 >
                   No products yet
@@ -277,23 +279,23 @@ export default function AdminDashboard() {
             {(products ?? []).map((p, i) => (
               <tr
                 key={String(p.id)}
-                style={{ borderBottom: "1px solid #1a1a1a" }}
+                style={{ borderBottom: "1px solid #f5f5f5" }}
                 data-ocid={`admin.products.item.${i + 1}`}
               >
                 <td
                   style={{
                     padding: "10px",
                     fontSize: 14,
-                    color: "#ddd",
+                    color: "#222",
                     fontWeight: 500,
                   }}
                 >
                   {p.name}
                 </td>
-                <td style={{ padding: "10px", fontSize: 13, color: "#888" }}>
+                <td style={{ padding: "10px", fontSize: 13, color: "#666" }}>
                   {String(p.categoryId)}
                 </td>
-                <td style={{ padding: "10px", fontSize: 13, color: "#aaa" }}>
+                <td style={{ padding: "10px", fontSize: 13, color: "#888" }}>
                   {p.moq}
                 </td>
                 <td style={{ padding: "10px" }}>
@@ -301,8 +303,8 @@ export default function AdminDashboard() {
                     <a
                       href="/admin/products"
                       style={{
-                        background: "gold",
-                        color: "#111",
+                        background: "#1A237E",
+                        color: "#fff",
                         border: "none",
                         borderRadius: 6,
                         padding: "4px 12px",

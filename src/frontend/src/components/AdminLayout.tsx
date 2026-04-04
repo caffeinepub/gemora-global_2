@@ -36,29 +36,29 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div
       className="min-h-screen flex"
-      style={{ background: "#0b0b0d", color: "#fff" }}
+      style={{ background: "#0d1554", color: "#fff" }}
     >
       {/* Sidebar */}
       <aside
         className="flex flex-col flex-shrink-0"
         style={{
           width: 240,
-          background: "#111",
-          borderRight: "1px solid #222",
+          background: "#1A237E",
+          borderRight: "1px solid #2a3a9e",
           minHeight: "100vh",
         }}
       >
         {/* Logo */}
         <div
           className="p-5 flex items-center gap-3"
-          style={{ borderBottom: "1px solid #222" }}
+          style={{ borderBottom: "1px solid #2a3a9e" }}
         >
           <img
             src="/assets/uploads/logo-removebg-preview-1-1.png"
             alt="Gemora Global"
             className="h-8 object-contain"
           />
-          <span style={{ color: "gold", fontWeight: 600, fontSize: 18 }}>
+          <span style={{ color: "#42A5F5", fontWeight: 600, fontSize: 18 }}>
             GEMORA
           </span>
         </div>
@@ -76,10 +76,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 to={item.to}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all"
                 style={{
-                  background: active ? "#1a1a1a" : "transparent",
-                  color: active ? "gold" : "rgba(255,255,255,0.6)",
+                  background: active ? "rgba(66,165,245,0.15)" : "transparent",
+                  color: active ? "#42A5F5" : "rgba(255,255,255,0.65)",
                   borderLeft: active
-                    ? "3px solid gold"
+                    ? "3px solid #42A5F5"
                     : "3px solid transparent",
                   fontWeight: active ? 600 : 400,
                 }}
@@ -92,7 +92,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </nav>
 
         {/* Logout */}
-        <div className="p-3" style={{ borderTop: "1px solid #222" }}>
+        <div className="p-3" style={{ borderTop: "1px solid #2a3a9e" }}>
           <button
             type="button"
             onClick={handleLogout}
@@ -100,7 +100,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             style={{ color: "rgba(255,255,255,0.4)" }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.background =
-                "#1a1a1a";
+                "rgba(66,165,245,0.1)";
               (e.currentTarget as HTMLButtonElement).style.color =
                 "rgba(255,255,255,0.7)";
             }}
@@ -119,15 +119,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Main */}
-      <main className="flex-1 overflow-auto" style={{ background: "#0b0b0d" }}>
+      <main className="flex-1 overflow-auto" style={{ background: "#f0f4ff" }}>
         {/* Top bar */}
         <div
           className="sticky top-0 z-10 flex items-center justify-between px-6"
           style={{
             height: 60,
-            background: "rgba(17,17,17,0.95)",
+            background: "rgba(26,35,126,0.97)",
             backdropFilter: "blur(12px)",
-            borderBottom: "1px solid #222",
+            borderBottom: "1px solid #2a3a9e",
           }}
         >
           <h1 style={{ color: "#fff", fontWeight: 600, fontSize: 18 }}>
@@ -138,15 +138,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               placeholder="Search..."
               className="px-3 py-1.5 rounded-lg text-sm outline-none"
               style={{
-                background: "#1a1a1a",
-                border: "1px solid #333",
-                color: "rgba(255,255,255,0.7)",
+                background: "rgba(255,255,255,0.1)",
+                border: "1px solid rgba(66,165,245,0.3)",
+                color: "rgba(255,255,255,0.9)",
                 width: 160,
               }}
             />
             <div
               className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
-              style={{ background: "gold", color: "#111" }}
+              style={{ background: "#42A5F5", color: "#1A237E" }}
             >
               A
             </div>

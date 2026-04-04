@@ -20,17 +20,17 @@ const categories = [
 
 const fieldStyle = {
   width: "100%",
-  background: "#1a1a1a",
-  border: "1px solid #333",
+  background: "#f5f7ff",
+  border: "1px solid #c5cae9",
   borderRadius: 8,
   padding: "10px 12px",
-  color: "#fff",
+  color: "#1A237E",
   fontSize: 14,
   outline: "none",
 } as React.CSSProperties;
 
 const labelStyle = {
-  color: "rgba(255,255,255,0.6)",
+  color: "#555",
   fontSize: 12,
   display: "block",
   marginBottom: 6,
@@ -149,12 +149,12 @@ export default function AdminBlog() {
       <div style={{ maxWidth: 1000 }}>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 style={{ color: "gold", fontWeight: 700, fontSize: 20 }}>
+            <h2 style={{ color: "#1A237E", fontWeight: 700, fontSize: 20 }}>
               Blog Management
             </h2>
             <p
               style={{
-                color: "rgba(255,255,255,0.5)",
+                color: "#666",
                 fontSize: 13,
                 marginTop: 2,
               }}
@@ -168,8 +168,8 @@ export default function AdminBlog() {
               type="button"
               onClick={() => setShowForm(true)}
               style={{
-                background: "gold",
-                color: "#111",
+                background: "#1A237E",
+                color: "#fff",
                 border: "none",
                 borderRadius: 8,
                 padding: "8px 18px",
@@ -187,8 +187,8 @@ export default function AdminBlog() {
         {showForm && (
           <div
             style={{
-              background: "#111",
-              border: "1px solid #222",
+              background: "#fff",
+              border: "1px solid #c5cae9",
               borderRadius: 12,
               padding: 24,
               marginBottom: 24,
@@ -196,7 +196,7 @@ export default function AdminBlog() {
           >
             <h3
               style={{
-                color: "gold",
+                color: "#1A237E",
                 fontWeight: 600,
                 fontSize: 16,
                 marginBottom: 20,
@@ -282,11 +282,11 @@ export default function AdminBlog() {
                     onClick={() => imageFileRef.current?.click()}
                     disabled={uploading}
                     style={{
-                      background: uploading ? "#333" : "#1a1a1a",
-                      border: "1px dashed #555",
+                      background: uploading ? "#e8eaf6" : "#f5f7ff",
+                      border: "1px dashed #7986cb",
                       borderRadius: 8,
                       padding: "8px 14px",
-                      color: uploading ? "gold" : "#aaa",
+                      color: uploading ? "#42A5F5" : "#666",
                       fontSize: 13,
                       cursor: "pointer",
                       whiteSpace: "nowrap",
@@ -345,8 +345,8 @@ export default function AdminBlog() {
                 type="button"
                 onClick={handleSave}
                 style={{
-                  background: "gold",
-                  color: "#111",
+                  background: "#1A237E",
+                  color: "#fff",
                   border: "none",
                   borderRadius: 8,
                   padding: "9px 24px",
@@ -363,8 +363,8 @@ export default function AdminBlog() {
                 onClick={resetForm}
                 style={{
                   background: "transparent",
-                  color: "#aaa",
-                  border: "1px solid #333",
+                  color: "#666",
+                  border: "1px solid #c5cae9",
                   borderRadius: 8,
                   padding: "9px 18px",
                   fontSize: 14,
@@ -380,8 +380,8 @@ export default function AdminBlog() {
 
         <div
           style={{
-            background: "#111",
-            border: "1px solid #222",
+            background: "#fff",
+            border: "1px solid #e0e0e0",
             borderRadius: 12,
             overflow: "hidden",
           }}
@@ -406,12 +406,12 @@ export default function AdminBlog() {
                     style={{
                       textAlign: "left",
                       padding: "12px 14px",
-                      color: "#666",
+                      color: "#999",
                       fontSize: 11,
                       fontWeight: 600,
                       textTransform: "uppercase",
-                      borderBottom: "1px solid #222",
-                      background: "#0f0f0f",
+                      borderBottom: "1px solid #e0e0e0",
+                      background: "#f5f7ff",
                     }}
                   >
                     {h}
@@ -423,7 +423,7 @@ export default function AdminBlog() {
               {posts.map((post, i) => (
                 <tr
                   key={post.id}
-                  style={{ borderBottom: "1px solid #1a1a1a" }}
+                  style={{ borderBottom: "1px solid #f5f5f5" }}
                   data-ocid={`admin.blog.item.${i + 1}`}
                 >
                   <td style={{ padding: "10px 14px" }}>
@@ -443,7 +443,7 @@ export default function AdminBlog() {
                         style={{
                           width: 60,
                           height: 40,
-                          background: "#1a1a1a",
+                          background: "#e8eaf6",
                           borderRadius: 6,
                           display: "flex",
                           alignItems: "center",
@@ -459,7 +459,7 @@ export default function AdminBlog() {
                     style={{
                       padding: "10px 14px",
                       fontSize: 13,
-                      color: "#ddd",
+                      color: "#333",
                       maxWidth: 200,
                     }}
                   >
@@ -469,7 +469,7 @@ export default function AdminBlog() {
                     style={{
                       padding: "10px 14px",
                       fontSize: 12,
-                      color: "#888",
+                      color: "#666",
                     }}
                   >
                     {post.category}
@@ -478,7 +478,7 @@ export default function AdminBlog() {
                     style={{
                       padding: "10px 14px",
                       fontSize: 12,
-                      color: "#888",
+                      color: "#666",
                     }}
                   >
                     {post.author}
@@ -487,7 +487,7 @@ export default function AdminBlog() {
                     style={{
                       padding: "10px 14px",
                       fontSize: 12,
-                      color: "#888",
+                      color: "#666",
                     }}
                   >
                     {post.date}
@@ -512,8 +512,8 @@ export default function AdminBlog() {
                         type="button"
                         onClick={() => handleEdit(post)}
                         style={{
-                          background: "gold",
-                          color: "#111",
+                          background: "#1A237E",
+                          color: "#fff",
                           border: "none",
                           borderRadius: 6,
                           padding: "5px 12px",
@@ -553,7 +553,7 @@ export default function AdminBlog() {
               style={{
                 padding: 40,
                 textAlign: "center",
-                color: "#555",
+                color: "#aaa",
                 fontSize: 14,
               }}
               data-ocid="admin.blog.empty_state"

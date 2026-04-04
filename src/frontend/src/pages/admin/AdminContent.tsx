@@ -188,8 +188,8 @@ function ContentField({
   return (
     <div
       style={{
-        background: "#1a1a1a",
-        border: "1px solid #2a2a2a",
+        background: "#f5f7ff",
+        border: "1px solid #c5cae9",
         borderRadius: 10,
         padding: 16,
       }}
@@ -198,7 +198,7 @@ function ContentField({
         <label
           htmlFor={`field-${contentKey}`}
           style={{
-            color: "#ddd",
+            color: "#1A237E",
             fontSize: 13,
             fontWeight: 600,
             display: "block",
@@ -210,7 +210,7 @@ function ContentField({
         {hint && (
           <p
             style={{
-              color: "rgba(255,255,255,0.4)",
+              color: "#888",
               fontSize: 11,
               marginBottom: 6,
             }}
@@ -227,9 +227,9 @@ function ContentField({
           rows={3}
           placeholder={placeholder}
           style={{
-            background: "#111",
-            border: "1px solid #333",
-            color: "#fff",
+            background: "#fff",
+            border: "1px solid #c5cae9",
+            color: "#1A237E",
           }}
         />
       ) : (
@@ -239,9 +239,9 @@ function ContentField({
           onChange={(e) => setValue(e.target.value)}
           placeholder={placeholder}
           style={{
-            background: "#111",
-            border: "1px solid #333",
-            color: "#fff",
+            background: "#fff",
+            border: "1px solid #c5cae9",
+            color: "#1A237E",
           }}
         />
       )}
@@ -250,8 +250,8 @@ function ContentField({
         onClick={() => mutation.mutate()}
         disabled={mutation.isPending}
         style={{
-          background: "gold",
-          color: "#111",
+          background: "#1A237E",
+          color: "#fff",
           border: "none",
           fontWeight: 700,
           marginTop: 10,
@@ -269,7 +269,7 @@ export default function AdminContent() {
       <div style={{ maxWidth: 800 }}>
         <h1
           style={{
-            color: "gold",
+            color: "#1A237E",
             fontWeight: 700,
             fontSize: 22,
             marginBottom: 6,
@@ -279,7 +279,7 @@ export default function AdminContent() {
         </h1>
         <p
           style={{
-            color: "rgba(255,255,255,0.5)",
+            color: "#666",
             fontSize: 13,
             marginBottom: 28,
           }}
@@ -292,11 +292,11 @@ export default function AdminContent() {
           <div key={section} style={{ marginBottom: 32 }}>
             <h2
               style={{
-                color: "rgba(255,255,255,0.8)",
+                color: "#1A237E",
                 fontSize: 15,
                 fontWeight: 600,
                 marginBottom: 12,
-                borderBottom: "1px solid #222",
+                borderBottom: "1px solid #c5cae9",
                 paddingBottom: 8,
               }}
             >

@@ -12,15 +12,15 @@ import {
 import AdminLayout from "../../components/AdminLayout";
 
 const BOX = {
-  background: "#111",
-  border: "1px solid #222",
+  background: "#fff",
+  border: "1px solid #e0e0e0",
   borderRadius: 12,
   padding: 20,
 } as const;
 
 const CARD = {
-  background: "linear-gradient(145deg, #1a1a1a, #111)",
-  border: "1px solid #222",
+  background: "linear-gradient(145deg, #e8eaf6, #fff)",
+  border: "1px solid #c5cae9",
   borderRadius: 12,
   padding: 20,
 } as const;
@@ -55,10 +55,10 @@ const statCards = [
 
 const TOOLTIP_STYLE = {
   contentStyle: {
-    background: "#1a1a1a",
-    border: "1px solid #333",
+    background: "#fff",
+    border: "1px solid #c5cae9",
     borderRadius: 8,
-    color: "#fff",
+    color: "#1A237E",
   },
 };
 
@@ -76,12 +76,12 @@ export default function AdminAnalytics() {
       >
         {statCards.map((card) => (
           <div key={card.label} style={CARD}>
-            <p style={{ color: "#aaa", fontSize: 12, marginBottom: 6 }}>
+            <p style={{ color: "#666", fontSize: 12, marginBottom: 6 }}>
               {card.label}
             </p>
             <p
               style={{
-                color: "gold",
+                color: "#1A237E",
                 fontSize: 22,
                 fontWeight: 700,
                 marginBottom: 4,
@@ -89,7 +89,7 @@ export default function AdminAnalytics() {
             >
               {card.value}
             </p>
-            <p style={{ color: "#666", fontSize: 11 }}>{card.sub}</p>
+            <p style={{ color: "#999", fontSize: 11 }}>{card.sub}</p>
           </div>
         ))}
       </div>
@@ -97,44 +97,44 @@ export default function AdminAnalytics() {
       {/* Charts */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
         <div style={BOX}>
-          <h3 style={{ color: "#fff", marginBottom: 16, fontWeight: 600 }}>
+          <h3 style={{ color: "#1A237E", marginBottom: 16, fontWeight: 600 }}>
             Traffic by Country
           </h3>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={countryData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
               <XAxis
                 dataKey="country"
-                stroke="#666"
-                tick={{ fill: "#aaa", fontSize: 11 }}
+                stroke="#999"
+                tick={{ fill: "#666", fontSize: 11 }}
               />
-              <YAxis stroke="#666" tick={{ fill: "#aaa", fontSize: 11 }} />
+              <YAxis stroke="#999" tick={{ fill: "#666", fontSize: 11 }} />
               <Tooltip {...TOOLTIP_STYLE} />
-              <Bar dataKey="visits" fill="gold" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="visits" fill="#42A5F5" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div style={BOX}>
-          <h3 style={{ color: "#fff", marginBottom: 16, fontWeight: 600 }}>
+          <h3 style={{ color: "#1A237E", marginBottom: 16, fontWeight: 600 }}>
             Monthly Inquiries
           </h3>
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
               <XAxis
                 dataKey="month"
-                stroke="#666"
-                tick={{ fill: "#aaa", fontSize: 11 }}
+                stroke="#999"
+                tick={{ fill: "#666", fontSize: 11 }}
               />
-              <YAxis stroke="#666" tick={{ fill: "#aaa", fontSize: 11 }} />
+              <YAxis stroke="#999" tick={{ fill: "#666", fontSize: 11 }} />
               <Tooltip {...TOOLTIP_STYLE} />
               <Line
                 type="monotone"
                 dataKey="inquiries"
-                stroke="gold"
+                stroke="#42A5F5"
                 strokeWidth={2}
-                dot={{ fill: "gold", r: 4 }}
+                dot={{ fill: "#42A5F5", r: 4 }}
               />
             </LineChart>
           </ResponsiveContainer>

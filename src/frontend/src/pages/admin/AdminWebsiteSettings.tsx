@@ -9,8 +9,8 @@ import { useActor } from "../../hooks/useActor";
 import { useStorageUpload } from "../../hooks/useStorageUpload";
 
 const BOX = {
-  background: "#111",
-  border: "1px solid #222",
+  background: "#fff",
+  border: "1px solid #e0e0e0",
   borderRadius: 12,
   padding: 20,
   marginBottom: 16,
@@ -27,7 +27,7 @@ function SettingCard({
     <div style={BOX}>
       <h3
         style={{
-          color: "gold",
+          color: "#1A237E",
           fontWeight: 600,
           fontSize: 15,
           marginBottom: 14,
@@ -112,8 +112,8 @@ export default function AdminWebsiteSettings() {
       onClick={() => saveMutation.mutate(k)}
       disabled={saveMutation.isPending}
       style={{
-        background: "gold",
-        color: "#111",
+        background: "#1A237E",
+        color: "#fff",
         border: "none",
         borderRadius: 8,
         padding: "7px 18px",
@@ -132,7 +132,7 @@ export default function AdminWebsiteSettings() {
     <AdminLayout>
       <h2
         style={{
-          color: "#fff",
+          color: "#1A237E",
           fontSize: 22,
           fontWeight: 700,
           marginBottom: 20,
@@ -143,15 +143,15 @@ export default function AdminWebsiteSettings() {
 
       <SettingCard title="🏠 Homepage Banner">
         <div style={{ marginBottom: 10 }}>
-          <Label style={{ color: "#aaa" }}>Hero Title</Label>
+          <Label style={{ color: "#555" }}>Hero Title</Label>
           <Input
             value={getValue("hero_title")}
             onChange={(e) => setValue("hero_title", e.target.value)}
             placeholder="India's Leading Imitation Jewellery Manufacturer..."
             style={{
-              background: "#1a1a1a",
-              border: "1px solid #333",
-              color: "#fff",
+              background: "#f5f7ff",
+              border: "1px solid #c5cae9",
+              color: "#1A237E",
               marginTop: 4,
             }}
             data-ocid="admin.websettings.hero_title.input"
@@ -159,16 +159,16 @@ export default function AdminWebsiteSettings() {
           <SaveBtn k="hero_title" />
         </div>
         <div>
-          <Label style={{ color: "#aaa" }}>Hero Subtitle</Label>
+          <Label style={{ color: "#555" }}>Hero Subtitle</Label>
           <Textarea
             value={getValue("hero_subtitle")}
             onChange={(e) => setValue("hero_subtitle", e.target.value)}
             placeholder="Premium handcrafted designs..."
             rows={2}
             style={{
-              background: "#1a1a1a",
-              border: "1px solid #333",
-              color: "#fff",
+              background: "#f5f7ff",
+              border: "1px solid #c5cae9",
+              color: "#1A237E",
               marginTop: 4,
             }}
             data-ocid="admin.websettings.hero_subtitle.textarea"
@@ -176,16 +176,16 @@ export default function AdminWebsiteSettings() {
           <SaveBtn k="hero_subtitle" />{" "}
         </div>
         <div style={{ marginTop: 12 }}>
-          <Label style={{ color: "#aaa" }}>Hero Background Image</Label>
+          <Label style={{ color: "#555" }}>Hero Background Image</Label>
           <div
             style={{
               marginTop: 8,
-              border: "2px dashed #333",
+              border: "2px dashed #c5cae9",
               borderRadius: 8,
               padding: "16px",
               textAlign: "center",
               cursor: "pointer",
-              background: "#1a1a1a",
+              background: "#f5f7ff",
             }}
             onClick={() => heroFileRef.current?.click()}
             onKeyDown={(e) => {
@@ -214,7 +214,7 @@ export default function AdminWebsiteSettings() {
                 if (heroFileRef.current) heroFileRef.current.value = "";
               }}
             />
-            <p style={{ color: uploading ? "gold" : "#888", fontSize: 13 }}>
+            <p style={{ color: uploading ? "#42A5F5" : "#888", fontSize: 13 }}>
               {uploading
                 ? "Uploading..."
                 : "Click to upload hero background image"}
@@ -237,15 +237,15 @@ export default function AdminWebsiteSettings() {
       </SettingCard>
 
       <SettingCard title="💬 WhatsApp Number">
-        <Label style={{ color: "#aaa" }}>WhatsApp Number</Label>
+        <Label style={{ color: "#555" }}>WhatsApp Number</Label>
         <Input
           value={getValue("whatsapp_number")}
           onChange={(e) => setValue("whatsapp_number", e.target.value)}
           placeholder="+91 7976341419"
           style={{
-            background: "#1a1a1a",
-            border: "1px solid #333",
-            color: "#fff",
+            background: "#f5f7ff",
+            border: "1px solid #c5cae9",
+            color: "#1A237E",
             marginTop: 4,
           }}
           data-ocid="admin.websettings.whatsapp_number.input"
@@ -254,16 +254,16 @@ export default function AdminWebsiteSettings() {
       </SettingCard>
 
       <SettingCard title="🖼 Logo Upload">
-        <Label style={{ color: "#aaa" }}>Upload New Logo</Label>
+        <Label style={{ color: "#555" }}>Upload New Logo</Label>
         <div
           style={{
             marginTop: 8,
-            border: "2px dashed #333",
+            border: "2px dashed #c5cae9",
             borderRadius: 8,
             padding: "20px",
             textAlign: "center",
             cursor: "pointer",
-            background: "#1a1a1a",
+            background: "#f5f7ff",
           }}
           onClick={() => logoFileRef.current?.click()}
           onKeyDown={(e) => {
@@ -279,7 +279,7 @@ export default function AdminWebsiteSettings() {
             className="hidden"
             onChange={handleLogoUpload}
           />
-          <p style={{ color: uploading ? "gold" : "#888", fontSize: 13 }}>
+          <p style={{ color: uploading ? "#42A5F5" : "#888", fontSize: 13 }}>
             {uploading
               ? "Uploading..."
               : "Click to upload logo (PNG, SVG, WEBP)"}
@@ -295,15 +295,15 @@ export default function AdminWebsiteSettings() {
       <SettingCard title="📞 Contact Info">
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <div>
-            <Label style={{ color: "#aaa" }}>Email</Label>
+            <Label style={{ color: "#555" }}>Email</Label>
             <Input
               value={getValue("contact_email")}
               onChange={(e) => setValue("contact_email", e.target.value)}
               placeholder="globalgemora@gmail.com"
               style={{
-                background: "#1a1a1a",
-                border: "1px solid #333",
-                color: "#fff",
+                background: "#f5f7ff",
+                border: "1px solid #c5cae9",
+                color: "#1A237E",
                 marginTop: 4,
               }}
               data-ocid="admin.websettings.contact_email.input"
@@ -311,15 +311,15 @@ export default function AdminWebsiteSettings() {
             <SaveBtn k="contact_email" />
           </div>
           <div>
-            <Label style={{ color: "#aaa" }}>Phone</Label>
+            <Label style={{ color: "#555" }}>Phone</Label>
             <Input
               value={getValue("contact_phone")}
               onChange={(e) => setValue("contact_phone", e.target.value)}
               placeholder="+91 7976341419"
               style={{
-                background: "#1a1a1a",
-                border: "1px solid #333",
-                color: "#fff",
+                background: "#f5f7ff",
+                border: "1px solid #c5cae9",
+                color: "#1A237E",
                 marginTop: 4,
               }}
               data-ocid="admin.websettings.contact_phone.input"
@@ -327,16 +327,16 @@ export default function AdminWebsiteSettings() {
             <SaveBtn k="contact_phone" />
           </div>
           <div>
-            <Label style={{ color: "#aaa" }}>Address</Label>
+            <Label style={{ color: "#555" }}>Address</Label>
             <Textarea
               value={getValue("contact_address")}
               onChange={(e) => setValue("contact_address", e.target.value)}
               placeholder="B 66 MAA Hinglaj Nagar..."
               rows={2}
               style={{
-                background: "#1a1a1a",
-                border: "1px solid #333",
-                color: "#fff",
+                background: "#f5f7ff",
+                border: "1px solid #c5cae9",
+                color: "#1A237E",
                 marginTop: 4,
               }}
               data-ocid="admin.websettings.contact_address.textarea"

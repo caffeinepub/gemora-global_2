@@ -8,7 +8,7 @@ import { usePageSEO } from "../hooks/usePageSEO";
 import { type BlogPost, getBlogPosts } from "../utils/blogStore";
 
 const categoryColors: Record<string, string> = {
-  Trends: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+  Trends: "bg-sky-500/20 text-sky-400 border-sky-500/30",
   "Business Guide": "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
   "Industry Insights": "bg-blue-500/20 text-blue-400 border-blue-500/30",
   Collections: "bg-rose-500/20 text-rose-400 border-rose-500/30",

@@ -39,10 +39,10 @@ interface Order {
 }
 
 const STATUS_COLORS: Record<OrderStatus, { bg: string; color: string }> = {
-  Pending: { bg: "rgba(255,200,0,0.15)", color: "gold" },
+  Pending: { bg: "rgba(66,165,245,0.15)", color: "#1A237E" },
   Processing: { bg: "rgba(100,150,255,0.15)", color: "#6b9fff" },
   Shipped: { bg: "rgba(180,100,255,0.15)", color: "#c084fc" },
-  Delivered: { bg: "rgba(100,220,150,0.15)", color: "#6fcf97" },
+  Delivered: { bg: "rgba(100,220,150,0.15)", color: "#2e7d32" },
 };
 
 const MOCK_ORDERS: Order[] = [
@@ -56,7 +56,7 @@ const MOCK_ORDERS: Order[] = [
     amount: "$2,400",
     status: "Delivered",
     items: [
-      { name: "Gold Kundan Necklace Set", qty: "50", price: "$28.00" },
+      { name: "Kundan Necklace Set", qty: "50", price: "$28.00" },
       { name: "Pearl Drop Earrings", qty: "100", price: "$8.00" },
     ],
     notes: "Urgent delivery required. VIP client.",
@@ -77,7 +77,7 @@ const MOCK_ORDERS: Order[] = [
         qty: "60",
         price: "$15.00",
       },
-      { name: "Minimal Gold Necklace", qty: "60", price: "$15.00" },
+      { name: "Minimal Necklace", qty: "60", price: "$15.00" },
     ],
     notes: "Prefer eco-friendly packaging.",
     createdAt: "March 5, 2026",
@@ -115,29 +115,51 @@ const EMPTY_ORDER = {
 const EMPTY_ITEM: OrderItem = { name: "", qty: "", price: "" };
 
 const BOX = {
-  background: "#111",
-  border: "1px solid #222",
+  background: "#fff",
+  border: "1px solid #e0e0e0",
   borderRadius: 12,
   padding: 20,
 } as const;
 
 const inputStyle = {
   width: "100%",
-  background: "#1a1a1a",
-  border: "1px solid #333",
+  background: "#f5f7ff",
+  border: "1px solid #c5cae9",
   borderRadius: 8,
   padding: "9px 12px",
-  color: "#fff",
+  color: "#1A237E",
   fontSize: 13,
   outline: "none",
 } as React.CSSProperties;
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
+  const [orders, setOrders] = useState<Order[]>(() => {
+    try {
+      const saved = localStorage.getItem("gemora_orders");
+      return saved ? (JSON.parse(saved) as Order[]) : MOCK_ORDERS;
+    } catch {
+      return MOCK_ORDERS;
+    }
+  });
   const [addOpen, setAddOpen] = useState(false);
   const [detailOrder, setDetailOrder] = useState<Order | null>(null);
   const [form, setForm] = useState(EMPTY_ORDER);
   const [items, setItems] = useState<OrderItem[]>([{ ...EMPTY_ITEM }]);
+
+  const saveOrders = (updated: Order[]) => {
+    localStorage.setItem("gemora_orders", JSON.stringify(updated));
+    setOrders(updated);
+  };
+
+  const updateOrderStatus = (id: string, newStatus: OrderStatus) => {
+    const updated = orders.map((o) =>
+      o.id === id ? { ...o, status: newStatus } : o,
+    );
+    saveOrders(updated);
+    if (detailOrder?.id === id) {
+      setDetailOrder((prev) => (prev ? { ...prev, status: newStatus } : prev));
+    }
+  };
 
   const addItem = () => setItems((prev) => [...prev, { ...EMPTY_ITEM }]);
   const removeItem = (idx: number) =>
@@ -159,7 +181,8 @@ export default function AdminOrders() {
         year: "numeric",
       }),
     };
-    setOrders((prev) => [newOrder, ...prev]);
+    const updated = [newOrder, ...orders];
+    saveOrders(updated);
     setForm(EMPTY_ORDER);
     setItems([{ ...EMPTY_ITEM }]);
     setAddOpen(false);
@@ -175,7 +198,7 @@ export default function AdminOrders() {
           marginBottom: 20,
         }}
       >
-        <h2 style={{ color: "#fff", fontSize: 22, fontWeight: 700 }}>
+        <h2 style={{ color: "#1A237E", fontSize: 22, fontWeight: 700 }}>
           Export Orders
         </h2>
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
@@ -183,8 +206,8 @@ export default function AdminOrders() {
             <button
               type="button"
               style={{
-                background: "gold",
-                color: "#111",
+                background: "#1A237E",
+                color: "#fff",
                 border: "none",
                 borderRadius: 8,
                 padding: "8px 18px",
@@ -313,9 +336,9 @@ export default function AdminOrders() {
                     type="button"
                     onClick={addItem}
                     style={{
-                      background: "#1a1a1a",
-                      border: "1px solid #444",
-                      color: "gold",
+                      background: "#e8eaf6",
+                      border: "1px solid #c5cae9",
+                      color: "#1A237E",
                       borderRadius: 6,
                       padding: "4px 10px",
                       fontSize: 12,
@@ -390,8 +413,8 @@ export default function AdminOrders() {
                 type="submit"
                 style={{
                   width: "100%",
-                  background: "gold",
-                  color: "#111",
+                  background: "#1A237E",
+                  color: "#fff",
                   border: "none",
                   borderRadius: 8,
                   padding: "10px",
@@ -415,31 +438,37 @@ export default function AdminOrders() {
         >
           <thead>
             <tr>
-              {["Order ID", "Buyer", "Country", "Amount", "Status", "Date"].map(
-                (h) => (
-                  <th
-                    key={h}
-                    style={{
-                      textAlign: "left",
-                      padding: "8px 10px",
-                      color: "#666",
-                      fontSize: 11,
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      borderBottom: "1px solid #222",
-                    }}
-                  >
-                    {h}
-                  </th>
-                ),
-              )}
+              {[
+                "Order ID",
+                "Buyer",
+                "Country",
+                "Amount",
+                "Status",
+                "Date",
+                "Update Status",
+              ].map((h) => (
+                <th
+                  key={h}
+                  style={{
+                    textAlign: "left",
+                    padding: "8px 10px",
+                    color: "#999",
+                    fontSize: 11,
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                    borderBottom: "1px solid #e0e0e0",
+                  }}
+                >
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {orders.map((order, i) => (
               <tr
                 key={order.id}
-                style={{ borderBottom: "1px solid #1a1a1a" }}
+                style={{ borderBottom: "1px solid #f5f5f5" }}
                 data-ocid={`admin.orders.item.${i + 1}`}
               >
                 <td style={{ padding: "10px" }}>
@@ -449,14 +478,14 @@ export default function AdminOrders() {
                     style={{
                       background: "none",
                       border: "none",
-                      color: "gold",
+                      color: "#42A5F5",
                       fontFamily: "monospace",
                       fontSize: 13,
                       cursor: "pointer",
                       textDecoration: "underline",
                       padding: 0,
                     }}
-                    data-ocid={"admin.orders.open_modal_button"}
+                    data-ocid="admin.orders.open_modal_button"
                   >
                     {order.id}
                   </button>
@@ -465,20 +494,20 @@ export default function AdminOrders() {
                   style={{
                     padding: "10px",
                     fontSize: 14,
-                    color: "#ddd",
+                    color: "#222",
                     fontWeight: 500,
                   }}
                 >
                   {order.buyer}
                 </td>
-                <td style={{ padding: "10px", fontSize: 13, color: "#aaa" }}>
+                <td style={{ padding: "10px", fontSize: 13, color: "#666" }}>
                   {order.country}
                 </td>
                 <td
                   style={{
                     padding: "10px",
                     fontSize: 14,
-                    color: "gold",
+                    color: "#1A237E",
                     fontWeight: 600,
                   }}
                 >
@@ -497,8 +526,32 @@ export default function AdminOrders() {
                     {order.status}
                   </span>
                 </td>
-                <td style={{ padding: "10px", fontSize: 12, color: "#666" }}>
+                <td style={{ padding: "10px", fontSize: 12, color: "#999" }}>
                   {order.createdAt}
+                </td>
+                <td style={{ padding: "10px" }}>
+                  <select
+                    value={order.status}
+                    onChange={(e) =>
+                      updateOrderStatus(order.id, e.target.value as OrderStatus)
+                    }
+                    style={{
+                      background: "#f5f7ff",
+                      border: "1px solid #c5cae9",
+                      borderRadius: 6,
+                      padding: "4px 8px",
+                      color: "#1A237E",
+                      fontSize: 12,
+                      cursor: "pointer",
+                      outline: "none",
+                    }}
+                    data-ocid={`admin.orders.select.${i + 1}`}
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Delivered">Delivered</option>
+                  </select>
                 </td>
               </tr>
             ))}
@@ -512,7 +565,7 @@ export default function AdminOrders() {
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(0,0,0,0.75)",
+            background: "rgba(13,21,84,0.6)",
             zIndex: 1000,
             display: "flex",
             alignItems: "center",
@@ -525,11 +578,11 @@ export default function AdminOrders() {
         >
           <div
             style={{
-              background: "#111",
-              border: "1px solid #333",
+              background: "#fff",
+              border: "1px solid #c5cae9",
               borderRadius: 16,
               padding: 28,
-              maxWidth: 560,
+              maxWidth: 580,
               width: "100%",
               maxHeight: "90vh",
               overflowY: "auto",
@@ -547,7 +600,7 @@ export default function AdminOrders() {
               <div>
                 <p
                   style={{
-                    color: "#666",
+                    color: "#999",
                     fontSize: 11,
                     textTransform: "uppercase",
                     letterSpacing: 1,
@@ -555,7 +608,7 @@ export default function AdminOrders() {
                 >
                   Order Details
                 </p>
-                <h3 style={{ color: "gold", fontWeight: 700, fontSize: 20 }}>
+                <h3 style={{ color: "#1A237E", fontWeight: 700, fontSize: 20 }}>
                   {detailOrder.id}
                 </h3>
                 <p style={{ color: "#888", fontSize: 12, marginTop: 2 }}>
@@ -563,28 +616,52 @@ export default function AdminOrders() {
                 </p>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span
-                  style={{
-                    ...STATUS_COLORS[detailOrder.status],
-                    fontSize: 12,
-                    padding: "4px 14px",
-                    borderRadius: 20,
-                    fontWeight: 600,
-                  }}
-                >
-                  {detailOrder.status}
-                </span>
+                {/* Inline status update in modal */}
+                <div>
+                  <p style={{ color: "#999", fontSize: 10, marginBottom: 4 }}>
+                    Update Status
+                  </p>
+                  <select
+                    value={detailOrder.status}
+                    onChange={(e) => {
+                      const newStatus = e.target.value as OrderStatus;
+                      updateOrderStatus(detailOrder.id, newStatus);
+                    }}
+                    style={{
+                      background: detailOrder.status
+                        ? STATUS_COLORS[detailOrder.status].bg
+                        : "#f5f7ff",
+                      border: "1px solid #c5cae9",
+                      borderRadius: 8,
+                      padding: "5px 10px",
+                      color: detailOrder.status
+                        ? STATUS_COLORS[detailOrder.status].color
+                        : "#1A237E",
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      outline: "none",
+                    }}
+                    data-ocid="admin.orders.modal_select"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Delivered">Delivered</option>
+                  </select>
+                </div>
                 <button
                   type="button"
                   onClick={() => setDetailOrder(null)}
                   style={{
-                    background: "#1a1a1a",
-                    border: "1px solid #333",
-                    color: "#aaa",
+                    background: "#f5f7ff",
+                    border: "1px solid #c5cae9",
+                    color: "#666",
                     borderRadius: 8,
                     padding: "6px 12px",
                     fontSize: 16,
                     cursor: "pointer",
+                    alignSelf: "flex-end",
                   }}
                   data-ocid="admin.orders.close_button"
                 >
@@ -596,7 +673,7 @@ export default function AdminOrders() {
             {/* Buyer Info */}
             <div
               style={{
-                background: "#1a1a1a",
+                background: "#f5f7ff",
                 borderRadius: 10,
                 padding: 16,
                 marginBottom: 16,
@@ -604,7 +681,7 @@ export default function AdminOrders() {
             >
               <p
                 style={{
-                  color: "gold",
+                  color: "#1A237E",
                   fontWeight: 600,
                   fontSize: 13,
                   marginBottom: 10,
@@ -620,36 +697,36 @@ export default function AdminOrders() {
                 }}
               >
                 <div>
-                  <p style={{ color: "#555", fontSize: 11 }}>Name</p>
-                  <p style={{ color: "#ddd", fontSize: 14 }}>
+                  <p style={{ color: "#999", fontSize: 11 }}>Name</p>
+                  <p style={{ color: "#222", fontSize: 14 }}>
                     {detailOrder.buyer}
                   </p>
                 </div>
                 <div>
-                  <p style={{ color: "#555", fontSize: 11 }}>Country</p>
-                  <p style={{ color: "#ddd", fontSize: 14 }}>
+                  <p style={{ color: "#999", fontSize: 11 }}>Country</p>
+                  <p style={{ color: "#222", fontSize: 14 }}>
                     {detailOrder.country}
                   </p>
                 </div>
                 <div>
-                  <p style={{ color: "#555", fontSize: 11 }}>Email</p>
-                  <p style={{ color: "#ddd", fontSize: 13 }}>
+                  <p style={{ color: "#999", fontSize: 11 }}>Email</p>
+                  <p style={{ color: "#444", fontSize: 13 }}>
                     {detailOrder.email || "—"}
                   </p>
                 </div>
                 <div>
-                  <p style={{ color: "#555", fontSize: 11 }}>Phone</p>
-                  <p style={{ color: "#ddd", fontSize: 13 }}>
+                  <p style={{ color: "#999", fontSize: 11 }}>Phone</p>
+                  <p style={{ color: "#444", fontSize: 13 }}>
                     {detailOrder.phone || "—"}
                   </p>
                 </div>
               </div>
               {detailOrder.address && (
                 <div style={{ marginTop: 8 }}>
-                  <p style={{ color: "#555", fontSize: 11 }}>
+                  <p style={{ color: "#999", fontSize: 11 }}>
                     Shipping Address
                   </p>
-                  <p style={{ color: "#ddd", fontSize: 13, lineHeight: 1.5 }}>
+                  <p style={{ color: "#444", fontSize: 13, lineHeight: 1.5 }}>
                     {detailOrder.address}
                   </p>
                 </div>
@@ -661,7 +738,7 @@ export default function AdminOrders() {
               <div style={{ marginBottom: 16 }}>
                 <p
                   style={{
-                    color: "gold",
+                    color: "#1A237E",
                     fontWeight: 600,
                     fontSize: 13,
                     marginBottom: 10,
@@ -678,10 +755,10 @@ export default function AdminOrders() {
                           style={{
                             textAlign: "left",
                             padding: "6px 8px",
-                            color: "#555",
+                            color: "#999",
                             fontSize: 11,
                             fontWeight: 600,
-                            borderBottom: "1px solid #222",
+                            borderBottom: "1px solid #e0e0e0",
                           }}
                         >
                           {h}
@@ -693,13 +770,13 @@ export default function AdminOrders() {
                     {detailOrder.items.map((item, _idx) => (
                       <tr
                         key={item.name + String(_idx)}
-                        style={{ borderBottom: "1px solid #1a1a1a" }}
+                        style={{ borderBottom: "1px solid #f5f5f5" }}
                       >
                         <td
                           style={{
                             padding: "8px",
                             fontSize: 13,
-                            color: "#ddd",
+                            color: "#333",
                           }}
                         >
                           {item.name}
@@ -708,7 +785,7 @@ export default function AdminOrders() {
                           style={{
                             padding: "8px",
                             fontSize: 13,
-                            color: "#aaa",
+                            color: "#666",
                           }}
                         >
                           {item.qty}
@@ -717,7 +794,7 @@ export default function AdminOrders() {
                           style={{
                             padding: "8px",
                             fontSize: 13,
-                            color: "gold",
+                            color: "#1A237E",
                           }}
                         >
                           {item.price}
@@ -735,7 +812,7 @@ export default function AdminOrders() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                borderTop: "1px solid #222",
+                borderTop: "1px solid #e0e0e0",
                 paddingTop: 12,
               }}
             >
@@ -747,8 +824,8 @@ export default function AdminOrders() {
                 )}
               </div>
               <div style={{ textAlign: "right" }}>
-                <p style={{ color: "#555", fontSize: 11 }}>Total Amount</p>
-                <p style={{ color: "gold", fontSize: 20, fontWeight: 700 }}>
+                <p style={{ color: "#999", fontSize: 11 }}>Total Amount</p>
+                <p style={{ color: "#1A237E", fontSize: 20, fontWeight: 700 }}>
                   {detailOrder.amount}
                 </p>
               </div>

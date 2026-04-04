@@ -7,8 +7,8 @@ import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
 
 const BOX = {
-  background: "#111",
-  border: "1px solid #222",
+  background: "#fff",
+  border: "1px solid #e0e0e0",
   borderRadius: 12,
   padding: 24,
   marginBottom: 16,
@@ -60,7 +60,7 @@ export default function AdminSystemSettings() {
     <AdminLayout>
       <h2
         style={{
-          color: "#fff",
+          color: "#1A237E",
           fontSize: 22,
           fontWeight: 700,
           marginBottom: 20,
@@ -73,7 +73,7 @@ export default function AdminSystemSettings() {
       <div style={BOX}>
         <h3
           style={{
-            color: "gold",
+            color: "#1A237E",
             fontWeight: 600,
             fontSize: 15,
             marginBottom: 16,
@@ -83,7 +83,7 @@ export default function AdminSystemSettings() {
         </h3>
         <form onSubmit={handleSubmit} style={{ maxWidth: 440 }}>
           <div style={{ marginBottom: 12 }}>
-            <Label style={{ color: "#aaa" }}>Current Username</Label>
+            <Label style={{ color: "#555" }}>Current Username</Label>
             <Input
               value={form.currentUsername}
               onChange={(e) =>
@@ -91,16 +91,16 @@ export default function AdminSystemSettings() {
               }
               required
               style={{
-                background: "#1a1a1a",
-                border: "1px solid #333",
-                color: "#fff",
+                background: "#f5f7ff",
+                border: "1px solid #c5cae9",
+                color: "#1A237E",
                 marginTop: 4,
               }}
               data-ocid="admin.settings.current_username.input"
             />
           </div>
           <div style={{ marginBottom: 12 }}>
-            <Label style={{ color: "#aaa" }}>Current Password</Label>
+            <Label style={{ color: "#555" }}>Current Password</Label>
             <Input
               type="password"
               value={form.currentPassword}
@@ -109,16 +109,16 @@ export default function AdminSystemSettings() {
               }
               required
               style={{
-                background: "#1a1a1a",
-                border: "1px solid #333",
-                color: "#fff",
+                background: "#f5f7ff",
+                border: "1px solid #c5cae9",
+                color: "#1A237E",
                 marginTop: 4,
               }}
               data-ocid="admin.settings.current_password.input"
             />
           </div>
           <div style={{ marginBottom: 12 }}>
-            <Label style={{ color: "#aaa" }}>New Username</Label>
+            <Label style={{ color: "#555" }}>New Username</Label>
             <Input
               value={form.newUsername}
               onChange={(e) =>
@@ -126,16 +126,16 @@ export default function AdminSystemSettings() {
               }
               required
               style={{
-                background: "#1a1a1a",
-                border: "1px solid #333",
-                color: "#fff",
+                background: "#f5f7ff",
+                border: "1px solid #c5cae9",
+                color: "#1A237E",
                 marginTop: 4,
               }}
               data-ocid="admin.settings.new_username.input"
             />
           </div>
           <div style={{ marginBottom: 16 }}>
-            <Label style={{ color: "#aaa" }}>New Password</Label>
+            <Label style={{ color: "#555" }}>New Password</Label>
             <Input
               type="password"
               value={form.newPassword}
@@ -144,9 +144,9 @@ export default function AdminSystemSettings() {
               }
               required
               style={{
-                background: "#1a1a1a",
-                border: "1px solid #333",
-                color: "#fff",
+                background: "#f5f7ff",
+                border: "1px solid #c5cae9",
+                color: "#1A237E",
                 marginTop: 4,
               }}
               data-ocid="admin.settings.new_password.input"
@@ -156,8 +156,8 @@ export default function AdminSystemSettings() {
             type="submit"
             disabled={changeCreds.isPending}
             style={{
-              background: changeCreds.isPending ? "#555" : "gold",
-              color: "#111",
+              background: changeCreds.isPending ? "#c5cae9" : "#1A237E",
+              color: "#fff",
               border: "none",
               borderRadius: 8,
               padding: "10px 24px",
@@ -171,7 +171,7 @@ export default function AdminSystemSettings() {
           </button>
           {changeCreds.isSuccess && (
             <p
-              style={{ color: "#6fcf97", fontSize: 13, marginTop: 8 }}
+              style={{ color: "#2e7d32", fontSize: 13, marginTop: 8 }}
               data-ocid="admin.settings.success_state"
             >
               ✓ Credentials updated
@@ -179,7 +179,7 @@ export default function AdminSystemSettings() {
           )}
           {changeCreds.isError && (
             <p
-              style={{ color: "#ff6b6b", fontSize: 13, marginTop: 8 }}
+              style={{ color: "#c62828", fontSize: 13, marginTop: 8 }}
               data-ocid="admin.settings.error_state"
             >
               ✗ Update failed
@@ -192,7 +192,7 @@ export default function AdminSystemSettings() {
       <div style={BOX}>
         <h3
           style={{
-            color: "gold",
+            color: "#1A237E",
             fontWeight: 600,
             fontSize: 15,
             marginBottom: 16,
@@ -206,9 +206,9 @@ export default function AdminSystemSettings() {
             alignItems: "center",
             gap: 16,
             padding: "12px 16px",
-            background: "#1a1a1a",
+            background: "#f5f7ff",
             borderRadius: 8,
-            border: "1px solid #222",
+            border: "1px solid #c5cae9",
           }}
         >
           <div
@@ -216,8 +216,8 @@ export default function AdminSystemSettings() {
               width: 40,
               height: 40,
               borderRadius: "50%",
-              background: "gold",
-              color: "#111",
+              background: "#1A237E",
+              color: "#fff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -228,7 +228,7 @@ export default function AdminSystemSettings() {
             A
           </div>
           <div>
-            <p style={{ color: "#ddd", fontWeight: 600, fontSize: 14 }}>
+            <p style={{ color: "#1A237E", fontWeight: 600, fontSize: 14 }}>
               admin
             </p>
             <p style={{ color: "#777", fontSize: 12 }}>gemora@admin.com</p>
@@ -236,8 +236,8 @@ export default function AdminSystemSettings() {
           <span
             style={{
               marginLeft: "auto",
-              background: "rgba(255,200,0,0.15)",
-              color: "gold",
+              background: "rgba(66,165,245,0.15)",
+              color: "#1A237E",
               borderRadius: 20,
               padding: "3px 12px",
               fontSize: 12,
@@ -248,7 +248,7 @@ export default function AdminSystemSettings() {
           </span>
         </div>
 
-        <p style={{ color: "#555", fontSize: 12, marginTop: 10 }}>
+        <p style={{ color: "#aaa", fontSize: 12, marginTop: 10 }}>
           Multi-role management (Manager / Sales / Admin) — Coming soon in a
           future update.
         </p>
@@ -258,7 +258,7 @@ export default function AdminSystemSettings() {
       <div style={BOX}>
         <h3
           style={{
-            color: "gold",
+            color: "#1A237E",
             fontWeight: 600,
             fontSize: 15,
             marginBottom: 12,

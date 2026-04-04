@@ -130,9 +130,9 @@ export default function SeoLandingPage({
       <Navbar />
 
       {/* Hero */}
-      <section className="pt-28 pb-16 px-4 bg-gradient-to-b from-black to-background border-b border-yellow-600/20">
+      <section className="pt-28 pb-16 px-4 bg-gradient-to-b from-blue-50 to-background border-b border-blue-700/20">
         <div className="container max-w-4xl mx-auto text-center">
-          <p className="text-xs uppercase tracking-widest text-yellow-500 mb-4 font-semibold">
+          <p className="text-xs uppercase tracking-widest text-sky-500 mb-4 font-semibold">
             Gemora Global — India&apos;s Trusted Jewellery Exporter
           </p>
           <h1 className="text-3xl md:text-5xl font-serif font-bold text-primary leading-tight mb-6">
@@ -146,7 +146,7 @@ export default function SeoLandingPage({
             <Button
               asChild
               size="lg"
-              className="bg-yellow-600 hover:bg-yellow-500 text-black font-bold"
+              className="bg-blue-800 hover:bg-blue-700 text-white font-bold"
               data-ocid="seo.primary_button"
             >
               <a
@@ -161,7 +161,7 @@ export default function SeoLandingPage({
               asChild
               variant="outline"
               size="lg"
-              className="border-yellow-600/50 hover:border-yellow-500"
+              className="border-blue-700/50 hover:border-blue-500"
               data-ocid="seo.secondary_button"
             >
               <Link to="/contact">Send Inquiry</Link>
@@ -172,7 +172,7 @@ export default function SeoLandingPage({
 
       {/* Body Content */}
       <section className="py-14 px-4">
-        <div className="container max-w-4xl mx-auto prose prose-invert max-w-none">
+        <div className="container max-w-4xl mx-auto prose max-w-none">
           <div className="text-muted-foreground leading-relaxed space-y-4">
             {bodyContent}
           </div>
@@ -189,7 +189,7 @@ export default function SeoLandingPage({
             {TRUST_POINTS.map((p) => (
               <div
                 key={p.title}
-                className="p-6 rounded-xl border border-yellow-600/20 bg-background/50"
+                className="p-6 rounded-xl border border-blue-700/20 bg-background/50"
               >
                 <h3 className="font-semibold text-primary mb-2">{p.title}</h3>
                 <p className="text-sm text-muted-foreground">{p.desc}</p>
@@ -207,7 +207,7 @@ export default function SeoLandingPage({
           </h2>
           <p className="text-center text-muted-foreground mb-10">
             500+ designs across all categories — refreshed every season.{" "}
-            <Link to="/products" className="text-yellow-500 hover:underline">
+            <Link to="/products" className="text-sky-500 hover:underline">
               View all products →
             </Link>
           </p>
@@ -217,7 +217,7 @@ export default function SeoLandingPage({
                 key={cat.name}
                 to="/products"
                 title={`Buy ${cat.name} Wholesale from India`}
-                className="p-5 rounded-xl border border-yellow-600/20 bg-card hover:border-yellow-500/50 transition-colors group"
+                className="p-5 rounded-xl border border-blue-700/20 bg-card hover:border-blue-500/50 transition-colors group"
                 data-ocid="seo.link"
               >
                 <div className="text-3xl mb-3">{cat.icon}</div>
@@ -239,19 +239,19 @@ export default function SeoLandingPage({
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
             <div className="space-y-2">
-              <div className="text-4xl font-bold text-yellow-500">500+</div>
+              <div className="text-4xl font-bold text-sky-500">500+</div>
               <div className="text-sm text-muted-foreground">
                 Active Designs
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-4xl font-bold text-yellow-500">15+</div>
+              <div className="text-4xl font-bold text-sky-500">15+</div>
               <div className="text-sm text-muted-foreground">
                 Export Countries
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-4xl font-bold text-yellow-500">10+</div>
+              <div className="text-4xl font-bold text-sky-500">10+</div>
               <div className="text-sm text-muted-foreground">
                 Years Experience
               </div>
@@ -267,7 +267,7 @@ export default function SeoLandingPage({
               are the preferred supplier for international wholesale buyers.{" "}
               <Link
                 to="/why-choose-us"
-                className="text-yellow-500 hover:underline"
+                className="text-sky-500 hover:underline"
               >
                 Learn more →
               </Link>
@@ -284,10 +284,7 @@ export default function SeoLandingPage({
           </h2>
           <p className="text-center text-muted-foreground mb-10 text-sm">
             Reliable global shipping with full export documentation.{" "}
-            <Link
-              to="/global-markets"
-              className="text-yellow-500 hover:underline"
-            >
+            <Link to="/global-markets" className="text-sky-500 hover:underline">
               View all markets →
             </Link>
           </p>
@@ -295,7 +292,7 @@ export default function SeoLandingPage({
             {EXPORT_COUNTRIES.map((c) => (
               <div
                 key={c.name}
-                className="flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-600/30 bg-card text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 rounded-full border border-blue-700/30 bg-card text-sm font-medium"
               >
                 <span className="text-xl">{c.flag}</span>
                 <span>{c.name}</span>
@@ -306,7 +303,7 @@ export default function SeoLandingPage({
       </section>
 
       {/* Get Catalog CTA */}
-      <section className="py-14 px-4 bg-gradient-to-r from-yellow-900/20 to-yellow-600/10 border-y border-yellow-600/20">
+      <section className="py-14 px-4 bg-gradient-to-r from-blue-900/20 to-blue-700/10 border-y border-blue-700/20">
         <div className="container max-w-3xl mx-auto text-center">
           <h2 className="text-2xl md:text-3xl font-serif font-bold text-primary mb-4">
             Get Our Wholesale Catalogue
@@ -320,7 +317,7 @@ export default function SeoLandingPage({
             <Button
               asChild
               size="lg"
-              className="bg-yellow-600 hover:bg-yellow-500 text-black font-bold"
+              className="bg-blue-800 hover:bg-blue-700 text-white font-bold"
               data-ocid="seo.open_modal_button"
             >
               <a
@@ -335,7 +332,7 @@ export default function SeoLandingPage({
               asChild
               variant="outline"
               size="lg"
-              className="border-yellow-600/50"
+              className="border-blue-700/50"
               data-ocid="seo.secondary_button"
             >
               <Link to="/gallery">View Gallery</Link>
@@ -355,7 +352,7 @@ export default function SeoLandingPage({
           </p>
           {submitted ? (
             <div
-              className="text-center py-12 border border-yellow-600/30 rounded-xl bg-card"
+              className="text-center py-12 border border-blue-700/30 rounded-xl bg-card"
               data-ocid="seo.success_state"
             >
               <div className="text-5xl mb-4">✅</div>
@@ -369,7 +366,7 @@ export default function SeoLandingPage({
           ) : (
             <form
               onSubmit={handleSubmit}
-              className="space-y-5 border border-yellow-600/20 rounded-xl p-8 bg-card"
+              className="space-y-5 border border-blue-700/20 rounded-xl p-8 bg-card"
               data-ocid="seo.dialog"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -427,7 +424,7 @@ export default function SeoLandingPage({
               </div>
               <Button
                 type="submit"
-                className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold"
+                className="w-full bg-blue-800 hover:bg-blue-700 text-white font-bold"
                 data-ocid="seo.submit_button"
               >
                 Send Inquiry
@@ -447,11 +444,11 @@ export default function SeoLandingPage({
             {faqs.map((faq) => (
               <details
                 key={faq.q}
-                className="group border border-yellow-600/20 rounded-xl bg-background overflow-hidden"
+                className="group border border-blue-700/20 rounded-xl bg-background overflow-hidden"
               >
                 <summary className="flex items-center justify-between px-6 py-4 cursor-pointer font-semibold text-foreground hover:text-primary transition-colors">
                   {faq.q}
-                  <span className="text-yellow-500 ml-4 shrink-0 group-open:rotate-45 transition-transform">
+                  <span className="text-sky-500 ml-4 shrink-0 group-open:rotate-45 transition-transform">
                     +
                   </span>
                 </summary>
@@ -469,38 +466,29 @@ export default function SeoLandingPage({
         <div className="container max-w-4xl mx-auto">
           <p className="text-sm text-muted-foreground text-center">
             Explore:{" "}
-            <Link
-              to="/products"
-              className="text-yellow-500 hover:underline mx-2"
-            >
+            <Link to="/products" className="text-sky-500 hover:underline mx-2">
               Imitation Jewellery Products
             </Link>{" "}
             ·
-            <Link
-              to="/wholesale"
-              className="text-yellow-500 hover:underline mx-2"
-            >
+            <Link to="/wholesale" className="text-sky-500 hover:underline mx-2">
               Wholesale Bulk Export Pricing
             </Link>{" "}
             ·
             <Link
               to="/why-choose-us"
-              className="text-yellow-500 hover:underline mx-2"
+              className="text-sky-500 hover:underline mx-2"
             >
               Why Choose Gemora Global
             </Link>{" "}
             ·
             <Link
               to="/global-markets"
-              className="text-yellow-500 hover:underline mx-2"
+              className="text-sky-500 hover:underline mx-2"
             >
               Global Export Markets
             </Link>{" "}
             ·
-            <Link
-              to="/contact"
-              className="text-yellow-500 hover:underline mx-2"
-            >
+            <Link to="/contact" className="text-sky-500 hover:underline mx-2">
               Send Wholesale Inquiry
             </Link>
           </p>

@@ -4,8 +4,8 @@ import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
 
 const BOX = {
-  background: "#111",
-  border: "1px solid #222",
+  background: "#fff",
+  border: "1px solid #e0e0e0",
   borderRadius: 12,
   padding: 20,
 } as const;
@@ -27,8 +27,8 @@ export default function AdminWhatsAppLeads() {
       <div
         style={{
           background:
-            "linear-gradient(135deg, rgba(255,200,0,0.1), rgba(255,200,0,0.05))",
-          border: "1px solid rgba(255,200,0,0.2)",
+            "linear-gradient(135deg, rgba(66,165,245,0.1), rgba(66,165,245,0.05))",
+          border: "1px solid rgba(66,165,245,0.2)",
           borderRadius: 12,
           padding: "16px 20px",
           marginBottom: 20,
@@ -41,7 +41,7 @@ export default function AdminWhatsAppLeads() {
         <div>
           <p
             style={{
-              color: "gold",
+              color: "#1A237E",
               fontWeight: 600,
               fontSize: 14,
               marginBottom: 2,
@@ -49,7 +49,7 @@ export default function AdminWhatsAppLeads() {
           >
             WhatsApp Business Integration
           </p>
-          <p style={{ color: "#aaa", fontSize: 13 }}>
+          <p style={{ color: "#666", fontSize: 13 }}>
             Connect your WhatsApp Business API to track incoming messages, send
             auto-replies, and manage follow-ups directly from this dashboard.
           </p>
@@ -58,13 +58,13 @@ export default function AdminWhatsAppLeads() {
 
       {/* Leads Table */}
       <div style={BOX}>
-        <h3 style={{ color: "#fff", marginBottom: 16, fontWeight: 600 }}>
+        <h3 style={{ color: "#1A237E", marginBottom: 16, fontWeight: 600 }}>
           Leads with WhatsApp Numbers ({whatsappLeads.length})
         </h3>
         {whatsappLeads.length === 0 ? (
           <p
             style={{
-              color: "#555",
+              color: "#aaa",
               fontSize: 13,
               padding: "24px 0",
               textAlign: "center",
@@ -93,11 +93,11 @@ export default function AdminWhatsAppLeads() {
                     style={{
                       textAlign: "left",
                       padding: "8px 10px",
-                      color: "#666",
+                      color: "#999",
                       fontSize: 11,
                       fontWeight: 600,
                       textTransform: "uppercase",
-                      borderBottom: "1px solid #222",
+                      borderBottom: "1px solid #e0e0e0",
                     }}
                   >
                     {h}
@@ -109,30 +109,30 @@ export default function AdminWhatsAppLeads() {
               {whatsappLeads.map((inq, i) => (
                 <tr
                   key={String(inq.id)}
-                  style={{ borderBottom: "1px solid #1a1a1a" }}
+                  style={{ borderBottom: "1px solid #f5f5f5" }}
                   data-ocid={`admin.whatsapp.item.${i + 1}`}
                 >
                   <td
                     style={{
                       padding: "10px",
                       fontSize: 14,
-                      color: "#ddd",
+                      color: "#222",
                       fontWeight: 500,
                     }}
                   >
                     {inq.name}
                   </td>
-                  <td style={{ padding: "10px", fontSize: 13, color: "#aaa" }}>
+                  <td style={{ padding: "10px", fontSize: 13, color: "#666" }}>
                     {inq.country}
                   </td>
-                  <td style={{ padding: "10px", fontSize: 13, color: "#aaa" }}>
+                  <td style={{ padding: "10px", fontSize: 13, color: "#666" }}>
                     {inq.whatsapp}
                   </td>
                   <td
                     style={{
                       padding: "10px",
                       fontSize: 12,
-                      color: "#777",
+                      color: "#888",
                       maxWidth: 200,
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -172,7 +172,7 @@ export default function AdminWhatsAppLeads() {
 
       {/* Integration Guide */}
       <div style={{ ...BOX, marginTop: 20 }}>
-        <h3 style={{ color: "#fff", marginBottom: 12, fontWeight: 600 }}>
+        <h3 style={{ color: "#1A237E", marginBottom: 12, fontWeight: 600 }}>
           Integration Guide
         </h3>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -200,8 +200,8 @@ export default function AdminWhatsAppLeads() {
             >
               <span
                 style={{
-                  background: "gold",
-                  color: "#111",
+                  background: "#1A237E",
+                  color: "#fff",
                   borderRadius: "50%",
                   width: 24,
                   height: 24,
@@ -215,7 +215,7 @@ export default function AdminWhatsAppLeads() {
               >
                 {item.step}
               </span>
-              <p style={{ color: "#aaa", fontSize: 13, paddingTop: 3 }}>
+              <p style={{ color: "#666", fontSize: 13, paddingTop: 3 }}>
                 {item.text}
               </p>
             </div>
