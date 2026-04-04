@@ -1,10 +1,11 @@
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
 import { motion } from "motion/react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import { useActor } from "../hooks/useActor";
 import { usePageSEO } from "../hooks/usePageSEO";
-import { getBlogPosts } from "../utils/blogStore";
 
 const categoryColors: Record<string, string> = {
   Trends: "bg-sky-500/20 text-sky-400 border-sky-500/30",
@@ -15,12 +16,27 @@ const categoryColors: Record<string, string> = {
   "Product Care": "bg-teal-500/20 text-teal-400 border-teal-500/30",
 };
 
-export default function BlogPost() {
+export default function BlogPostPage() {
   const { slug } = useParams() as { slug: string };
-  const allPosts = getBlogPosts();
-  const post = allPosts.find((p) => p.slug === slug);
+  const { actor } = useActor();
 
-  // Always call hooks unconditionally before any early return
+  const { data: post, isLoading } = useQuery({
+    queryKey: ["blogPost", slug],
+    queryFn: () => actor!.getBlogPost(slug),
+    enabled: !!actor && !!slug,
+    select: (data) =>
+      Array.isArray(data) ? (data[0] ?? null) : (data ?? null),
+  });
+
+  const { data: allPosts = [] } = useQuery({
+    queryKey: ["blogPosts"],
+    queryFn: () => actor!.getBlogPosts(null),
+    enabled: !!actor,
+  });
+
+  const related = allPosts.filter((p) => p.slug !== slug).slice(0, 3);
+
+  // Always call hooks unconditionally
   usePageSEO({
     title: post ? `${post.title} | Gemora Global` : "Blog | Gemora Global",
     description: post
@@ -31,15 +47,30 @@ export default function BlogPost() {
       : "https://gemoraglobal-tje.caffeine.xyz/blog",
   });
 
-  if (!post) return <Navigate to="/blog" replace />;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <Navbar />
+        <main className="pt-16">
+          <div className="relative h-72 md:h-96 bg-muted animate-pulse" />
+          <div className="container max-w-3xl py-12 space-y-4">
+            <div className="h-8 bg-muted rounded w-2/3 animate-pulse" />
+            <div className="h-4 bg-muted rounded animate-pulse" />
+            <div className="h-4 bg-muted rounded w-5/6 animate-pulse" />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
-  const related = allPosts.filter((p) => p.slug !== slug).slice(0, 3);
+  if (!post) return <Navigate to="/blog" replace />;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <main className="pt-16">
-        {/* Hero Image — eager for LCP */}
+        {/* Hero Image \u2014 eager for LCP */}
         <div className="relative h-72 md:h-96 overflow-hidden">
           <img
             src={post.image}
@@ -142,49 +173,51 @@ export default function BlogPost() {
         </section>
 
         {/* Related Posts */}
-        <section className="container py-16">
-          <h2 className="font-display text-2xl font-bold text-foreground mb-8">
-            Related Articles
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {related.map((rp, i) => (
-              <motion.article
-                key={rp.slug}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                data-ocid={`blogpost.related.item.${i + 1}`}
-                className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-colors"
-              >
-                <Link to={`/blog/${rp.slug}`}>
-                  <div className="relative overflow-hidden aspect-video">
-                    <img
-                      src={rp.image}
-                      alt={rp.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                      width={600}
-                      height={338}
-                    />
-                    <span
-                      className={`absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full border ${categoryColors[rp.category] ?? "bg-primary/20 text-primary border-primary/30"}`}
-                    >
-                      {rp.category}
-                    </span>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-display text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
-                      {rp.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {rp.date}
-                    </p>
-                  </div>
-                </Link>
-              </motion.article>
-            ))}
-          </div>
-        </section>
+        {related.length > 0 && (
+          <section className="container py-16">
+            <h2 className="font-display text-2xl font-bold text-foreground mb-8">
+              Related Articles
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {related.map((rp, i) => (
+                <motion.article
+                  key={rp.slug}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  data-ocid={`blogpost.related.item.${i + 1}`}
+                  className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-colors"
+                >
+                  <Link to={`/blog/${rp.slug}`}>
+                    <div className="relative overflow-hidden aspect-video">
+                      <img
+                        src={rp.image}
+                        alt={rp.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                        width={600}
+                        height={338}
+                      />
+                      <span
+                        className={`absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full border ${categoryColors[rp.category] ?? "bg-primary/20 text-primary border-primary/30"}`}
+                      >
+                        {rp.category}
+                      </span>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-display text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                        {rp.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {rp.date}
+                      </p>
+                    </div>
+                  </Link>
+                </motion.article>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
       <Footer />
     </div>

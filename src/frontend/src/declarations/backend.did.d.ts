@@ -72,6 +72,29 @@ export interface _CaffeineStorageRefillResult {
   'success' : [] | [boolean],
   'topped_up_amount' : [] | [bigint],
 }
+export interface BlogPost {
+  'id' : bigint,
+  'slug' : string,
+  'title' : string,
+  'category' : string,
+  'excerpt' : string,
+  'author' : string,
+  'date' : string,
+  'readTime' : string,
+  'status' : string,
+  'image' : string,
+  'content' : string,
+  'createdAt' : bigint,
+}
+export interface Catalogue {
+  'id' : bigint,
+  'title' : string,
+  'description' : string,
+  'fileUrl' : string,
+  'fileName' : string,
+  'uploadedAt' : string,
+  'createdAt' : bigint,
+}
 export interface _SERVICE {
   '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
   '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
@@ -151,6 +174,16 @@ export interface _SERVICE {
     [bigint, string, string, string, string, bigint, boolean],
     undefined
   >,
+  'verifyAdminLogin' : ActorMethod<[string, string], boolean>,
+  'changeAdminCredentials' : ActorMethod<[string, string, string, string], boolean>,
+  'getBlogPosts' : ActorMethod<[[] | [string]], Array<BlogPost>>,
+  'getBlogPost' : ActorMethod<[string], [] | [BlogPost]>,
+  'createBlogPost' : ActorMethod<[string, string, string, string, string, string, string, string, string, string], bigint>,
+  'updateBlogPost' : ActorMethod<[bigint, string, string, string, string, string, string, string, string, string, string], undefined>,
+  'deleteBlogPost' : ActorMethod<[bigint], undefined>,
+  'getCatalogues' : ActorMethod<[], Array<Catalogue>>,
+  'createCatalogue' : ActorMethod<[string, string, string, string, string], bigint>,
+  'deleteCatalogue' : ActorMethod<[bigint], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

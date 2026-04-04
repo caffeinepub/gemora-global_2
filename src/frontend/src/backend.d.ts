@@ -60,6 +60,29 @@ export enum UserRole {
     user = "user",
     guest = "guest"
 }
+export interface BlogPost {
+    id: bigint;
+    slug: string;
+    title: string;
+    category: string;
+    excerpt: string;
+    author: string;
+    date: string;
+    readTime: string;
+    status: string;
+    image: string;
+    content: string;
+    createdAt: bigint;
+}
+export interface Catalogue {
+    id: bigint;
+    title: string;
+    description: string;
+    fileUrl: string;
+    fileName: string;
+    uploadedAt: string;
+    createdAt: bigint;
+}
 export interface backendInterface {
     verifyAdminLogin(username: string, password: string): Promise<boolean>;
     changeAdminCredentials(currentUsername: string, currentPassword: string, newUsername: string, newPassword: string): Promise<boolean>;
@@ -99,4 +122,13 @@ export interface backendInterface {
     updateInquiryStatus(id: bigint, status: string): Promise<void>;
     updateProduct(id: bigint, categoryId: bigint, name: string, description: string, moq: string, imageUrls: Array<string>, featured: boolean): Promise<void>;
     updateTestimonial(id: bigint, name: string, company: string, country: string, text: string, rating: bigint, active: boolean): Promise<void>;
+    getBlogPosts(status: string | null): Promise<Array<BlogPost>>;
+    getBlogPost(slug: string): Promise<BlogPost | null>;
+    createBlogPost(slug: string, title: string, category: string, excerpt: string, author: string, date: string, readTime: string, status: string, image: string, content: string): Promise<bigint>;
+    updateBlogPost(id: bigint, slug: string, title: string, category: string, excerpt: string, author: string, date: string, readTime: string, status: string, image: string, content: string): Promise<void>;
+    deleteBlogPost(id: bigint): Promise<void>;
+    getCatalogues(): Promise<Array<Catalogue>>;
+    createCatalogue(title: string, description: string, fileUrl: string, fileName: string, uploadedAt: string): Promise<bigint>;
+    deleteCatalogue(id: bigint): Promise<void>;
+    _caffeineStorageCreateCertificate(hash: string): Promise<{ method: string; blob_hash: string }>;
 }

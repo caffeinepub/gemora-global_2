@@ -1,12 +1,9 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import AdminLayout from "../../components/AdminLayout";
+import { useActor } from "../../hooks/useActor";
 import { useStorageUpload } from "../../hooks/useStorageUpload";
-import {
-  type Catalogue,
-  getCatalogues,
-  saveCatalogues,
-} from "../../utils/catalogueStore";
 
 const fieldStyle = {
   width: "100%",
@@ -27,9 +24,8 @@ const labelStyle = {
 } as React.CSSProperties;
 
 export default function AdminCatalogue() {
-  const [catalogues, setCatalogues] = useState<Catalogue[]>(() =>
-    getCatalogues(),
-  );
+  const { actor } = useActor();
+  const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
     title: "",
@@ -37,13 +33,52 @@ export default function AdminCatalogue() {
     fileUrl: "",
     fileName: "",
   });
-  const [uploading, setUploading] = useState(false);
   const {
     uploadFile,
     uploading: storageUploading,
     progress,
   } = useStorageUpload();
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const { data: catalogues = [] } = useQuery({
+    queryKey: ["catalogues"],
+    queryFn: () => actor!.getCatalogues(),
+    enabled: !!actor,
+  });
+
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["catalogues"] });
+
+  const createMutation = useMutation({
+    mutationFn: () => {
+      const uploadedAt = new Date().toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+      return actor!.createCatalogue(
+        form.title.trim(),
+        form.description.trim(),
+        form.fileUrl,
+        form.fileName,
+        uploadedAt,
+      );
+    },
+    onSuccess: () => {
+      toast.success("Catalogue saved");
+      resetForm();
+      invalidate();
+    },
+    onError: () => toast.error("Failed to save catalogue"),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: bigint) => actor!.deleteCatalogue(id),
+    onSuccess: () => {
+      toast.success("Catalogue deleted");
+      invalidate();
+    },
+    onError: () => toast.error("Failed to delete catalogue"),
+  });
 
   const resetForm = () => {
     setForm({ title: "", description: "", fileUrl: "", fileName: "" });
@@ -53,15 +88,12 @@ export default function AdminCatalogue() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
     try {
       const url = await uploadFile(file);
       setForm((f) => ({ ...f, fileUrl: url, fileName: file.name }));
       toast.success("File uploaded successfully");
     } catch {
       toast.error("Upload failed");
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -74,36 +106,15 @@ export default function AdminCatalogue() {
       toast.error("Please upload a PDF file");
       return;
     }
-    const updated = [
-      ...catalogues,
-      {
-        id: Date.now(),
-        title: form.title.trim(),
-        description: form.description.trim(),
-        fileUrl: form.fileUrl,
-        fileName: form.fileName,
-        uploadedAt: new Date().toLocaleDateString("en-IN", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        }),
-      },
-    ];
-    saveCatalogues(updated);
-    setCatalogues(updated);
-    toast.success("Catalogue saved");
-    resetForm();
+    createMutation.mutate();
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: bigint) => {
     if (!confirm("Delete this catalogue?")) return;
-    const updated = catalogues.filter((c) => c.id !== id);
-    saveCatalogues(updated);
-    setCatalogues(updated);
-    toast.success("Catalogue deleted");
+    deleteMutation.mutate(id);
   };
 
-  const isUploading = uploading || storageUploading;
+  const isSaving = createMutation.isPending || storageUploading;
 
   return (
     <AdminLayout>
@@ -127,13 +138,7 @@ export default function AdminCatalogue() {
             >
               Catalogue Manager
             </h2>
-            <p
-              style={{
-                color: "#666",
-                fontSize: 13,
-                marginTop: 4,
-              }}
-            >
+            <p style={{ color: "#666", fontSize: 13, marginTop: 4 }}>
               Upload multiple catalogues. Buyers can download them from the
               website.
             </p>
@@ -230,7 +235,7 @@ export default function AdminCatalogue() {
                     <div style={{ color: "#2e7d32", fontSize: 14 }}>
                       ✓ {form.fileName}
                     </div>
-                  ) : isUploading ? (
+                  ) : storageUploading ? (
                     <div style={{ color: "#42A5F5", fontSize: 14 }}>
                       Uploading... {progress > 0 ? `${progress}%` : ""}
                     </div>
@@ -247,19 +252,19 @@ export default function AdminCatalogue() {
               <button
                 type="button"
                 onClick={handleSave}
-                disabled={isUploading}
+                disabled={isSaving}
                 style={{
-                  background: isUploading ? "#c5cae9" : "#1A237E",
+                  background: isSaving ? "#c5cae9" : "#1A237E",
                   color: "#fff",
                   border: "none",
                   borderRadius: 8,
                   padding: "10px 24px",
                   fontWeight: 600,
-                  cursor: isUploading ? "not-allowed" : "pointer",
+                  cursor: isSaving ? "not-allowed" : "pointer",
                   fontSize: 14,
                 }}
               >
-                {isUploading ? "Uploading..." : "Save Catalogue"}
+                {isSaving ? "Saving..." : "Save Catalogue"}
               </button>
               <button
                 type="button"
@@ -301,7 +306,7 @@ export default function AdminCatalogue() {
           <div style={{ display: "grid", gap: 12 }}>
             {catalogues.map((cat) => (
               <div
-                key={cat.id}
+                key={String(cat.id)}
                 style={{
                   background: "#fff",
                   border: "1px solid #e0e0e0",

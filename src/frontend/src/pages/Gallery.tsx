@@ -8,7 +8,6 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
 import { usePageSEO } from "../hooks/usePageSEO";
-import { getCatalogues } from "../utils/catalogueStore";
 
 const SAMPLE_GALLERY: GalleryItem[] = [
   {
@@ -83,7 +82,11 @@ export default function Gallery() {
   const { actor } = useActor();
   const [filter, setFilter] = useState("");
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
-  const catalogues = getCatalogues();
+  const { data: catalogues = [] } = useQuery({
+    queryKey: ["catalogues"],
+    queryFn: () => actor!.getCatalogues(),
+    enabled: !!actor,
+  });
 
   useEffect(() => {
     document.title =
@@ -453,7 +456,7 @@ export default function Gallery() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {catalogues.map((cat) => (
                 <a
-                  key={cat.id}
+                  key={String(cat.id)}
                   href={cat.fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"

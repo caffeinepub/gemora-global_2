@@ -1,13 +1,9 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import AdminLayout from "../../components/AdminLayout";
+import { useActor } from "../../hooks/useActor";
 import { useStorageUpload } from "../../hooks/useStorageUpload";
-import {
-  type BlogPost,
-  generateSlug,
-  getBlogPosts,
-  saveBlogPosts,
-} from "../../utils/blogStore";
 
 const categories = [
   "Trends",
@@ -47,13 +43,96 @@ const EMPTY_FORM = {
   image: "",
 };
 
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 export default function AdminBlog() {
-  const [posts, setPosts] = useState<BlogPost[]>(() => getBlogPosts());
+  const { actor } = useActor();
+  const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
+  const [editId, setEditId] = useState<bigint | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const { uploadFile, uploading } = useStorageUpload();
   const imageFileRef = useRef<HTMLInputElement>(null);
+
+  const { data: posts = [] } = useQuery({
+    queryKey: ["blogPosts"],
+    queryFn: () => actor!.getBlogPosts(null),
+    enabled: !!actor,
+  });
+
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["blogPosts"] });
+
+  const createMutation = useMutation({
+    mutationFn: () => {
+      const now = new Date().toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+      const wordCount = form.content.split(" ").length;
+      const readTime = `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
+      return actor!.createBlogPost(
+        generateSlug(form.title),
+        form.title,
+        form.category,
+        form.excerpt,
+        form.author,
+        form.date || now,
+        readTime,
+        form.status,
+        form.image,
+        form.content,
+      );
+    },
+    onSuccess: () => {
+      toast.success("Post published");
+      resetForm();
+      invalidate();
+    },
+    onError: () => toast.error("Failed to create post"),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: () => {
+      const wordCount = form.content.split(" ").length;
+      const readTime = `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
+      return actor!.updateBlogPost(
+        editId!,
+        generateSlug(form.title),
+        form.title,
+        form.category,
+        form.excerpt,
+        form.author,
+        form.date,
+        readTime,
+        form.status,
+        form.image,
+        form.content,
+      );
+    },
+    onSuccess: () => {
+      toast.success("Post updated");
+      resetForm();
+      invalidate();
+    },
+    onError: () => toast.error("Failed to update post"),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: bigint) => actor!.deleteBlogPost(id),
+    onSuccess: () => {
+      toast.success("Post deleted");
+      invalidate();
+    },
+    onError: () => toast.error("Failed to delete post"),
+  });
 
   const resetForm = () => {
     setForm(EMPTY_FORM);
@@ -61,7 +140,7 @@ export default function AdminBlog() {
     setShowForm(false);
   };
 
-  const handleEdit = (post: BlogPost) => {
+  const handleEdit = (post: (typeof posts)[0]) => {
     setForm({
       title: post.title,
       category: post.category,
@@ -76,12 +155,9 @@ export default function AdminBlog() {
     setShowForm(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: bigint) => {
     if (!confirm("Delete this blog post?")) return;
-    const updated = posts.filter((p) => p.id !== id);
-    setPosts(updated);
-    saveBlogPosts(updated);
-    toast.success("Post deleted");
+    deleteMutation.mutate(id);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,44 +178,10 @@ export default function AdminBlog() {
       toast.error("Title and author are required");
       return;
     }
-    const now = new Date().toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-    let updated: BlogPost[];
-    if (editId !== null) {
-      updated = posts.map((p) =>
-        p.id === editId
-          ? {
-              ...p,
-              ...form,
-              slug: generateSlug(form.title),
-              readTime: `${Math.max(1, Math.ceil(form.content.split(" ").length / 200))} min read`,
-            }
-          : p,
-      );
-    } else {
-      const newPost: BlogPost = {
-        id: Date.now(),
-        slug: generateSlug(form.title),
-        title: form.title,
-        category: form.category,
-        author: form.author,
-        date: form.date || now,
-        readTime: `${Math.max(1, Math.ceil(form.content.split(" ").length / 200))} min read`,
-        status: form.status,
-        excerpt: form.excerpt,
-        content: form.content,
-        image: form.image,
-      };
-      updated = [newPost, ...posts];
-    }
-    setPosts(updated);
-    saveBlogPosts(updated);
-    toast.success(editId !== null ? "Post updated" : "Post published");
-    resetForm();
+    editId !== null ? updateMutation.mutate() : createMutation.mutate();
   };
+
+  const isSaving = createMutation.isPending || updateMutation.isPending;
 
   const statusColor = (s: string) =>
     s === "Published" ? "#22c55e" : s === "Draft" ? "#f59e0b" : "#6b7280";
@@ -152,13 +194,7 @@ export default function AdminBlog() {
             <h2 style={{ color: "#1A237E", fontWeight: 700, fontSize: 20 }}>
               Blog Management
             </h2>
-            <p
-              style={{
-                color: "#666",
-                fontSize: 13,
-                marginTop: 2,
-              }}
-            >
+            <p style={{ color: "#666", fontSize: 13, marginTop: 2 }}>
               {posts.filter((p) => p.status === "Published").length} published •{" "}
               {posts.filter((p) => p.status === "Draft").length} drafts
             </p>
@@ -276,7 +312,6 @@ export default function AdminBlog() {
               </div>
               <div>
                 <p style={labelStyle}>Featured Image</p>
-                {/* File upload area */}
                 <div
                   style={{
                     border: "2px dashed #c5cae9",
@@ -364,10 +399,8 @@ export default function AdminBlog() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        lineHeight: 1,
                       }}
                       aria-label="Remove image"
-                      data-ocid="admin.blog.delete_button"
                     >
                       ×
                     </button>
@@ -402,19 +435,24 @@ export default function AdminBlog() {
               <button
                 type="button"
                 onClick={handleSave}
+                disabled={isSaving || uploading}
                 style={{
-                  background: "#1A237E",
+                  background: isSaving ? "#c5cae9" : "#1A237E",
                   color: "#fff",
                   border: "none",
                   borderRadius: 8,
                   padding: "9px 24px",
                   fontWeight: 700,
                   fontSize: 14,
-                  cursor: "pointer",
+                  cursor: isSaving ? "not-allowed" : "pointer",
                 }}
                 data-ocid="admin.blog.save_button"
               >
-                {editId !== null ? "Update Post" : "Publish Post"}
+                {isSaving
+                  ? "Saving..."
+                  : editId !== null
+                    ? "Update Post"
+                    : "Publish Post"}
               </button>
               <button
                 type="button"
@@ -480,7 +518,7 @@ export default function AdminBlog() {
             <tbody>
               {posts.map((post, i) => (
                 <tr
-                  key={post.id}
+                  key={String(post.id)}
                   style={{ borderBottom: "1px solid #f5f5f5" }}
                   data-ocid={`admin.blog.item.${i + 1}`}
                 >

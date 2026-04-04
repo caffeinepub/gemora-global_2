@@ -148,6 +148,29 @@ export interface Testimonial {
     company: string;
     rating: bigint;
 }
+export interface BlogPost {
+    id: bigint;
+    slug: string;
+    title: string;
+    category: string;
+    excerpt: string;
+    author: string;
+    date: string;
+    readTime: string;
+    status: string;
+    image: string;
+    content: string;
+    createdAt: bigint;
+}
+export interface Catalogue {
+    id: bigint;
+    title: string;
+    description: string;
+    fileUrl: string;
+    fileName: string;
+    uploadedAt: string;
+    createdAt: bigint;
+}
 export enum UserRole {
     admin = "admin",
     user = "user",
@@ -199,6 +222,14 @@ export interface backendInterface {
     updateInquiryStatus(id: bigint, status: string): Promise<void>;
     updateProduct(id: bigint, categoryId: bigint, name: string, description: string, moq: string, imageUrls: Array<string>, featured: boolean): Promise<void>;
     updateTestimonial(id: bigint, name: string, company: string, country: string, text: string, rating: bigint, active: boolean): Promise<void>;
+    getBlogPosts(status: string | null): Promise<Array<BlogPost>>;
+    getBlogPost(slug: string): Promise<BlogPost | null>;
+    createBlogPost(slug: string, title: string, category: string, excerpt: string, author: string, date: string, readTime: string, status: string, image: string, content: string): Promise<bigint>;
+    updateBlogPost(id: bigint, slug: string, title: string, category: string, excerpt: string, author: string, date: string, readTime: string, status: string, image: string, content: string): Promise<void>;
+    deleteBlogPost(id: bigint): Promise<void>;
+    getCatalogues(): Promise<Array<Catalogue>>;
+    createCatalogue(title: string, description: string, fileUrl: string, fileName: string, uploadedAt: string): Promise<bigint>;
+    deleteCatalogue(id: bigint): Promise<void>;
 }
 import type { Inquiry as _Inquiry, Product as _Product, UserProfile as _UserProfile, UserRole as _UserRole, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -747,6 +778,38 @@ export class Backend implements backendInterface {
             const result = await this.actor.updateTestimonial(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
             return result;
         }
+    }
+    async getBlogPosts(arg0: string | null): Promise<Array<BlogPost>> {
+        const result = await this.actor.getBlogPosts(arg0 ? [arg0] : []);
+        return result as unknown as Array<BlogPost>;
+    }
+    async getBlogPost(arg0: string): Promise<BlogPost | null> {
+        const result = await this.actor.getBlogPost(arg0);
+        return (Array.isArray(result) ? result[0] ?? null : result ?? null) as unknown as BlogPost | null;
+    }
+    async createBlogPost(arg0: string, arg1: string, arg2: string, arg3: string, arg4: string, arg5: string, arg6: string, arg7: string, arg8: string, arg9: string): Promise<bigint> {
+        const result = await this.actor.createBlogPost(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+        return result;
+    }
+    async updateBlogPost(arg0: bigint, arg1: string, arg2: string, arg3: string, arg4: string, arg5: string, arg6: string, arg7: string, arg8: string, arg9: string, arg10: string): Promise<void> {
+        const result = await this.actor.updateBlogPost(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+        return result;
+    }
+    async deleteBlogPost(arg0: bigint): Promise<void> {
+        const result = await this.actor.deleteBlogPost(arg0);
+        return result;
+    }
+    async getCatalogues(): Promise<Array<Catalogue>> {
+        const result = await this.actor.getCatalogues();
+        return result as unknown as Array<Catalogue>;
+    }
+    async createCatalogue(arg0: string, arg1: string, arg2: string, arg3: string, arg4: string): Promise<bigint> {
+        const result = await this.actor.createCatalogue(arg0, arg1, arg2, arg3, arg4);
+        return result;
+    }
+    async deleteCatalogue(arg0: bigint): Promise<void> {
+        const result = await this.actor.deleteCatalogue(arg0);
+        return result;
     }
 }
 function from_candid_Inquiry_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Inquiry): Inquiry {

@@ -73,6 +73,30 @@ export const Testimonial = IDL.Record({
   'rating' : IDL.Nat,
 });
 
+export const BlogPost = IDL.Record({
+  'id' : IDL.Nat,
+  'slug' : IDL.Text,
+  'title' : IDL.Text,
+  'category' : IDL.Text,
+  'excerpt' : IDL.Text,
+  'author' : IDL.Text,
+  'date' : IDL.Text,
+  'readTime' : IDL.Text,
+  'status' : IDL.Text,
+  'image' : IDL.Text,
+  'content' : IDL.Text,
+  'createdAt' : IDL.Int,
+});
+export const Catalogue = IDL.Record({
+  'id' : IDL.Nat,
+  'title' : IDL.Text,
+  'description' : IDL.Text,
+  'fileUrl' : IDL.Text,
+  'fileName' : IDL.Text,
+  'uploadedAt' : IDL.Text,
+  'createdAt' : IDL.Int,
+});
+
 export const idlService = IDL.Service({
   '_caffeineStorageBlobIsLive' : IDL.Func(
       [IDL.Vec(IDL.Nat8)],
@@ -387,6 +411,16 @@ export const idlFactory = ({ IDL }) => {
         [],
         [],
       ),
+    'verifyAdminLogin' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], ['query']),
+    'changeAdminCredentials' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text], [IDL.Bool], []),
+    'getBlogPosts' : IDL.Func([IDL.Opt(IDL.Text)], [IDL.Vec(BlogPost)], ['query']),
+    'getBlogPost' : IDL.Func([IDL.Text], [IDL.Opt(BlogPost)], ['query']),
+    'createBlogPost' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
+    'updateBlogPost' : IDL.Func([IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text], [], []),
+    'deleteBlogPost' : IDL.Func([IDL.Nat], [], []),
+    'getCatalogues' : IDL.Func([], [IDL.Vec(Catalogue)], ['query']),
+    'createCatalogue' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
+    'deleteCatalogue' : IDL.Func([IDL.Nat], [], []),
   });
 };
 
