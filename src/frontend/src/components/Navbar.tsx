@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const links = [
@@ -87,9 +87,24 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [servicesHover, setServicesHover] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const navBg =
+    scrolled || open
+      ? "bg-[#1A237E]/95 backdrop-blur-md border-b border-[#3448bb]/60 shadow-lg"
+      : "bg-transparent border-b border-transparent";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 bg-[#1A237E] border-b border-[#2a3a9e]">
+    <nav
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${navBg}`}
+    >
       <div className="container flex items-center justify-between h-16">
         <Link to="/" className="flex items-center">
           <img
@@ -107,7 +122,7 @@ export default function Navbar() {
               className={`text-sm font-medium transition-colors ${
                 location.pathname === l.to
                   ? "text-[#42A5F5]"
-                  : "text-white/80 hover:text-[#42A5F5]"
+                  : "text-white/90 hover:text-[#42A5F5]"
               }`}
             >
               {l.label}
@@ -123,7 +138,7 @@ export default function Navbar() {
             <button
               type="button"
               data-ocid="nav.link"
-              className="flex items-center gap-1 text-sm font-medium transition-colors text-white/80 hover:text-[#42A5F5]"
+              className="flex items-center gap-1 text-sm font-medium transition-colors text-white/90 hover:text-[#42A5F5]"
             >
               Our Services
               <ChevronDown
@@ -133,13 +148,13 @@ export default function Navbar() {
               />
             </button>
             {servicesHover && (
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[520px] bg-[#1A237E] border border-[#2a3a9e] rounded-md shadow-lg z-50 py-2">
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[520px] bg-[#1A237E]/95 backdrop-blur-md border border-[#3448bb]/60 rounded-md shadow-xl z-50 py-2">
                 <div className="grid grid-cols-2">
                   {SERVICE_LINKS.map((s) => (
                     <Link
                       key={s.to}
                       to={s.to}
-                      className="block px-4 py-2 text-sm text-white/80 hover:bg-[#0d1857] hover:text-[#42A5F5] transition-colors"
+                      className="block px-4 py-2 text-sm text-white/80 hover:bg-[#1a2e8a] hover:text-[#42A5F5] transition-colors"
                       onClick={() => setServicesHover(false)}
                     >
                       {s.label}
@@ -163,7 +178,7 @@ export default function Navbar() {
         <button
           type="button"
           aria-label="Toggle menu"
-          className="md:hidden p-2 text-white/80"
+          className="md:hidden p-2 text-white/90"
           onClick={() => setOpen(!open)}
         >
           <svg
@@ -192,7 +207,7 @@ export default function Navbar() {
         </button>
       </div>
       {open && (
-        <div className="md:hidden bg-[#1A237E] border-t border-[#2a3a9e] px-4 py-3 flex flex-col gap-3">
+        <div className="md:hidden bg-[#1A237E]/95 backdrop-blur-md border-t border-[#3448bb]/60 px-4 py-3 flex flex-col gap-3">
           {links.map((l) => (
             <Link
               key={l.to}
@@ -201,7 +216,7 @@ export default function Navbar() {
               className={`text-sm py-1 transition-colors ${
                 location.pathname === l.to
                   ? "text-[#42A5F5]"
-                  : "text-white/80 hover:text-[#42A5F5]"
+                  : "text-white/90 hover:text-[#42A5F5]"
               }`}
               onClick={() => setOpen(false)}
             >
@@ -213,7 +228,7 @@ export default function Navbar() {
           <div>
             <button
               type="button"
-              className="flex items-center gap-1 text-sm py-1 w-full text-left text-white/80 hover:text-[#42A5F5] transition-colors"
+              className="flex items-center gap-1 text-sm py-1 w-full text-left text-white/90 hover:text-[#42A5F5] transition-colors"
               onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
             >
               Our Services

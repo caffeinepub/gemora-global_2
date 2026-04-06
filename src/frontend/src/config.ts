@@ -44,13 +44,20 @@ export async function loadConfig(): Promise<Config> {
       throw new Error("CANISTER_ID_BACKEND is not set");
     }
 
+    // Use the real storage gateway URL; fall back to default if env var is missing or invalid
+    const rawGatewayUrl = process.env.STORAGE_GATEWAY_URL;
+    const storageGatewayUrl =
+      rawGatewayUrl && rawGatewayUrl !== "nogateway" && rawGatewayUrl !== "undefined"
+        ? rawGatewayUrl
+        : DEFAULT_STORAGE_GATEWAY_URL;
+
     const fullConfig = {
       backend_host:
         config.backend_host === "undefined" ? undefined : config.backend_host,
       backend_canister_id: (config.backend_canister_id === "undefined"
         ? backendCanisterId
         : config.backend_canister_id) as string,
-      storage_gateway_url: process.env.STORAGE_GATEWAY_URL ?? "nogateway",
+      storage_gateway_url: storageGatewayUrl,
       bucket_name: DEFAULT_BUCKET_NAME,
       project_id:
         config.project_id !== "undefined"
