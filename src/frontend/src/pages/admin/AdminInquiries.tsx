@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import type { Inquiry } from "../../backend";
 import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
+import type { Inquiry } from "../../types";
 
 const STATUS_COLORS: Record<string, string> = {
   new: "bg-blue-500/20 text-blue-600 border-blue-500/30",

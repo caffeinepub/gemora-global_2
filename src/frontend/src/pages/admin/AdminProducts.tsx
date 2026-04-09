@@ -28,13 +28,19 @@ import {
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FileSpreadsheet, ImageOff, Upload, X } from "lucide-react";
+import { FileSpreadsheet, ImageOff, Loader2, Upload, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import type { Category, Product } from "../../backend";
 import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
 import { useStorageUpload } from "../../hooks/useStorageUpload";
+import type { Category, Product } from "../../types";
+
+type WebPBadgeInfo = {
+  originalKB: number;
+  webpKB: number;
+  savedPercent: number;
+};
 
 type ProductForm = {
   categoryId: string;
@@ -42,6 +48,7 @@ type ProductForm = {
   description: string;
   moq: string;
   imageUrls: string[];
+  imageWebPInfo: Record<string, WebPBadgeInfo>;
   featured: boolean;
 };
 
@@ -51,11 +58,29 @@ const EMPTY: ProductForm = {
   description: "",
   moq: "",
   imageUrls: [],
+  imageWebPInfo: {},
   featured: false,
 };
 
 const CSV_TEMPLATE =
   "name,description,moq,categoryId,imageUrl,featured\nKundan Necklace Set,Beautiful kundan set for bridal wear,$8/piece (min 50),1,https://example.com/img.jpg,false";
+
+function WebPBadge({ info }: { info?: WebPBadgeInfo }) {
+  if (!info) return null;
+  return (
+    <span
+      className="absolute bottom-0 left-0 right-0 text-center text-[9px] font-bold rounded-b"
+      style={{
+        background: "rgba(46,125,50,0.85)",
+        color: "#fff",
+        padding: "2px 0",
+      }}
+      title={`WebP: ${info.webpKB.toFixed(0)}KB (${info.savedPercent.toFixed(0)}% smaller)`}
+    >
+      WebP ✓
+    </span>
+  );
+}
 
 export default function AdminProducts() {
   const { actor } = useActor();
@@ -66,15 +91,15 @@ export default function AdminProducts() {
   const [form, setForm] = useState<ProductForm>(EMPTY);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const csvInputRef = useRef<HTMLInputElement>(null);
-  const { uploadFile, uploading, progress } = useStorageUpload();
+  const { uploadFileDetailed, uploading, converting, progress, uploadError } =
+    useStorageUpload();
 
-  // CSV import progress state
   const [csvImporting, setCsvImporting] = useState(false);
   const [csvProgress, setCsvProgress] = useState({ current: 0, total: 0 });
 
   const { data: products } = useQuery<Product[]>({
     queryKey: ["products", null],
-    queryFn: () => actor!.getProducts(null),
+    queryFn: () => actor!.getProducts([]),
     enabled: !!actor,
   });
   const { data: categories } = useQuery<Category[]>({
@@ -144,6 +169,7 @@ export default function AdminProducts() {
       description: p.description,
       moq: p.moq,
       imageUrls: p.imageUrls,
+      imageWebPInfo: {},
       featured: p.featured,
     });
     setOpen(true);
@@ -152,17 +178,52 @@ export default function AdminProducts() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
-    const urls: string[] = [];
     for (const file of files) {
       try {
-        const url = await uploadFile(file);
-        urls.push(url);
+        const result = await uploadFileDetailed(file);
+        setForm((f) => ({
+          ...f,
+          imageUrls: [...f.imageUrls, result.url],
+          imageWebPInfo: {
+            ...f.imageWebPInfo,
+            [result.url]: {
+              originalKB: result.originalKB,
+              webpKB: result.webpKB,
+              savedPercent: result.savedPercent,
+            },
+          },
+        }));
       } catch {
-        toast.error(`Failed to upload ${file.name}`);
+        toast.error(
+          "Upload failed — please check your internet connection and try again",
+        );
       }
     }
-    setForm((f) => ({ ...f, imageUrls: [...f.imageUrls, ...urls] }));
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleDropUpload = async (droppedFiles: File[]) => {
+    for (const file of droppedFiles) {
+      try {
+        const result = await uploadFileDetailed(file);
+        setForm((f) => ({
+          ...f,
+          imageUrls: [...f.imageUrls, result.url],
+          imageWebPInfo: {
+            ...f.imageWebPInfo,
+            [result.url]: {
+              originalKB: result.originalKB,
+              webpKB: result.webpKB,
+              savedPercent: result.savedPercent,
+            },
+          },
+        }));
+      } catch {
+        toast.error(
+          "Upload failed — please check your internet connection and try again",
+        );
+      }
+    }
   };
 
   const removeUploadedUrl = (idx: number) => {
@@ -191,22 +252,17 @@ export default function AdminProducts() {
     if (!actor) return;
     const file = e.target.files?.[0];
     if (!file) return;
-
     const text = await file.text();
     const lines = text.split("\n").filter((l) => l.trim());
     if (lines.length < 2) {
       toast.error("CSV has no data rows");
       return;
     }
-
-    // Skip header row
     const dataLines = lines.slice(1);
     setCsvImporting(true);
     setCsvProgress({ current: 0, total: dataLines.length });
-
     let successCount = 0;
     let failCount = 0;
-
     for (let i = 0; i < dataLines.length; i++) {
       setCsvProgress({ current: i + 1, total: dataLines.length });
       const cols = dataLines[i].split(",");
@@ -234,12 +290,10 @@ export default function AdminProducts() {
         failCount++;
       }
     }
-
     setCsvImporting(false);
     setCsvProgress({ current: 0, total: 0 });
     if (csvInputRef.current) csvInputRef.current.value = "";
     invalidate();
-
     if (failCount === 0) {
       toast.success(
         `${successCount} product${successCount !== 1 ? "s" : ""} imported`,
@@ -249,6 +303,13 @@ export default function AdminProducts() {
     }
     setCsvOpen(false);
   };
+
+  const uploadActive = converting || uploading;
+  const uploadLabel = converting
+    ? "Converting to WebP..."
+    : uploading
+      ? `Uploading... ${progress}%`
+      : null;
 
   return (
     <AdminLayout>
@@ -296,7 +357,6 @@ export default function AdminProducts() {
                     </button>
                   </div>
                 </div>
-
                 <div>
                   <Label>Select CSV file</Label>
                   <div
@@ -331,7 +391,6 @@ export default function AdminProducts() {
                     </p>
                   </div>
                 </div>
-
                 {csvImporting && (
                   <div data-ocid="admin.products.csv_loading_state">
                     <div
@@ -357,7 +416,6 @@ export default function AdminProducts() {
                     />
                   </div>
                 )}
-
                 <Button
                   variant="outline"
                   className="w-full"
@@ -371,7 +429,7 @@ export default function AdminProducts() {
             </DialogContent>
           </Dialog>
 
-          {/* Add Product Dialog */}
+          {/* Add/Edit Product Dialog */}
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button
@@ -441,16 +499,23 @@ export default function AdminProducts() {
                   />
                 </div>
 
-                {/* File Upload */}
+                {/* Image Upload — file only, no URL input */}
                 <div>
-                  <Label>Upload Product Images</Label>
+                  <div className="flex items-center justify-between mb-1">
+                    <Label>Upload Product Images</Label>
+                    <span className="text-xs text-muted-foreground">
+                      Auto-converted to WebP
+                    </span>
+                  </div>
                   <div
-                    className="mt-1 border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors"
+                    className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors"
                     style={{
-                      borderColor: uploading ? "#42A5F5" : "#c5cae9",
-                      background: "#f5f7ff",
+                      borderColor: uploadActive ? "#42A5F5" : "#c5cae9",
+                      background: uploadActive ? "#e8f4fe" : "#f5f7ff",
                     }}
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={() =>
+                      !uploadActive && fileInputRef.current?.click()
+                    }
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ")
                         fileInputRef.current?.click();
@@ -461,20 +526,7 @@ export default function AdminProducts() {
                       const files = Array.from(e.dataTransfer.files).filter(
                         (f) => f.type.startsWith("image/"),
                       );
-                      if (!files.length) return;
-                      const urls: string[] = [];
-                      for (const file of files) {
-                        try {
-                          const url = await uploadFile(file);
-                          urls.push(url);
-                        } catch {
-                          toast.error(`Failed to upload ${file.name}`);
-                        }
-                      }
-                      setForm((f) => ({
-                        ...f,
-                        imageUrls: [...f.imageUrls, ...urls],
-                      }));
+                      if (files.length) await handleDropUpload(files);
                     }}
                     data-ocid="admin.products.dropzone"
                   >
@@ -486,17 +538,37 @@ export default function AdminProducts() {
                       className="hidden"
                       onChange={handleFileChange}
                     />
-                    <Upload
-                      className="mx-auto mb-2 text-muted-foreground"
-                      size={24}
-                    />
-                    <p className="text-sm text-muted-foreground">
-                      Drag & drop images or{" "}
-                      <span style={{ color: "#42A5F5" }}>click to browse</span>
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      PNG, JPG, WEBP supported
-                    </p>
+                    {uploadActive ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <Loader2
+                          size={22}
+                          className="animate-spin"
+                          style={{ color: "#42A5F5" }}
+                        />
+                        <p
+                          className="text-sm font-medium"
+                          style={{ color: "#42A5F5" }}
+                        >
+                          {uploadLabel}
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload
+                          className="mx-auto mb-2 text-muted-foreground"
+                          size={24}
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          Drag & drop images or{" "}
+                          <span style={{ color: "#42A5F5" }}>
+                            click to browse
+                          </span>
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          PNG, JPG → auto-converted to WebP
+                        </p>
+                      </>
+                    )}
                   </div>
                   {uploading && (
                     <div
@@ -504,10 +576,15 @@ export default function AdminProducts() {
                       data-ocid="admin.products.loading_state"
                     >
                       <Progress value={progress} className="h-2" />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Uploading... {progress}%
-                      </p>
                     </div>
+                  )}
+                  {uploadError && (
+                    <p
+                      className="mt-1 text-xs text-destructive"
+                      data-ocid="admin.products.upload_error"
+                    >
+                      {uploadError}
+                    </p>
                   )}
                   {form.imageUrls.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -518,11 +595,13 @@ export default function AdminProducts() {
                             alt="Preview"
                             className="w-16 h-16 object-cover rounded"
                           />
+                          <WebPBadge info={form.imageWebPInfo[url]} />
                           <button
                             type="button"
                             onClick={() => removeUploadedUrl(i)}
                             className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
                             style={{ background: "crimson" }}
+                            aria-label="Remove image"
                           >
                             <X size={10} color="#fff" />
                           </button>
@@ -547,7 +626,7 @@ export default function AdminProducts() {
                   disabled={
                     createMutation.isPending ||
                     updateMutation.isPending ||
-                    uploading
+                    uploadActive
                   }
                   data-ocid="admin.products.submit_button"
                 >
@@ -635,9 +714,8 @@ export default function AdminProducts() {
                     onClick={() => {
                       if (
                         confirm("Are you sure you want to delete this product?")
-                      ) {
+                      )
                         deleteMutation.mutate(p.id);
-                      }
                     }}
                     data-ocid={`admin.products.delete_button.${i + 1}`}
                   >

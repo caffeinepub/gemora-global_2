@@ -3,11 +3,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import type { GalleryItem } from "../backend";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
 import { usePageSEO } from "../hooks/usePageSEO";
+import type { GalleryItem } from "../types";
 
 const SAMPLE_GALLERY: GalleryItem[] = [
   {
@@ -151,7 +151,7 @@ export default function Gallery() {
 
   const { data: items, isLoading } = useQuery<GalleryItem[]>({
     queryKey: ["gallery", filter],
-    queryFn: () => actor!.getGallery(filter || null),
+    queryFn: () => actor!.getGallery(filter ? [filter] : []),
     enabled: !!actor,
   });
 

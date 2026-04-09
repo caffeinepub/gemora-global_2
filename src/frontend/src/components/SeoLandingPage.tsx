@@ -8,6 +8,11 @@ import { usePageSEO } from "../hooks/usePageSEO";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 
+export interface HreflangEntry {
+  lang: string;
+  url: string;
+}
+
 export interface SeoLandingPageProps {
   title: string;
   metaDescription: string;
@@ -18,6 +23,7 @@ export interface SeoLandingPageProps {
   bodyContent: React.ReactNode;
   faqs: { q: string; a: string }[];
   schema?: object;
+  hreflangs?: HreflangEntry[];
 }
 
 const CATEGORIES = [
@@ -89,6 +95,7 @@ export default function SeoLandingPage({
   bodyContent,
   faqs,
   schema,
+  hreflangs,
 }: SeoLandingPageProps) {
   usePageSEO({
     title,
@@ -98,6 +105,7 @@ export default function SeoLandingPage({
     ogDescription: metaDescription,
     ogImage:
       "https://gemoraglobal-tje.caffeine.xyz/assets/uploads/logo-removebg-preview-1.png",
+    hreflangs,
     schema: schema ?? {
       "@context": "https://schema.org",
       "@type": "WebPage",
@@ -122,6 +130,19 @@ export default function SeoLandingPage({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const text = [
+      `Name: ${form.name}`,
+      `Email: ${form.email}`,
+      form.country ? `Country: ${form.country}` : null,
+      `Message: ${form.message}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    window.open(
+      `https://wa.me/917976341419?text=${encodeURIComponent(text)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
     setSubmitted(true);
   }
 

@@ -108,7 +108,7 @@ export default function Contact() {
         form.country,
         form.whatsapp,
         form.requirement,
-        productId ? BigInt(productId) : null,
+        productId ? [BigInt(productId)] : [],
       ),
     onSuccess: () => {
       toast.success("Inquiry sent! We'll contact you shortly.");

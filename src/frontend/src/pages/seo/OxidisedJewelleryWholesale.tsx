@@ -1,6 +1,96 @@
 import { Link } from "react-router-dom";
 import SeoLandingPage from "../../components/SeoLandingPage";
 
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What is oxidised jewellery made of?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Oxidised jewellery is made from brass or copper base metal coated with silver plating, then treated with chemicals to create a darkened antique finish. The resulting black-silver appearance is what gives it the distinctive oxidised look.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is oxidised jewellery durable?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, quality oxidised jewellery is durable when properly finished. Our pieces use multi-layer plating and protective coating to prevent excessive tarnishing beyond the intended antique finish.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is the MOQ for oxidised jewellery wholesale?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Our oxidised jewellery wholesale MOQ is 50 units per design. Mixed assortments of different oxidised designs require a minimum of 200 units total.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do you export oxidised jewellery to Western countries?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, we regularly export oxidised jewellery to UK, USA, Germany, France, Australia, and Canada. The bohemian and ethnic fashion segments in these markets have strong demand for quality oxidised pieces.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can I get custom oxidised jewellery designs?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, we offer custom oxidised jewellery manufacturing for exclusive designs. Custom orders require a minimum of 100 units and 15–20 business days for production.",
+        },
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://gemoraglobal-tje.caffeine.xyz/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Our Services",
+        item: "https://gemoraglobal-tje.caffeine.xyz/wholesale",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "Oxidised Jewellery Wholesale",
+        item: "https://gemoraglobal-tje.caffeine.xyz/oxidised-jewellery-wholesale",
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "Gemora Global",
+    description:
+      "Oxidised jewellery wholesale manufacturer and exporter from Jaipur, Rajasthan, India.",
+    url: "https://gemoraglobal-tje.caffeine.xyz/oxidised-jewellery-wholesale",
+    telephone: "+91-7976341419",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "B 66 MAA Hinglaj Nagar",
+      addressLocality: "Jaipur",
+      addressRegion: "Rajasthan",
+      postalCode: "302021",
+      addressCountry: "IN",
+    },
+  },
+];
+
 export default function OxidisedJewelleryWholesale() {
   return (
     <SeoLandingPage
@@ -10,6 +100,7 @@ export default function OxidisedJewelleryWholesale() {
       h1="Oxidised Jewellery Wholesale Supplier India"
       targetKeyword="oxidised jewellery wholesale"
       heroSubtitle="Gemora Global is a leading oxidised jewellery wholesale supplier from Jaipur, India. Antique silver-finish earrings, necklaces, bracelets, rings and sets for boutiques and international buyers. MOQ from 50 units."
+      schema={schema}
       bodyContent={
         <>
           <h2 className="text-xl font-serif font-bold text-primary mt-0">
@@ -106,7 +197,21 @@ export default function OxidisedJewelleryWholesale() {
               UAE distributors
             </Link>{" "}
             consistently rank oxidised jewellery among their top-selling
-            categories.
+            categories. Also explore our{" "}
+            <Link
+              to="/imitation-jewellery-manufacturer-jaipur"
+              className="text-primary underline"
+            >
+              Jaipur jewellery manufacturer
+            </Link>{" "}
+            page and{" "}
+            <Link
+              to="/wholesale-jewellery-rajasthan"
+              className="text-primary underline"
+            >
+              wholesale jewellery Rajasthan
+            </Link>{" "}
+            page for the full range.
           </p>
         </>
       }

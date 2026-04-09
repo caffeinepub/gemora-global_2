@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Inquiry } from "../../backend";
 import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
+import type { Inquiry } from "../../types";
 
 const BOX = {
   background: "#fff",

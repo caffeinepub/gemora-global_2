@@ -7,15 +7,19 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface Product {
+export interface Testimonial {
     id: bigint;
-    moq: string;
-    categoryId: bigint;
-    featured: boolean;
-    imageUrls: Array<string>;
+    active: boolean;
+    country: string;
     name: string;
-    createdAt: bigint;
-    description: string;
+    text: string;
+    company: string;
+    rating: bigint;
+}
+export interface UserProfile {
+    country: string;
+    name: string;
+    company: string;
 }
 export interface Category {
     id: bigint;
@@ -23,6 +27,29 @@ export interface Category {
     name: string;
     description: string;
     imageUrl: string;
+}
+export interface Catalogue {
+    id: bigint;
+    title: string;
+    createdAt: bigint;
+    description: string;
+    fileName: string;
+    uploadedAt: string;
+    fileUrl: string;
+}
+export interface BlogPost {
+    id: bigint;
+    status: string;
+    title: string;
+    content: string;
+    date: string;
+    createdAt: bigint;
+    slug: string;
+    author: string;
+    readTime: string;
+    excerpt: string;
+    category: string;
+    image: string;
 }
 export interface Inquiry {
     id: bigint;
@@ -41,62 +68,41 @@ export interface GalleryItem {
     caption: string;
     itemType: string;
 }
-export interface UserProfile {
-    country: string;
-    name: string;
-    company: string;
-}
-export interface Testimonial {
+export interface Product {
     id: bigint;
-    active: boolean;
-    country: string;
+    moq: string;
+    categoryId: bigint;
+    featured: boolean;
+    imageUrls: Array<string>;
     name: string;
-    text: string;
-    company: string;
-    rating: bigint;
+    createdAt: bigint;
+    description: string;
 }
 export enum UserRole {
     admin = "admin",
     user = "user",
     guest = "guest"
 }
-export interface BlogPost {
-    id: bigint;
-    slug: string;
-    title: string;
-    category: string;
-    excerpt: string;
-    author: string;
-    date: string;
-    readTime: string;
-    status: string;
-    image: string;
-    content: string;
-    createdAt: bigint;
-}
-export interface Catalogue {
-    id: bigint;
-    title: string;
-    description: string;
-    fileUrl: string;
-    fileName: string;
-    uploadedAt: string;
-    createdAt: bigint;
-}
 export interface backendInterface {
-    verifyAdminLogin(username: string, password: string): Promise<boolean>;
-    changeAdminCredentials(currentUsername: string, currentPassword: string, newUsername: string, newPassword: string): Promise<boolean>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    changeAdminCredentials(currentUsername: string, currentPassword: string, newUsername: string, newPassword: string): Promise<boolean>;
+    createBlogPost(slug: string, title: string, category: string, excerpt: string, author: string, date: string, readTime: string, status: string, image: string, content: string): Promise<bigint>;
+    createCatalogue(title: string, description: string, fileUrl: string, fileName: string, uploadedAt: string): Promise<bigint>;
     createCategory(name: string, description: string, imageUrl: string, sortOrder: bigint): Promise<bigint>;
     createGalleryItem(imageUrl: string, caption: string, itemType: string, sortOrder: bigint): Promise<bigint>;
     createProduct(categoryId: bigint, name: string, description: string, moq: string, imageUrls: Array<string>, featured: boolean): Promise<bigint>;
     createTestimonial(name: string, company: string, country: string, text: string, rating: bigint, active: boolean): Promise<bigint>;
+    deleteBlogPost(id: bigint): Promise<void>;
+    deleteCatalogue(id: bigint): Promise<void>;
     deleteCategory(id: bigint): Promise<void>;
     deleteGalleryItem(id: bigint): Promise<void>;
     deleteProduct(id: bigint): Promise<void>;
     deleteTestimonial(id: bigint): Promise<void>;
+    getBlogPost(slug: string): Promise<BlogPost | null>;
+    getBlogPosts(status: string | null): Promise<Array<BlogPost>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getCatalogues(): Promise<Array<Catalogue>>;
     getCategories(): Promise<Array<Category>>;
     getContent(key: string): Promise<string | null>;
     getDashboardStats(): Promise<{
@@ -117,18 +123,11 @@ export interface backendInterface {
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setContent(key: string, value: string): Promise<void>;
     submitInquiry(name: string, country: string, whatsapp: string, requirement: string, productId: bigint | null): Promise<bigint>;
+    updateBlogPost(id: bigint, slug: string, title: string, category: string, excerpt: string, author: string, date: string, readTime: string, status: string, image: string, content: string): Promise<void>;
     updateCategory(id: bigint, name: string, description: string, imageUrl: string, sortOrder: bigint): Promise<void>;
     updateGalleryItem(id: bigint, imageUrl: string, caption: string, itemType: string, sortOrder: bigint): Promise<void>;
     updateInquiryStatus(id: bigint, status: string): Promise<void>;
     updateProduct(id: bigint, categoryId: bigint, name: string, description: string, moq: string, imageUrls: Array<string>, featured: boolean): Promise<void>;
     updateTestimonial(id: bigint, name: string, company: string, country: string, text: string, rating: bigint, active: boolean): Promise<void>;
-    getBlogPosts(status: string | null): Promise<Array<BlogPost>>;
-    getBlogPost(slug: string): Promise<BlogPost | null>;
-    createBlogPost(slug: string, title: string, category: string, excerpt: string, author: string, date: string, readTime: string, status: string, image: string, content: string): Promise<bigint>;
-    updateBlogPost(id: bigint, slug: string, title: string, category: string, excerpt: string, author: string, date: string, readTime: string, status: string, image: string, content: string): Promise<void>;
-    deleteBlogPost(id: bigint): Promise<void>;
-    getCatalogues(): Promise<Array<Catalogue>>;
-    createCatalogue(title: string, description: string, fileUrl: string, fileName: string, uploadedAt: string): Promise<bigint>;
-    deleteCatalogue(id: bigint): Promise<void>;
-    _caffeineStorageCreateCertificate(hash: string): Promise<{ method: string; blob_hash: string }>;
+    verifyAdminLogin(username: string, password: string): Promise<boolean>;
 }

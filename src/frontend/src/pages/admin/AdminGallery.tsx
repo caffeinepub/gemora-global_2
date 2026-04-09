@@ -17,25 +17,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CloudUpload, Images, Upload, X } from "lucide-react";
+import { CloudUpload, Images, Loader2, Upload, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import type { GalleryItem } from "../../backend";
 import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
 import { useStorageUpload } from "../../hooks/useStorageUpload";
+import type { GalleryItem } from "../../types";
 
 type GForm = {
   imageUrl: string;
   caption: string;
   itemType: string;
   sortOrder: string;
+  webpKB?: number;
+  originalKB?: number;
 };
 const EMPTY: GForm = {
   imageUrl: "",
   caption: "",
   itemType: "lifestyle",
   sortOrder: "0",
+};
+
+type BulkItem = {
+  name: string;
+  status: "pending" | "converting" | "uploading" | "done" | "error";
+  webpKB?: number;
+  originalKB?: number;
 };
 
 export default function AdminGallery() {
@@ -46,16 +55,16 @@ export default function AdminGallery() {
   const [form, setForm] = useState<GForm>(EMPTY);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bulkInputRef = useRef<HTMLInputElement>(null);
-  const { uploadFile, uploading, progress } = useStorageUpload();
+  const { uploadFileDetailed, uploading, converting, progress, uploadError } =
+    useStorageUpload();
 
-  // Bulk upload state
-  const [bulkUploading, setBulkUploading] = useState(false);
-  const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0 });
+  const [bulkItems, setBulkItems] = useState<BulkItem[]>([]);
+  const [bulkRunning, setBulkRunning] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
 
   const { data: items } = useQuery<GalleryItem[]>({
     queryKey: ["gallery", ""],
-    queryFn: () => actor!.getGallery(null),
+    queryFn: () => actor!.getGallery([]),
     enabled: !!actor,
   });
 
@@ -74,7 +83,7 @@ export default function AdminGallery() {
       setOpen(false);
       invalidate();
     },
-    onError: () => toast.error("Failed"),
+    onError: () => toast.error("Failed to save gallery item"),
   });
 
   const updateMut = useMutation({
@@ -91,7 +100,7 @@ export default function AdminGallery() {
       setOpen(false);
       invalidate();
     },
-    onError: () => toast.error("Failed"),
+    onError: () => toast.error("Failed to update gallery item"),
   });
 
   const deleteMut = useMutation({
@@ -100,7 +109,7 @@ export default function AdminGallery() {
       toast.success("Deleted");
       invalidate();
     },
-    onError: () => toast.error("Failed"),
+    onError: () => toast.error("Failed to delete gallery item"),
   });
 
   const openEdit = (item: GalleryItem) => {
@@ -114,58 +123,100 @@ export default function AdminGallery() {
     setOpen(true);
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSingleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const url = await uploadFile(file);
-      setForm((f) => ({ ...f, imageUrl: url }));
-      toast.success("Image uploaded");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed");
+      const result = await uploadFileDetailed(file);
+      setForm((f) => ({
+        ...f,
+        imageUrl: result.url,
+        webpKB: result.webpKB,
+        originalKB: result.originalKB,
+      }));
+      toast.success("Image uploaded & converted to WebP");
+    } catch {
+      toast.error(
+        "Upload failed — please check your internet connection and try again",
+      );
     }
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleBulkUpload = async (files: FileList | File[]) => {
     if (!actor) return;
-    const fileArr = Array.from(files).filter((f) =>
-      f.type.startsWith("image/"),
-    );
+    const fileArr = Array.from(files)
+      .filter((f) => f.type.startsWith("image/"))
+      .slice(0, 10);
     if (!fileArr.length) return;
 
-    setBulkUploading(true);
-    setBulkProgress({ current: 0, total: fileArr.length });
+    const initial: BulkItem[] = fileArr.map((f) => ({
+      name: f.name,
+      status: "pending",
+    }));
+    setBulkItems(initial);
+    setBulkRunning(true);
 
     let successCount = 0;
     let failCount = 0;
 
     for (let i = 0; i < fileArr.length; i++) {
       const file = fileArr[i];
-      setBulkProgress({ current: i + 1, total: fileArr.length });
+      setBulkItems((prev) =>
+        prev.map((it, idx) =>
+          idx === i ? { ...it, status: "converting" } : it,
+        ),
+      );
       try {
-        const url = await uploadFile(file);
+        const result = await uploadFileDetailed(file);
+        setBulkItems((prev) =>
+          prev.map((it, idx) =>
+            idx === i
+              ? {
+                  ...it,
+                  status: "uploading",
+                  webpKB: result.webpKB,
+                  originalKB: result.originalKB,
+                }
+              : it,
+          ),
+        );
         const caption = file.name.replace(/\.[^/.]+$/, "");
-        await actor.createGalleryItem(url, caption, "lifestyle", BigInt(0));
+        await actor.createGalleryItem(
+          result.url,
+          caption,
+          "lifestyle",
+          BigInt(0),
+        );
+        setBulkItems((prev) =>
+          prev.map((it, idx) => (idx === i ? { ...it, status: "done" } : it)),
+        );
         successCount++;
       } catch {
+        setBulkItems((prev) =>
+          prev.map((it, idx) => (idx === i ? { ...it, status: "error" } : it)),
+        );
         failCount++;
       }
     }
 
-    setBulkUploading(false);
-    setBulkProgress({ current: 0, total: 0 });
+    setBulkRunning(false);
     if (bulkInputRef.current) bulkInputRef.current.value = "";
     invalidate();
 
     if (failCount === 0) {
       toast.success(
-        `${successCount} image${successCount !== 1 ? "s" : ""} uploaded to gallery`,
+        `${successCount} image${successCount !== 1 ? "s" : ""} uploaded & converted to WebP`,
       );
     } else {
-      toast.success(`${successCount} uploaded, ${failCount} failed`);
+      toast.warning(
+        `${successCount} uploaded, ${failCount} failed — check connection and retry`,
+      );
     }
+    setTimeout(() => setBulkItems([]), 3000);
   };
+
+  const uploadActive = converting || uploading;
 
   return (
     <AdminLayout>
@@ -198,16 +249,21 @@ export default function AdminGallery() {
               }}
               className="space-y-3 mt-2"
             >
-              {/* File Upload */}
+              {/* File Upload only — no URL input */}
               <div>
-                <Label>Upload Image</Label>
+                <div className="flex items-center justify-between mb-1">
+                  <Label>Upload Image</Label>
+                  <span className="text-xs text-muted-foreground">
+                    Auto-converted to WebP
+                  </span>
+                </div>
                 <div
-                  className="mt-1 border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-colors"
+                  className="border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-colors"
                   style={{
-                    borderColor: uploading ? "#42A5F5" : "#c5cae9",
-                    background: "#f5f7ff",
+                    borderColor: uploadActive ? "#42A5F5" : "#c5cae9",
+                    background: uploadActive ? "#e8f4fe" : "#f5f7ff",
                   }}
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => !uploadActive && fileInputRef.current?.click()}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ")
                       fileInputRef.current?.click();
@@ -218,12 +274,17 @@ export default function AdminGallery() {
                     const file = e.dataTransfer.files?.[0];
                     if (!file || !file.type.startsWith("image/")) return;
                     try {
-                      const url = await uploadFile(file);
-                      setForm((f) => ({ ...f, imageUrl: url }));
-                      toast.success("Image uploaded");
-                    } catch (err) {
+                      const result = await uploadFileDetailed(file);
+                      setForm((f) => ({
+                        ...f,
+                        imageUrl: result.url,
+                        webpKB: result.webpKB,
+                        originalKB: result.originalKB,
+                      }));
+                      toast.success("Image uploaded & converted to WebP");
+                    } catch {
                       toast.error(
-                        err instanceof Error ? err.message : "Upload failed",
+                        "Upload failed — please check your internet connection and try again",
                       );
                     }
                   }}
@@ -234,24 +295,47 @@ export default function AdminGallery() {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={handleFileChange}
+                    onChange={handleSingleFile}
                   />
-                  <Upload
-                    className="mx-auto mb-2 text-muted-foreground"
-                    size={20}
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    {uploading
-                      ? "Uploading..."
-                      : "Drag & drop or click to upload"}
-                  </p>
+                  {uploadActive ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2
+                        size={20}
+                        className="animate-spin"
+                        style={{ color: "#42A5F5" }}
+                      />
+                      <p
+                        className="text-sm font-medium"
+                        style={{ color: "#42A5F5" }}
+                      >
+                        {converting
+                          ? "Converting to WebP..."
+                          : `Uploading... ${progress}%`}
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload
+                        className="mx-auto mb-2 text-muted-foreground"
+                        size={20}
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        Drag & drop or click to upload
+                      </p>
+                    </>
+                  )}
                 </div>
+                {uploadError && (
+                  <p
+                    className="mt-1 text-xs text-destructive"
+                    data-ocid="admin.gallery.upload_error"
+                  >
+                    {uploadError}
+                  </p>
+                )}
                 {uploading && (
                   <div className="mt-2" data-ocid="admin.gallery.loading_state">
                     <Progress value={progress} className="h-2" />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Uploading... {progress}%
-                    </p>
                   </div>
                 )}
                 {form.imageUrl && (
@@ -261,9 +345,27 @@ export default function AdminGallery() {
                       alt="Preview"
                       className="w-full h-32 object-cover rounded-lg"
                     />
+                    {form.webpKB !== undefined && (
+                      <span
+                        className="absolute bottom-1 left-1 text-[10px] font-bold px-1.5 py-0.5 rounded"
+                        style={{
+                          background: "rgba(46,125,50,0.85)",
+                          color: "#fff",
+                        }}
+                      >
+                        WebP ✓ {form.webpKB.toFixed(0)}KB
+                      </span>
+                    )}
                     <button
                       type="button"
-                      onClick={() => setForm((f) => ({ ...f, imageUrl: "" }))}
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          imageUrl: "",
+                          webpKB: undefined,
+                          originalKB: undefined,
+                        }))
+                      }
                       className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center"
                       style={{ background: "crimson" }}
                       aria-label="Remove image"
@@ -313,7 +415,7 @@ export default function AdminGallery() {
                 type="submit"
                 className="w-full bg-primary text-primary-foreground"
                 disabled={
-                  createMut.isPending || updateMut.isPending || uploading
+                  createMut.isPending || updateMut.isPending || uploadActive
                 }
                 data-ocid="admin.gallery.submit_button"
               >
@@ -324,13 +426,13 @@ export default function AdminGallery() {
         </Dialog>
       </div>
 
-      {/* Bulk Upload Zone */}
+      {/* Bulk Upload Zone — up to 10 images, drag-and-drop, per-image progress */}
       <div
         className="mb-6 rounded-xl border-2 border-dashed transition-all"
         style={{
           borderColor: isDragOver
             ? "#42A5F5"
-            : bulkUploading
+            : bulkRunning
               ? "#42A5F5"
               : "#c5cae9",
           background: isDragOver ? "#e8f4fe" : "#f5f7ff",
@@ -344,7 +446,7 @@ export default function AdminGallery() {
         onDrop={(e) => {
           e.preventDefault();
           setIsDragOver(false);
-          if (!bulkUploading) handleBulkUpload(e.dataTransfer.files);
+          if (!bulkRunning) handleBulkUpload(e.dataTransfer.files);
         }}
         data-ocid="admin.gallery.bulk_dropzone"
       >
@@ -360,7 +462,7 @@ export default function AdminGallery() {
               className="font-semibold"
               style={{ color: "#1A237E", fontSize: 15 }}
             >
-              Bulk Upload Images
+              Bulk Upload Images (up to 10)
             </p>
             <p className="text-sm text-muted-foreground mt-1">
               Drag & drop multiple images here, or{" "}
@@ -368,14 +470,14 @@ export default function AdminGallery() {
                 type="button"
                 className="underline font-medium"
                 style={{ color: "#42A5F5" }}
-                onClick={() => !bulkUploading && bulkInputRef.current?.click()}
+                onClick={() => !bulkRunning && bulkInputRef.current?.click()}
                 data-ocid="admin.gallery.upload_button"
               >
                 click to browse
               </button>
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              PNG, JPG, WEBP — all selected files will be added to gallery
+              All images are automatically converted to WebP before upload
             </p>
           </div>
 
@@ -390,35 +492,7 @@ export default function AdminGallery() {
             }}
           />
 
-          {bulkUploading && (
-            <div
-              className="w-full max-w-sm"
-              data-ocid="admin.gallery.bulk_loading_state"
-            >
-              <div
-                className="flex justify-between text-xs mb-1"
-                style={{ color: "#1A237E" }}
-              >
-                <span>
-                  Uploading {bulkProgress.current} of {bulkProgress.total}...
-                </span>
-                <span>
-                  {Math.round(
-                    (bulkProgress.current / bulkProgress.total) * 100,
-                  )}
-                  %
-                </span>
-              </div>
-              <Progress
-                value={Math.round(
-                  (bulkProgress.current / bulkProgress.total) * 100,
-                )}
-                className="h-2"
-              />
-            </div>
-          )}
-
-          {!bulkUploading && (
+          {!bulkRunning && bulkItems.length === 0 && (
             <Button
               variant="outline"
               size="sm"
@@ -431,6 +505,68 @@ export default function AdminGallery() {
             </Button>
           )}
         </div>
+
+        {/* Per-image progress list */}
+        {bulkItems.length > 0 && (
+          <div
+            className="mt-4 space-y-2 max-w-md mx-auto"
+            data-ocid="admin.gallery.bulk_loading_state"
+          >
+            {bulkItems.map((item) => (
+              <div
+                key={item.name}
+                className="flex items-center gap-3 text-sm rounded-lg px-3 py-2"
+                style={{ background: "#fff", border: "1px solid #e3e8f0" }}
+              >
+                <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+                  {item.status === "done" && (
+                    <span style={{ color: "#2e7d32", fontSize: 14 }}>✓</span>
+                  )}
+                  {item.status === "error" && (
+                    <span style={{ color: "crimson", fontSize: 14 }}>✗</span>
+                  )}
+                  {(item.status === "converting" ||
+                    item.status === "uploading" ||
+                    item.status === "pending") && (
+                    <Loader2
+                      size={14}
+                      className="animate-spin"
+                      style={{ color: "#42A5F5" }}
+                    />
+                  )}
+                </div>
+                <span
+                  className="flex-1 truncate"
+                  style={{ color: "#1A237E", fontSize: 12 }}
+                >
+                  {item.name}
+                </span>
+                <span
+                  className="text-xs flex-shrink-0"
+                  style={{
+                    color:
+                      item.status === "done"
+                        ? "#2e7d32"
+                        : item.status === "error"
+                          ? "crimson"
+                          : "#888",
+                  }}
+                >
+                  {item.status === "converting" && "Converting..."}
+                  {item.status === "uploading" && "Uploading..."}
+                  {item.status === "pending" && "Waiting..."}
+                  {item.status === "done" &&
+                    item.webpKB !== undefined &&
+                    `WebP ✓ ${item.webpKB.toFixed(0)}KB`}
+                  {item.status === "done" &&
+                    item.webpKB === undefined &&
+                    "Done"}
+                  {item.status === "error" && "Failed"}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -463,9 +599,8 @@ export default function AdminGallery() {
                 variant="destructive"
                 className="h-6 text-xs"
                 onClick={() => {
-                  if (confirm("Are you sure you want to delete this image?")) {
+                  if (confirm("Are you sure you want to delete this image?"))
                     deleteMut.mutate(item.id);
-                  }
                 }}
                 data-ocid={`admin.gallery.delete_button.${i + 1}`}
               >

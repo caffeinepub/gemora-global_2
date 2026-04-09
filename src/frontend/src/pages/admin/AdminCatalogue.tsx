@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { FileText, Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import AdminLayout from "../../components/AdminLayout";
@@ -33,10 +34,12 @@ export default function AdminCatalogue() {
     fileUrl: "",
     fileName: "",
   });
+  // PDF upload — bypasses WebP conversion (PDFs stay as PDFs)
   const {
     uploadFile,
     uploading: storageUploading,
     progress,
+    uploadError,
   } = useStorageUpload();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -89,12 +92,16 @@ export default function AdminCatalogue() {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
+      // PDFs bypass WebP conversion — uploadFile handles this since convertToWebP skips non-images
       const url = await uploadFile(file);
       setForm((f) => ({ ...f, fileUrl: url, fileName: file.name }));
-      toast.success("File uploaded successfully");
+      toast.success("PDF uploaded successfully");
     } catch {
-      toast.error("Upload failed");
+      toast.error(
+        "Upload failed — please check your internet connection and try again",
+      );
     }
+    if (fileRef.current) fileRef.current.value = "";
   };
 
   const handleSave = () => {
@@ -107,11 +114,6 @@ export default function AdminCatalogue() {
       return;
     }
     createMutation.mutate();
-  };
-
-  const handleDelete = (id: bigint) => {
-    if (!confirm("Delete this catalogue?")) return;
-    deleteMutation.mutate(id);
   };
 
   const isSaving = createMutation.isPending || storageUploading;
@@ -157,6 +159,7 @@ export default function AdminCatalogue() {
                 cursor: "pointer",
                 fontSize: 14,
               }}
+              data-ocid="admin.catalogue.add_button"
             >
               + Add Catalogue
             </button>
@@ -189,6 +192,7 @@ export default function AdminCatalogue() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, title: e.target.value }))
                   }
+                  data-ocid="admin.catalogue.title_input"
                 />
               </div>
               <div>
@@ -203,25 +207,39 @@ export default function AdminCatalogue() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, description: e.target.value }))
                   }
+                  data-ocid="admin.catalogue.desc_textarea"
                 />
               </div>
               <div>
                 <label htmlFor="cat-file" style={labelStyle}>
                   Upload PDF File *
+                  <span
+                    style={{
+                      color: "#888",
+                      fontSize: 11,
+                      marginLeft: 8,
+                      fontWeight: 400,
+                    }}
+                  >
+                    (PDFs are uploaded as-is — no conversion)
+                  </span>
                 </label>
+                {/* File input only — no URL input */}
                 <button
                   type="button"
                   style={{
-                    border: "2px dashed #c5cae9",
+                    border: `2px dashed ${storageUploading ? "#42A5F5" : "#c5cae9"}`,
                     borderRadius: 8,
                     padding: "20px 16px",
                     textAlign: "center",
-                    cursor: "pointer",
-                    background: "#f5f7ff",
+                    cursor: storageUploading ? "not-allowed" : "pointer",
+                    background: storageUploading ? "#e8f4fe" : "#f5f7ff",
                     width: "100%",
+                    transition: "all 0.2s",
                   }}
-                  onClick={() => fileRef.current?.click()}
+                  onClick={() => !storageUploading && fileRef.current?.click()}
                   aria-label="Upload PDF file"
+                  data-ocid="admin.catalogue.upload_dropzone"
                 >
                   <input
                     ref={fileRef}
@@ -232,12 +250,53 @@ export default function AdminCatalogue() {
                     onChange={handleFileChange}
                   />
                   {form.fileUrl ? (
-                    <div style={{ color: "#2e7d32", fontSize: 14 }}>
-                      ✓ {form.fileName}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 10,
+                        color: "#2e7d32",
+                      }}
+                    >
+                      <FileText size={20} />
+                      <span style={{ fontSize: 14, fontWeight: 600 }}>
+                        ✓ {form.fileName}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setForm((f) => ({ ...f, fileUrl: "", fileName: "" }));
+                        }}
+                        style={{
+                          background: "crimson",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: 4,
+                          padding: "2px 8px",
+                          fontSize: 12,
+                          cursor: "pointer",
+                          marginLeft: 8,
+                        }}
+                      >
+                        Change
+                      </button>
                     </div>
                   ) : storageUploading ? (
-                    <div style={{ color: "#42A5F5", fontSize: 14 }}>
-                      Uploading... {progress > 0 ? `${progress}%` : ""}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 10,
+                        color: "#42A5F5",
+                      }}
+                    >
+                      <Loader2 size={18} className="animate-spin" />
+                      <span style={{ fontSize: 14, fontWeight: 600 }}>
+                        Uploading PDF... {progress > 0 ? `${progress}%` : ""}
+                      </span>
                     </div>
                   ) : (
                     <div style={{ color: "#888", fontSize: 14 }}>
@@ -246,8 +305,17 @@ export default function AdminCatalogue() {
                     </div>
                   )}
                 </button>
+                {uploadError && (
+                  <p
+                    style={{ color: "crimson", fontSize: 12, marginTop: 6 }}
+                    data-ocid="admin.catalogue.upload_error"
+                  >
+                    {uploadError}
+                  </p>
+                )}
               </div>
             </div>
+
             <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
               <button
                 type="button"
@@ -263,6 +331,7 @@ export default function AdminCatalogue() {
                   cursor: isSaving ? "not-allowed" : "pointer",
                   fontSize: 14,
                 }}
+                data-ocid="admin.catalogue.save_button"
               >
                 {isSaving ? "Saving..." : "Save Catalogue"}
               </button>
@@ -278,6 +347,7 @@ export default function AdminCatalogue() {
                   cursor: "pointer",
                   fontSize: 14,
                 }}
+                data-ocid="admin.catalogue.cancel_button"
               >
                 Cancel
               </button>
@@ -295,6 +365,7 @@ export default function AdminCatalogue() {
               textAlign: "center",
               color: "#aaa",
             }}
+            data-ocid="admin.catalogue.empty_state"
           >
             <div style={{ fontSize: 40, marginBottom: 12 }}>📁</div>
             <p>No catalogues uploaded yet.</p>
@@ -304,7 +375,7 @@ export default function AdminCatalogue() {
           </div>
         ) : (
           <div style={{ display: "grid", gap: 12 }}>
-            {catalogues.map((cat) => (
+            {catalogues.map((cat, i) => (
               <div
                 key={String(cat.id)}
                 style={{
@@ -316,6 +387,7 @@ export default function AdminCatalogue() {
                   alignItems: "center",
                   gap: 16,
                 }}
+                data-ocid={`admin.catalogue.item.${i + 1}`}
               >
                 <div
                   style={{
@@ -362,12 +434,16 @@ export default function AdminCatalogue() {
                       textDecoration: "none",
                       cursor: "pointer",
                     }}
+                    data-ocid={`admin.catalogue.preview_button.${i + 1}`}
                   >
                     Preview
                   </a>
                   <button
                     type="button"
-                    onClick={() => handleDelete(cat.id)}
+                    onClick={() => {
+                      if (confirm("Delete this catalogue?"))
+                        deleteMutation.mutate(cat.id);
+                    }}
                     style={{
                       background: "rgba(220,38,38,0.15)",
                       color: "#c62828",
@@ -377,6 +453,7 @@ export default function AdminCatalogue() {
                       fontSize: 13,
                       cursor: "pointer",
                     }}
+                    data-ocid={`admin.catalogue.delete_button.${i + 1}`}
                   >
                     Delete
                   </button>

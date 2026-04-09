@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
-  { label: "Dashboard", to: "/admin", icon: "🏠" },
+  { label: "Dashboard", to: "/admin", icon: "⬛" },
   { label: "Products", to: "/admin/products", icon: "📦" },
   { label: "Categories", to: "/admin/categories", icon: "📁" },
   { label: "Media", to: "/admin/gallery", icon: "🖼" },
@@ -36,35 +36,42 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div
       className="min-h-screen flex"
-      style={{ background: "#0d1554", color: "#fff" }}
+      style={{ background: "#0a0f3c", color: "#fff" }}
     >
       {/* Sidebar */}
       <aside
-        className="flex flex-col flex-shrink-0"
+        className="flex flex-col flex-shrink-0 overflow-y-auto"
         style={{
           width: 240,
-          background: "#1A237E",
-          borderRight: "1px solid #2a3a9e",
+          background: "linear-gradient(180deg, #0d1554 0%, #111b6a 100%)",
+          borderRight: "1px solid rgba(212,175,55,0.15)",
           minHeight: "100vh",
         }}
       >
         {/* Logo */}
         <div
           className="p-5 flex items-center gap-3"
-          style={{ borderBottom: "1px solid #2a3a9e" }}
+          style={{ borderBottom: "1px solid rgba(212,175,55,0.15)" }}
         >
           <img
             src="/assets/uploads/logo-removebg-preview-1-1.png"
             alt="Gemora Global"
             className="h-8 object-contain"
           />
-          <span style={{ color: "#42A5F5", fontWeight: 600, fontSize: 18 }}>
-            GEMORA
+          <span
+            style={{
+              color: "#D4AF37",
+              fontWeight: 700,
+              fontSize: 16,
+              letterSpacing: "0.05em",
+            }}
+          >
+            GEMORA ADMIN
           </span>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 p-3 flex flex-col gap-1 overflow-y-auto">
+        <nav className="flex-1 p-3 flex flex-col gap-0.5">
           {navItems.map((item) => {
             const active =
               item.to === "/admin"
@@ -76,15 +83,33 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 to={item.to}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all"
                 style={{
-                  background: active ? "rgba(66,165,245,0.15)" : "transparent",
-                  color: active ? "#42A5F5" : "rgba(255,255,255,0.65)",
+                  background: active
+                    ? "linear-gradient(90deg, rgba(212,175,55,0.18) 0%, rgba(212,175,55,0.06) 100%)"
+                    : "transparent",
+                  color: active ? "#D4AF37" : "rgba(255,255,255,0.6)",
                   borderLeft: active
-                    ? "3px solid #42A5F5"
+                    ? "3px solid #D4AF37"
                     : "3px solid transparent",
                   fontWeight: active ? 600 : 400,
                 }}
+                onMouseEnter={(e) => {
+                  if (!active) {
+                    (e.currentTarget as HTMLAnchorElement).style.background =
+                      "rgba(212,175,55,0.08)";
+                    (e.currentTarget as HTMLAnchorElement).style.color =
+                      "rgba(255,255,255,0.9)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) {
+                    (e.currentTarget as HTMLAnchorElement).style.background =
+                      "transparent";
+                    (e.currentTarget as HTMLAnchorElement).style.color =
+                      "rgba(255,255,255,0.6)";
+                  }
+                }}
               >
-                <span style={{ fontSize: 15 }}>{item.icon}</span>
+                <span style={{ fontSize: 15, minWidth: 18 }}>{item.icon}</span>
                 <span>{item.label}</span>
               </Link>
             );
@@ -92,15 +117,18 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </nav>
 
         {/* Logout */}
-        <div className="p-3" style={{ borderTop: "1px solid #2a3a9e" }}>
+        <div
+          className="p-3"
+          style={{ borderTop: "1px solid rgba(212,175,55,0.15)" }}
+        >
           <button
             type="button"
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all"
-            style={{ color: "rgba(255,255,255,0.4)" }}
+            style={{ color: "rgba(255,255,255,0.35)" }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.background =
-                "rgba(66,165,245,0.1)";
+                "rgba(212,175,55,0.08)";
               (e.currentTarget as HTMLButtonElement).style.color =
                 "rgba(255,255,255,0.7)";
             }}
@@ -108,7 +136,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               (e.currentTarget as HTMLButtonElement).style.background =
                 "transparent";
               (e.currentTarget as HTMLButtonElement).style.color =
-                "rgba(255,255,255,0.4)";
+                "rgba(255,255,255,0.35)";
             }}
             data-ocid="admin.logout_button"
           >
@@ -118,35 +146,45 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      {/* Main */}
-      <main className="flex-1 overflow-auto" style={{ background: "#f0f4ff" }}>
+      {/* Main content */}
+      <main className="flex-1 overflow-auto" style={{ background: "#f4f6ff" }}>
         {/* Top bar */}
         <div
           className="sticky top-0 z-10 flex items-center justify-between px-6"
           style={{
             height: 60,
-            background: "rgba(26,35,126,0.97)",
+            background: "linear-gradient(90deg, #1A237E 0%, #1a2e9a 100%)",
             backdropFilter: "blur(12px)",
-            borderBottom: "1px solid #2a3a9e",
+            borderBottom: "1px solid rgba(212,175,55,0.2)",
+            boxShadow: "0 2px 12px rgba(26,35,126,0.3)",
           }}
         >
-          <h1 style={{ color: "#fff", fontWeight: 600, fontSize: 18 }}>
+          <h1
+            style={{
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: 17,
+              letterSpacing: "0.01em",
+            }}
+          >
+            <span style={{ color: "#D4AF37", marginRight: 8 }}>◆</span>
             {currentLabel}
           </h1>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <input
               placeholder="Search..."
               className="px-3 py-1.5 rounded-lg text-sm outline-none"
               style={{
-                background: "rgba(255,255,255,0.1)",
-                border: "1px solid rgba(66,165,245,0.3)",
+                background: "rgba(255,255,255,0.12)",
+                border: "1px solid rgba(212,175,55,0.35)",
                 color: "rgba(255,255,255,0.9)",
                 width: 160,
               }}
+              data-ocid="admin.search_input"
             />
             <div
-              className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
-              style={{ background: "#42A5F5", color: "#1A237E" }}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+              style={{ background: "#D4AF37", color: "#1A237E" }}
             >
               A
             </div>

@@ -45,17 +45,21 @@ import FashionJewelleryExporterIndia from "./pages/seo/FashionJewelleryExporterI
 import FashionJewelleryManufacturerIndia from "./pages/seo/FashionJewelleryManufacturerIndia";
 import ImitationJewelleryExporterIndia from "./pages/seo/ImitationJewelleryExporterIndia";
 import ImitationJewelleryManufacturerIndia from "./pages/seo/ImitationJewelleryManufacturerIndia";
+import ImitationJewelleryManufacturerJaipur from "./pages/seo/ImitationJewelleryManufacturerJaipur";
 import ImitationJewellerySupplierUSA from "./pages/seo/ImitationJewellerySupplierUSA";
 import JewelleryExporterToUSA from "./pages/seo/JewelleryExporterToUSA";
 import JewelleryExporterUAE from "./pages/seo/JewelleryExporterUAE";
 import JewellerySupplierUK from "./pages/seo/JewellerySupplierUK";
 import KundanJewelleryWholesale from "./pages/seo/KundanJewelleryWholesale";
+import MeenakariJewelleryWholesale from "./pages/seo/MeenakariJewelleryWholesale";
 import OxidisedJewellerySupplier from "./pages/seo/OxidisedJewellerySupplier";
 import OxidisedJewelleryWholesale from "./pages/seo/OxidisedJewelleryWholesale";
 import PrivateLabelJewelleryIndia from "./pages/seo/PrivateLabelJewelleryIndia";
 import TempleJewelleryManufacturer from "./pages/seo/TempleJewelleryManufacturer";
 import WholesaleImitationJewellery from "./pages/seo/WholesaleImitationJewellery";
 import WholesaleImitationJewelleryIndia from "./pages/seo/WholesaleImitationJewelleryIndia";
+import WholesaleJewelleryRajasthan from "./pages/seo/WholesaleJewelleryRajasthan";
+import WholesaleJewelleryUK from "./pages/seo/WholesaleJewelleryUK";
 
 function VisitTracker() {
   const { actor } = useActor();
@@ -295,6 +299,22 @@ export default function App() {
         <Route
           path="/imitation-jewellery-supplier-usa"
           element={<ImitationJewellerySupplierUSA />}
+        />
+        <Route
+          path="/imitation-jewellery-manufacturer-jaipur"
+          element={<ImitationJewelleryManufacturerJaipur />}
+        />
+        <Route
+          path="/wholesale-jewellery-rajasthan"
+          element={<WholesaleJewelleryRajasthan />}
+        />
+        <Route
+          path="/meenakari-jewellery-wholesale"
+          element={<MeenakariJewelleryWholesale />}
+        />
+        <Route
+          path="/wholesale-jewellery-uk"
+          element={<WholesaleJewelleryUK />}
         />
         <Route path="*" element={<NotFound />} />
       </Routes>

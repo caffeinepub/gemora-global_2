@@ -11,16 +11,24 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import {
+  Eye,
+  Grid3X3,
+  List,
+  MessageCircle,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import type { Category, Product } from "../backend";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useActor } from "../hooks/useActor";
 import { usePageSEO } from "../hooks/usePageSEO";
+import type { Category, Product } from "../types";
 
-// ─── Static Data ─────────────────────────────────────────────────────────────
+// ─── Static fallback data ─────────────────────────────────────────────────────
 
 const CATEGORY_IMAGES: Record<string, string> = {
   Necklaces: "/assets/generated/product-necklace.dim_600x600.jpg",
@@ -29,7 +37,6 @@ const CATEGORY_IMAGES: Record<string, string> = {
   Bangles: "/assets/generated/product-bangles.dim_600x600.jpg",
   Rings: "/assets/generated/product-rings.dim_600x600.jpg",
   "Bridal Jewellery": "/assets/generated/product-bridal.dim_600x600.jpg",
-  "Minimal Fashion": "/assets/generated/product-minimal.dim_600x600.jpg",
   "Minimal Fashion Jewellery":
     "/assets/generated/product-minimal.dim_600x600.jpg",
 };
@@ -38,57 +45,55 @@ const SAMPLE_CATEGORIES: Category[] = [
   {
     id: 1n,
     name: "Necklaces",
-    description: "Gold-plated, oxidised & kundan necklaces for wholesale",
+    description: "Gold-plated, oxidised & kundan necklaces",
     imageUrl: "/assets/generated/jewellery-necklace-hd.dim_800x800.jpg",
     sortOrder: 1n,
   },
   {
     id: 2n,
     name: "Earrings",
-    description: "Jhumka, stud, hoop & dangler earrings for bulk orders",
+    description: "Jhumka, stud, hoop & dangler earrings",
     imageUrl: "/assets/generated/jewellery-earrings-hd.dim_800x800.jpg",
     sortOrder: 2n,
   },
   {
     id: 3n,
     name: "Bracelets",
-    description: "Elegant bracelet designs for wholesale fashion jewellery",
+    description: "Elegant bracelet designs for wholesale",
     imageUrl: "/assets/generated/jewellery-bracelets-hd.dim_800x800.jpg",
     sortOrder: 3n,
   },
   {
     id: 4n,
     name: "Bangles",
-    description: "Traditional & designer bangles for boutiques worldwide",
+    description: "Traditional & designer bangles",
     imageUrl: "/assets/generated/product-bangles.dim_600x600.jpg",
     sortOrder: 4n,
   },
   {
     id: 5n,
     name: "Rings",
-    description:
-      "Statement rings — bulk artificial jewellery manufacturer India",
+    description: "Statement rings — bulk artificial jewellery",
     imageUrl: "/assets/generated/jewellery-rings-hd.dim_800x800.jpg",
     sortOrder: 5n,
   },
   {
     id: 6n,
     name: "Bridal Jewellery",
-    description:
-      "Complete bridal sets — premium imitation jewellery for export",
+    description: "Complete bridal sets for export",
     imageUrl: "/assets/generated/jewellery-bridal-hd.dim_800x800.jpg",
     sortOrder: 6n,
   },
   {
     id: 7n,
     name: "Minimal Fashion Jewellery",
-    description: "Contemporary minimal designs for boutiques",
+    description: "Contemporary minimal designs",
     imageUrl: "/assets/generated/jewellery-minimal-hd.dim_800x800.jpg",
     sortOrder: 7n,
   },
 ];
 
-type SampleProduct = {
+type NormalizedProduct = {
   id: bigint;
   name: string;
   description: string;
@@ -103,13 +108,12 @@ type SampleProduct = {
   priceRange: string;
 };
 
-const SAMPLE_PRODUCTS: SampleProduct[] = [
-  // Necklaces
+const SAMPLE_PRODUCTS: NormalizedProduct[] = [
   {
     id: 101n,
     name: "Kundan Choker Necklace Set",
     description:
-      "Heavy kundan choker with matching earrings, gold-plated brass, anti-tarnish coated. Perfect for bridal boutiques in UK & UAE.",
+      "Heavy kundan choker with matching earrings, gold-plated brass, anti-tarnish. Perfect for bridal boutiques in UK & UAE.",
     categoryId: 1n,
     imageUrls: ["/assets/generated/product-necklace.dim_600x600.jpg"],
     moq: "50 pcs",
@@ -165,12 +169,11 @@ const SAMPLE_PRODUCTS: SampleProduct[] = [
     style: "Modern",
     priceRange: "Mid-range",
   },
-  // Earrings
   {
     id: 201n,
     name: "Gold Jhumka Earrings",
     description:
-      "Classic gold-plated jhumka with meenakari work. One of our top sellers for South Asian diaspora markets.",
+      "Classic gold-plated jhumka with meenakari work. Top seller for South Asian diaspora markets.",
     categoryId: 2n,
     imageUrls: ["/assets/generated/product-earrings.dim_600x600.jpg"],
     moq: "100 pairs",
@@ -215,7 +218,7 @@ const SAMPLE_PRODUCTS: SampleProduct[] = [
     id: 204n,
     name: "Oxidised Tribal Danglers",
     description:
-      "Oxidised silver dangler earrings with intricate tribal patterns. Boho-style bestseller for European boutiques.",
+      "Oxidised silver dangler earrings with intricate tribal patterns. Boho bestseller for European boutiques.",
     categoryId: 2n,
     imageUrls: ["/assets/generated/jewellery-earrings-hd.dim_800x800.jpg"],
     moq: "50 pairs",
@@ -226,7 +229,6 @@ const SAMPLE_PRODUCTS: SampleProduct[] = [
     style: "Boho",
     priceRange: "Budget",
   },
-  // Bracelets
   {
     id: 301n,
     name: "Gold Bangle Bracelet Set",
@@ -246,7 +248,7 @@ const SAMPLE_PRODUCTS: SampleProduct[] = [
     id: 302n,
     name: "Kundan Kada Bracelet",
     description:
-      "Heavy kundan-set gold kada bracelet. Bridal and festive occasions. Complete with velvet box packaging.",
+      "Heavy kundan-set gold kada bracelet. Bridal and festive occasions. Velvet box packaging included.",
     categoryId: 3n,
     imageUrls: ["/assets/generated/jewellery-bracelets-hd.dim_800x800.jpg"],
     moq: "30 pcs",
@@ -257,7 +259,6 @@ const SAMPLE_PRODUCTS: SampleProduct[] = [
     style: "Traditional",
     priceRange: "Premium",
   },
-  // Bangles
   {
     id: 401n,
     name: "Enamel Bangle Set",
@@ -288,7 +289,6 @@ const SAMPLE_PRODUCTS: SampleProduct[] = [
     style: "Statement",
     priceRange: "Mid-range",
   },
-  // Rings
   {
     id: 501n,
     name: "Statement Cocktail Ring",
@@ -308,7 +308,7 @@ const SAMPLE_PRODUCTS: SampleProduct[] = [
     id: 502n,
     name: "Oxidised Tribal Ring",
     description:
-      "Oxidised silver tribal design ring. Adjustable size fits most. Popular boho style in France & UK.",
+      "Oxidised silver tribal design ring. Adjustable size. Popular boho style in France & UK.",
     categoryId: 5n,
     imageUrls: ["/assets/generated/jewellery-rings-hd.dim_800x800.jpg"],
     moq: "100 pcs",
@@ -319,7 +319,6 @@ const SAMPLE_PRODUCTS: SampleProduct[] = [
     style: "Boho",
     priceRange: "Budget",
   },
-  // Bridal Jewellery
   {
     id: 601n,
     name: "Full Bridal Jewellery Set",
@@ -365,12 +364,11 @@ const SAMPLE_PRODUCTS: SampleProduct[] = [
     style: "Indo-Western",
     priceRange: "Premium",
   },
-  // Minimal Fashion
   {
     id: 701n,
     name: "Dainty Chain Layering Set",
     description:
-      "Set of 3 dainty gold chains for layering. Bestseller in French and Scandinavian boutiques. Ultra-lightweight.",
+      "Set of 3 dainty gold chains for layering. Bestseller in French and Scandinavian boutiques.",
     categoryId: 7n,
     imageUrls: ["/assets/generated/product-minimal.dim_600x600.jpg"],
     moq: "100 sets",
@@ -419,13 +417,151 @@ const SORT_OPTIONS = [
   { value: "featured", label: "Featured First" },
   { value: "name_asc", label: "Name: A–Z" },
   { value: "name_desc", label: "Name: Z–A" },
-  { value: "newest", label: "Newest" },
 ];
+
+// ─── Quick View Modal ─────────────────────────────────────────────────────────
+
+interface QuickViewModalProps {
+  product: NormalizedProduct | null;
+  open: boolean;
+  onClose: () => void;
+}
+
+function QuickViewModal({ product, open, onClose }: QuickViewModalProps) {
+  if (!product) return null;
+  const img =
+    product.imageUrls[0] ||
+    "/assets/generated/product-necklace.dim_600x600.jpg";
+  const waMsg = encodeURIComponent(
+    `Hi GEMORA GLOBAL, I'm interested in ${product.name} (MOQ: ${product.moq}). Please share wholesale pricing.`,
+  );
+  const waLink = `https://wa.me/917976341419?text=${waMsg}`;
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) onClose();
+      }}
+    >
+      <DialogContent className="max-w-3xl p-0 overflow-hidden">
+        <div className="grid md:grid-cols-2">
+          {/* Image */}
+          <div className="relative bg-muted aspect-square md:aspect-auto">
+            <img
+              src={img}
+              alt={`${product.name} — wholesale imitation jewellery Jaipur India`}
+              className="w-full h-full object-cover"
+              width={480}
+              height={480}
+              loading="lazy"
+            />
+            {product.featured && (
+              <span className="absolute top-3 left-3 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">
+                Featured
+              </span>
+            )}
+            {/* MOQ badge */}
+            <span className="badge-moq">Min. Qty: {product.moq}</span>
+          </div>
+          {/* Details */}
+          <div className="p-6 flex flex-col">
+            <DialogHeader className="mb-4">
+              <DialogTitle className="font-serif text-xl leading-snug">
+                {product.name}
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+              {product.description}
+            </p>
+
+            {/* Specs */}
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-5 text-sm">
+              {product.metal && (
+                <>
+                  <span className="text-muted-foreground font-medium">
+                    Metal / Finish
+                  </span>
+                  <span className="text-foreground">{product.metal}</span>
+                </>
+              )}
+              {product.occasion && (
+                <>
+                  <span className="text-muted-foreground font-medium">
+                    Occasion
+                  </span>
+                  <span className="text-foreground">{product.occasion}</span>
+                </>
+              )}
+              {product.style && (
+                <>
+                  <span className="text-muted-foreground font-medium">
+                    Style
+                  </span>
+                  <span className="text-foreground">{product.style}</span>
+                </>
+              )}
+              {product.priceRange && (
+                <>
+                  <span className="text-muted-foreground font-medium">
+                    Price Range
+                  </span>
+                  <span className="text-foreground">{product.priceRange}</span>
+                </>
+              )}
+              <span className="text-muted-foreground font-medium">Stock</span>
+              <span className="text-green-600 font-semibold text-xs">
+                In Stock
+              </span>
+            </div>
+
+            {/* MOQ highlight */}
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 mb-5 flex items-center gap-3">
+              <span className="text-destructive font-bold text-lg">📦</span>
+              <div>
+                <p className="text-xs text-muted-foreground leading-none mb-0.5">
+                  Minimum Order Quantity
+                </p>
+                <p className="font-bold text-destructive">{product.moq}</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 mt-auto">
+              <a
+                href={waLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors text-sm"
+                data-ocid="quickview.whatsapp_cta"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Send Inquiry via WhatsApp
+              </a>
+              <Button
+                asChild
+                variant="outline"
+                className="border-primary text-primary hover:bg-primary/5 text-sm"
+              >
+                <Link
+                  to={`/products/${product.id}`}
+                  onClick={onClose}
+                  data-ocid="quickview.view_details"
+                >
+                  View Full Details →
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 // ─── Inquiry Modal ────────────────────────────────────────────────────────────
 
 interface InquiryModalProps {
-  product: SampleProduct | Product | null;
+  product: NormalizedProduct | null;
   open: boolean;
   onClose: () => void;
 }
@@ -446,7 +582,7 @@ function InquiryModal({ product, open, onClose }: InquiryModalProps) {
         form.country,
         form.whatsapp,
         form.requirement,
-        product && "id" in product ? (product.id as bigint) : null,
+        product ? [product.id] : [],
       ),
     onSuccess: () => {
       toast.success("Inquiry sent! We'll contact you shortly.");
@@ -528,6 +664,7 @@ function InquiryModal({ product, open, onClose }: InquiryModalProps) {
               type="submit"
               disabled={mutation.isPending}
               className="flex-1 bg-primary text-primary-foreground"
+              data-ocid="inquiry.submit"
             >
               {mutation.isPending ? "Sending..." : "Send Inquiry"}
             </Button>
@@ -550,6 +687,44 @@ interface FilterState {
   priceRanges: string[];
 }
 
+function FilterGroup({
+  title,
+  options,
+  selected,
+  onToggle,
+}: {
+  title: string;
+  options: string[];
+  selected: string[];
+  onToggle: (v: string) => void;
+}) {
+  return (
+    <div className="mb-5">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+        {title}
+      </h3>
+      <div className="space-y-1.5">
+        {options.map((opt) => (
+          <label
+            key={opt}
+            className="flex items-center gap-2 cursor-pointer group"
+          >
+            <input
+              type="checkbox"
+              checked={selected.includes(opt)}
+              onChange={() => onToggle(opt)}
+              className="accent-primary w-3.5 h-3.5"
+            />
+            <span className="text-sm text-foreground group-hover:text-primary transition-colors">
+              {opt}
+            </span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FilterSidebar({
   filters,
   setFilters,
@@ -561,18 +736,15 @@ function FilterSidebar({
   totalCount: number;
   filteredCount: number;
 }) {
-  const toggle = (key: keyof FilterState, value: string) => {
+  const toggle = (key: keyof FilterState, value: string) =>
     setFilters((prev) => ({
       ...prev,
       [key]: prev[key].includes(value)
         ? prev[key].filter((v) => v !== value)
         : [...prev[key], value],
     }));
-  };
-
   const clearAll = () =>
     setFilters({ metals: [], occasions: [], styles: [], priceRanges: [] });
-
   const hasFilters =
     filters.metals.length +
       filters.occasions.length +
@@ -583,7 +755,7 @@ function FilterSidebar({
   return (
     <aside className="w-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-sm uppercase tracking-wider text-foreground">
+        <h2 className="font-semibold text-sm uppercase tracking-wider">
           Filters
         </h2>
         {hasFilters && (
@@ -596,107 +768,30 @@ function FilterSidebar({
           </button>
         )}
       </div>
-
-      {/* Metal / Finish */}
-      <div className="mb-5">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-          Metal / Finish
-        </h3>
-        <div className="space-y-1.5">
-          {METALS.map((m) => (
-            <label
-              key={m}
-              className="flex items-center gap-2 cursor-pointer group"
-            >
-              <input
-                type="checkbox"
-                checked={filters.metals.includes(m)}
-                onChange={() => toggle("metals", m)}
-                className="accent-primary w-3.5 h-3.5"
-              />
-              <span className="text-sm text-foreground group-hover:text-primary transition-colors">
-                {m}
-              </span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Occasion */}
-      <div className="mb-5">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-          Occasion
-        </h3>
-        <div className="space-y-1.5">
-          {OCCASIONS.map((o) => (
-            <label
-              key={o}
-              className="flex items-center gap-2 cursor-pointer group"
-            >
-              <input
-                type="checkbox"
-                checked={filters.occasions.includes(o)}
-                onChange={() => toggle("occasions", o)}
-                className="accent-primary w-3.5 h-3.5"
-              />
-              <span className="text-sm text-foreground group-hover:text-primary transition-colors">
-                {o}
-              </span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Style */}
-      <div className="mb-5">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-          Style
-        </h3>
-        <div className="space-y-1.5">
-          {STYLES.map((s) => (
-            <label
-              key={s}
-              className="flex items-center gap-2 cursor-pointer group"
-            >
-              <input
-                type="checkbox"
-                checked={filters.styles.includes(s)}
-                onChange={() => toggle("styles", s)}
-                className="accent-primary w-3.5 h-3.5"
-              />
-              <span className="text-sm text-foreground group-hover:text-primary transition-colors">
-                {s}
-              </span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Price Range */}
-      <div className="mb-5">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-          Price Range
-        </h3>
-        <div className="space-y-1.5">
-          {PRICE_RANGES.map((p) => (
-            <label
-              key={p}
-              className="flex items-center gap-2 cursor-pointer group"
-            >
-              <input
-                type="checkbox"
-                checked={filters.priceRanges.includes(p)}
-                onChange={() => toggle("priceRanges", p)}
-                className="accent-primary w-3.5 h-3.5"
-              />
-              <span className="text-sm text-foreground group-hover:text-primary transition-colors">
-                {p}
-              </span>
-            </label>
-          ))}
-        </div>
-      </div>
-
+      <FilterGroup
+        title="Metal / Finish"
+        options={METALS}
+        selected={filters.metals}
+        onToggle={(v) => toggle("metals", v)}
+      />
+      <FilterGroup
+        title="Occasion"
+        options={OCCASIONS}
+        selected={filters.occasions}
+        onToggle={(v) => toggle("occasions", v)}
+      />
+      <FilterGroup
+        title="Style"
+        options={STYLES}
+        selected={filters.styles}
+        onToggle={(v) => toggle("styles", v)}
+      />
+      <FilterGroup
+        title="Price Range"
+        options={PRICE_RANGES}
+        selected={filters.priceRanges}
+        onToggle={(v) => toggle("priceRanges", v)}
+      />
       <div className="text-xs text-muted-foreground border-t border-border pt-3">
         Showing {filteredCount} of {totalCount} products
       </div>
@@ -704,36 +799,158 @@ function FilterSidebar({
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// ─── Product Card ─────────────────────────────────────────────────────────────
+
+interface ProductCardProps {
+  product: NormalizedProduct;
+  onQuickView: (p: NormalizedProduct) => void;
+  onInquiry: (p: NormalizedProduct) => void;
+  getImage: (p: NormalizedProduct) => string;
+}
+
+function ProductCard({
+  product,
+  onQuickView,
+  onInquiry,
+  getImage,
+}: ProductCardProps) {
+  return (
+    <div
+      className="product-card group relative flex flex-col"
+      data-ocid={`product-card.${product.id}`}
+    >
+      {/* Image with hover zoom */}
+      <div className="relative aspect-square overflow-hidden">
+        <Link to={`/products/${product.id}`} tabIndex={-1}>
+          <img
+            src={getImage(product)}
+            alt={`${product.name} — wholesale imitation jewellery Jaipur India`}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+            width={400}
+            height={400}
+          />
+        </Link>
+
+        {/* Featured badge */}
+        {product.featured && (
+          <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide z-10">
+            Featured
+          </span>
+        )}
+
+        {/* Metal badge */}
+        {product.metal && (
+          <span className="absolute top-2 right-2 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded-full z-10">
+            {product.metal}
+          </span>
+        )}
+
+        {/* MOQ badge — bottom right, always visible */}
+        <span className="badge-moq z-10">Min. Qty: {product.moq}</span>
+
+        {/* Quick view overlay — appears on hover */}
+        <button
+          type="button"
+          onClick={() => onQuickView(product)}
+          aria-label={`Quick view ${product.name}`}
+          className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-all duration-300 opacity-0 group-hover:opacity-100 z-20"
+          data-ocid={`product-card.quickview.${product.id}`}
+        >
+          <span className="flex items-center gap-1.5 bg-card text-foreground text-xs font-semibold px-3 py-1.5 rounded-full shadow-elevated translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+            <Eye className="w-3.5 h-3.5" />
+            Quick View
+          </span>
+        </button>
+      </div>
+
+      {/* Card body */}
+      <div className="p-3 flex-1 flex flex-col">
+        <Link to={`/products/${product.id}`} className="block mb-1">
+          <h3 className="font-semibold text-sm leading-snug line-clamp-2 hover:text-primary transition-colors">
+            {product.name}
+          </h3>
+        </Link>
+        <p className="text-xs text-muted-foreground line-clamp-2 mb-2 flex-1">
+          {product.description}
+        </p>
+
+        <div className="flex flex-wrap gap-1 mb-3">
+          {product.occasion && (
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+              {product.occasion}
+            </Badge>
+          )}
+          {product.style && (
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+              {product.style}
+            </Badge>
+          )}
+        </div>
+
+        <Button
+          size="sm"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs h-8"
+          onClick={() => onInquiry(product)}
+          data-ocid={`product-card.inquiry.${product.id}`}
+        >
+          Get Wholesale Quote
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Products Page ───────────────────────────────────────────────────────
 
 export default function Products() {
   usePageSEO({
     title:
-      "Wholesale Imitation Jewellery Products — Necklaces, Earrings, Bridal Sets | Gemora Global",
+      "Wholesale Imitation Jewellery Products — 500+ Designs | Gemora Global Jaipur",
     description:
-      "Browse Gemora Global's wholesale imitation jewellery range — necklaces, earrings, bangles, bracelets, rings, maang tikkas, and bridal jewellery sets. 500+ designs, anti-tarnish finish, MOQ-friendly pricing.",
+      "Browse Gemora Global's wholesale imitation jewellery — necklaces, earrings, bangles, bracelets, rings, bridal sets. MOQ 50 pcs. Anti-tarnish finish. Export to 50+ countries from Jaipur, India.",
     canonical: "https://gemoraglobal-tje.caffeine.xyz/products",
-    ogTitle:
-      "Wholesale Imitation Jewellery — Necklaces, Earrings, Bridal Sets | Gemora Global",
+    ogTitle: "Wholesale Imitation Jewellery — 500+ Designs | Gemora Global",
     ogImage: "https://gemoraglobal-tje.caffeine.xyz/images/og-products.jpg",
-    schema: {
-      "@context": "https://schema.org",
-      "@type": "CollectionPage",
-      url: "https://gemoraglobal-tje.caffeine.xyz/products",
-      name: "Wholesale Imitation Jewellery Products",
-      description:
-        "500+ wholesale imitation jewellery designs including necklaces, earrings, bangles, bracelets, rings and bridal sets.",
-    },
+    schema: [
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        url: "https://gemoraglobal-tje.caffeine.xyz/products",
+        name: "Wholesale Imitation Jewellery Products | Gemora Global",
+        description:
+          "500+ wholesale imitation jewellery designs — necklaces, earrings, bangles, rings, bridal sets. Manufacturer from Jaipur, India.",
+        breadcrumb: {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: "https://gemoraglobal-tje.caffeine.xyz/",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Products",
+              item: "https://gemoraglobal-tje.caffeine.xyz/products",
+            },
+          ],
+        },
+      },
+    ],
   });
 
   const { actor } = useActor();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCatId = searchParams.get("category");
 
-  const [inquiryProduct, setInquiryProduct] = useState<
-    SampleProduct | Product | null
-  >(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [quickViewProduct, setQuickViewProduct] =
+    useState<NormalizedProduct | null>(null);
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
+  const [inquiryProduct, setInquiryProduct] =
+    useState<NormalizedProduct | null>(null);
+  const [inquiryOpen, setInquiryOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("featured");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -755,15 +972,14 @@ export default function Products() {
     Product[]
   >({
     queryKey: ["products", activeCatId],
-    queryFn: () => actor!.getProducts(activeCatId ? BigInt(activeCatId) : null),
+    queryFn: () => actor!.getProducts(activeCatId ? [BigInt(activeCatId)] : []),
     enabled: !!actor,
   });
 
   const displayCategories =
     categories && categories.length > 0 ? categories : SAMPLE_CATEGORIES;
 
-  // Merge backend products with sample products (use backend if available)
-  const allProducts: SampleProduct[] = useMemo(() => {
+  const allProducts: NormalizedProduct[] = useMemo(() => {
     if (backendProducts && backendProducts.length > 0) {
       return backendProducts.map((p) => ({
         id: p.id,
@@ -783,57 +999,35 @@ export default function Products() {
     return SAMPLE_PRODUCTS;
   }, [backendProducts]);
 
-  // Filter products
   const filteredProducts = useMemo(() => {
     let result = allProducts;
-
-    // Category filter
-    if (activeCatId) {
+    if (activeCatId)
       result = result.filter((p) => String(p.categoryId) === activeCatId);
-    }
-
-    // Search
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
           p.description.toLowerCase().includes(q) ||
-          p.tags?.some((t) => t.toLowerCase().includes(q)),
+          p.tags.some((t) => t.toLowerCase().includes(q)),
       );
     }
-
-    // Metal filter
-    if (filters.metals.length > 0) {
+    if (filters.metals.length > 0)
       result = result.filter((p) => filters.metals.includes(p.metal));
-    }
-
-    // Occasion filter
-    if (filters.occasions.length > 0) {
+    if (filters.occasions.length > 0)
       result = result.filter((p) => filters.occasions.includes(p.occasion));
-    }
-
-    // Style filter
-    if (filters.styles.length > 0) {
+    if (filters.styles.length > 0)
       result = result.filter((p) => filters.styles.includes(p.style));
-    }
-
-    // Price range filter
-    if (filters.priceRanges.length > 0) {
+    if (filters.priceRanges.length > 0)
       result = result.filter((p) => filters.priceRanges.includes(p.priceRange));
-    }
-
-    // Sort
-    if (sort === "featured") {
+    if (sort === "featured")
       result = [...result].sort(
         (a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0),
       );
-    } else if (sort === "name_asc") {
+    else if (sort === "name_asc")
       result = [...result].sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sort === "name_desc") {
+    else if (sort === "name_desc")
       result = [...result].sort((a, b) => b.name.localeCompare(a.name));
-    }
-
     return result;
   }, [allProducts, activeCatId, search, filters, sort]);
 
@@ -843,11 +1037,14 @@ export default function Products() {
     filters.styles.length +
     filters.priceRanges.length;
 
-  const removeFilter = (key: keyof FilterState, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: prev[key].filter((v) => v !== value),
-    }));
+  const getProductImage = (p: NormalizedProduct) => {
+    if (p.imageUrls.length > 0 && !p.imageUrls[0].includes("placehold.co"))
+      return p.imageUrls[0];
+    return (
+      CATEGORY_IMAGES[
+        displayCategories.find((c) => c.id === p.categoryId)?.name ?? ""
+      ] || "/assets/generated/product-necklace.dim_600x600.jpg"
+    );
   };
 
   const getCategoryImage = (cat: Category) => {
@@ -859,51 +1056,46 @@ export default function Products() {
     );
   };
 
-  const getProductImage = (p: SampleProduct) => {
-    if (
-      p.imageUrls &&
-      p.imageUrls.length > 0 &&
-      !p.imageUrls[0].includes("placehold.co")
-    ) {
-      return p.imageUrls[0];
-    }
-    return (
-      CATEGORY_IMAGES[
-        displayCategories.find((c) => c.id === p.categoryId)?.name ?? ""
-      ] || "/assets/generated/product-necklace.dim_600x600.jpg"
-    );
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-16">
-        {/* Hero */}
-        <div className="bg-card border-b border-border py-10">
+        {/* Page hero */}
+        <div className="bg-card border-b border-border py-8">
           <div className="container">
+            {/* Breadcrumb */}
+            <nav
+              className="text-xs text-muted-foreground mb-3 flex items-center gap-1"
+              aria-label="Breadcrumb"
+            >
+              <Link to="/" className="hover:text-primary transition-colors">
+                Home
+              </Link>
+              <span>/</span>
+              <span className="text-foreground font-medium">Products</span>
+            </nav>
             <h1 className="font-serif text-3xl md:text-4xl font-bold mb-2">
               Wholesale Imitation Jewellery — 500+ Designs
             </h1>
             <p className="text-muted-foreground max-w-2xl text-sm">
-              Bulk artificial jewellery manufacturer India — premium imitation
-              jewellery for boutiques, distributors &amp; wholesale buyers
-              worldwide.
+              Bulk artificial jewellery manufacturer from Jaipur, India —
+              premium imitation jewellery for boutiques, distributors &amp;
+              wholesale buyers worldwide. MOQ starts at 50 pcs.
             </p>
           </div>
         </div>
 
-        {/* Category Tabs */}
-        <div className="bg-card border-b border-border sticky top-16 z-20">
+        {/* Sticky category tabs */}
+        <div className="bg-card border-b border-border sticky top-16 z-20 shadow-sm">
           <div className="container">
-            <div className="flex gap-1 overflow-x-auto py-3 scrollbar-hide">
+            <div
+              className="flex gap-1 overflow-x-auto py-2.5 scrollbar-hide"
+              data-ocid="category.tabs"
+            >
               <button
                 type="button"
                 onClick={() => setSearchParams(new URLSearchParams())}
-                className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
-                  !activeCatId
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "border-border text-foreground hover:border-primary hover:text-primary"
-                }`}
+                className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${!activeCatId ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary hover:text-primary"}`}
               >
                 All
               </button>
@@ -916,11 +1108,8 @@ export default function Products() {
                       new URLSearchParams({ category: String(cat.id) }),
                     )
                   }
-                  className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
-                    activeCatId === String(cat.id)
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "border-border text-foreground hover:border-primary hover:text-primary"
-                  }`}
+                  className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${activeCatId === String(cat.id) ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary hover:text-primary"}`}
+                  data-ocid={`category.tab.${cat.id}`}
                 >
                   {cat.name}
                 </button>
@@ -930,10 +1119,10 @@ export default function Products() {
         </div>
 
         <div className="container py-6">
-          {/* Search + Controls bar */}
+          {/* Controls bar */}
           <div className="flex flex-wrap gap-3 items-center mb-4">
             {/* Search */}
-            <div className="relative flex-1 min-w-[200px] max-w-xs">
+            <div className="relative flex-1 min-w-[180px] max-w-xs">
               <svg
                 aria-hidden="true"
                 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"
@@ -953,29 +1142,18 @@ export default function Products() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search jewellery..."
                 className="pl-9 h-9 text-sm"
+                data-ocid="products.search"
               />
             </div>
 
-            {/* Filter toggle (mobile) */}
+            {/* Filter toggle — mobile */}
             <button
               type="button"
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-lg text-sm hover:border-primary transition-colors"
+              data-ocid="products.filter_toggle"
             >
-              <svg
-                aria-hidden="true"
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"
-                />
-              </svg>
+              <SlidersHorizontal className="w-4 h-4" />
               Filters
               {activeFilterCount > 0 && (
                 <span className="bg-primary text-primary-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center">
@@ -989,6 +1167,7 @@ export default function Products() {
               value={sort}
               onChange={(e) => setSort(e.target.value)}
               className="border border-border rounded-lg px-3 py-1.5 text-sm bg-background text-foreground focus:outline-none focus:border-primary h-9"
+              data-ocid="products.sort"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -1002,41 +1181,18 @@ export default function Products() {
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
-                className={`p-2 transition-colors ${
-                  viewMode === "grid"
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                }`}
+                aria-label="Grid view"
+                className={`p-2 transition-colors ${viewMode === "grid" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
               >
-                <svg
-                  aria-hidden="true"
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M1 2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1V2zm5 0a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H7a1 1 0 01-1-1V2zm5 0a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1V2zM1 7a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1V7zm5 0a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H7a1 1 0 01-1-1V7zm5 0a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1V7zM1 12a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H2a1 1 0 01-1-1v-2zm5 0a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H7a1 1 0 01-1-1v-2zm5 0a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z" />
-                </svg>
+                <Grid3X3 className="w-4 h-4" aria-hidden="true" />
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode("list")}
-                className={`p-2 transition-colors ${
-                  viewMode === "list"
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                }`}
+                aria-label="List view"
+                className={`p-2 transition-colors ${viewMode === "list" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
               >
-                <svg
-                  aria-hidden="true"
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M2.5 12a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z"
-                  />
-                </svg>
+                <List className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 
@@ -1058,10 +1214,16 @@ export default function Products() {
                       {v}
                       <button
                         type="button"
-                        onClick={() => removeFilter(key, v)}
-                        className="hover:text-red-500 transition-colors ml-0.5"
+                        onClick={() =>
+                          setFilters((prev) => ({
+                            ...prev,
+                            [key]: prev[key].filter((x) => x !== v),
+                          }))
+                        }
+                        className="hover:text-destructive transition-colors ml-0.5"
+                        aria-label={`Remove ${v} filter`}
                       >
-                        ×
+                        <X className="w-3 h-3" />
                       </button>
                     </span>
                   )),
@@ -1084,7 +1246,7 @@ export default function Products() {
           )}
 
           <div className="flex gap-6">
-            {/* Desktop Sidebar */}
+            {/* Desktop sidebar */}
             <div className="hidden lg:block w-52 shrink-0">
               <div className="sticky top-36 bg-card border border-border rounded-xl p-4">
                 <FilterSidebar
@@ -1096,16 +1258,16 @@ export default function Products() {
               </div>
             </div>
 
-            {/* Mobile Sidebar Drawer */}
+            {/* Mobile sidebar drawer */}
             {sidebarOpen && (
               <div className="lg:hidden fixed inset-0 z-50 flex">
                 <div
                   className="absolute inset-0 bg-black/40"
                   onClick={() => setSidebarOpen(false)}
-                  onKeyDown={(e) => e.key === "Escape" && setSidebarOpen(false)}
                   role="button"
                   tabIndex={-1}
                   aria-label="Close filters"
+                  onKeyDown={(e) => e.key === "Escape" && setSidebarOpen(false)}
                 />
                 <div className="relative ml-auto w-72 bg-background h-full overflow-y-auto p-5 shadow-xl">
                   <div className="flex items-center justify-between mb-4">
@@ -1114,21 +1276,9 @@ export default function Products() {
                       type="button"
                       onClick={() => setSidebarOpen(false)}
                       className="text-muted-foreground hover:text-foreground"
+                      aria-label="Close filters"
                     >
-                      <svg
-                        aria-hidden="true"
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
+                      <X className="w-5 h-5" />
                     </button>
                   </div>
                   <FilterSidebar
@@ -1149,7 +1299,7 @@ export default function Products() {
 
             {/* Main content */}
             <div className="flex-1 min-w-0">
-              {/* Category showcase (when no filters active and showing all) */}
+              {/* Category showcase */}
               {!activeCatId && !search && activeFilterCount === 0 && (
                 <div className="mb-8">
                   <h2 className="font-serif text-xl font-bold mb-4">
@@ -1165,7 +1315,7 @@ export default function Products() {
                             new URLSearchParams({ category: String(cat.id) }),
                           )
                         }
-                        className="group relative overflow-hidden rounded-xl aspect-square cursor-pointer border border-border hover:border-primary transition-all"
+                        className="group relative overflow-hidden rounded-xl aspect-square cursor-pointer border border-border hover:border-primary hover:shadow-md transition-all"
                       >
                         <img
                           src={getCategoryImage(cat)}
@@ -1177,7 +1327,7 @@ export default function Products() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
-                          <p className="font-semibold text-white text-sm">
+                          <p className="font-semibold text-white text-sm drop-shadow">
                             {cat.name}
                           </p>
                         </div>
@@ -1189,13 +1339,9 @@ export default function Products() {
 
               {prodsLoading ? (
                 <div
-                  className={`grid gap-4 ${
-                    viewMode === "grid"
-                      ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-3"
-                      : "grid-cols-1"
-                  }`}
+                  className={`grid gap-4 ${viewMode === "grid" ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4" : "grid-cols-1"}`}
                 >
-                  {Array.from({ length: 6 }, (_, i) => `sk-${i}`).map((k) => (
+                  {Array.from({ length: 8 }, (_, i) => `sk-${i}`).map((k) => (
                     <Skeleton key={k} className="aspect-square rounded-lg" />
                   ))}
                 </div>
@@ -1211,102 +1357,44 @@ export default function Products() {
                       Collection
                     </h2>
                   )}
-                  <div
-                    className={`grid gap-4 ${
-                      viewMode === "grid"
-                        ? "grid-cols-2 md:grid-cols-3"
-                        : "grid-cols-1"
-                    }`}
-                  >
-                    {filteredProducts.map((product) =>
-                      viewMode === "grid" ? (
-                        <div
+
+                  {viewMode === "grid" ? (
+                    <div
+                      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                      data-ocid="products.grid"
+                    >
+                      {filteredProducts.map((product) => (
+                        <ProductCard
                           key={String(product.id)}
-                          className="group rounded-xl overflow-hidden border border-border hover:border-primary/50 hover:shadow-md transition-all bg-card flex flex-col"
-                        >
-                          <Link
-                            to={`/products/${product.id}`}
-                            className="block"
-                          >
-                            <div className="relative aspect-square overflow-hidden">
-                              <img
-                                src={getProductImage(product)}
-                                alt={`${product.name} - wholesale imitation jewellery India`}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                loading="lazy"
-                                width={400}
-                                height={400}
-                              />
-                              {product.featured && (
-                                <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                  FEATURED
-                                </span>
-                              )}
-                              <div className="absolute top-2 right-2 flex flex-col gap-1">
-                                {product.metal && (
-                                  <span className="bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded-full">
-                                    {product.metal}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <div className="p-3">
-                              <h3 className="font-semibold text-sm leading-snug mb-1">
-                                {product.name}
-                              </h3>
-                              <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-                                {product.description}
-                              </p>
-                              <div className="flex flex-wrap gap-1 mb-2">
-                                {product.occasion && (
-                                  <Badge
-                                    variant="outline"
-                                    className="text-[10px] px-1.5 py-0"
-                                  >
-                                    {product.occasion}
-                                  </Badge>
-                                )}
-                                {product.style && (
-                                  <Badge
-                                    variant="outline"
-                                    className="text-[10px] px-1.5 py-0"
-                                  >
-                                    {product.style}
-                                  </Badge>
-                                )}
-                              </div>
-                              <p className="text-xs text-muted-foreground">
-                                MOQ:{" "}
-                                <span className="font-medium text-foreground">
-                                  {product.moq}
-                                </span>
-                              </p>
-                            </div>
-                          </Link>
-                          <div className="px-3 pb-3 mt-auto">
-                            <Button
-                              size="sm"
-                              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs h-8"
-                              onClick={() => {
-                                setInquiryProduct(product);
-                                setModalOpen(true);
-                              }}
-                            >
-                              Get Wholesale Quote
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        // List view
+                          product={product}
+                          onQuickView={(p) => {
+                            setQuickViewProduct(p);
+                            setQuickViewOpen(true);
+                          }}
+                          onInquiry={(p) => {
+                            setInquiryProduct(p);
+                            setInquiryOpen(true);
+                          }}
+                          getImage={getProductImage}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div
+                      className="flex flex-col gap-3"
+                      data-ocid="products.list"
+                    >
+                      {filteredProducts.map((product) => (
                         <div
                           key={String(product.id)}
                           className="flex gap-4 rounded-xl overflow-hidden border border-border hover:border-primary/50 hover:shadow-md transition-all bg-card p-3"
+                          data-ocid={`product-list-row.${product.id}`}
                         >
                           <Link
                             to={`/products/${product.id}`}
                             className="shrink-0"
                           >
-                            <div className="w-24 h-24 rounded-lg overflow-hidden">
+                            <div className="relative w-24 h-24 rounded-lg overflow-hidden">
                               <img
                                 src={getProductImage(product)}
                                 alt={product.name}
@@ -1315,18 +1403,21 @@ export default function Products() {
                                 width={96}
                                 height={96}
                               />
+                              <span className="badge-moq !text-[8px] !px-1.5 !py-1 !bottom-0 !right-0 !rounded-br-lg !rounded-tl-lg !rounded-none !rounded-tr-none !rounded-bl-none">
+                                Min {product.moq}
+                              </span>
                             </div>
                           </Link>
                           <div className="flex-1 min-w-0">
                             <Link to={`/products/${product.id}`}>
-                              <h3 className="font-semibold text-sm mb-1">
+                              <h3 className="font-semibold text-sm mb-1 hover:text-primary transition-colors">
                                 {product.name}
                               </h3>
                             </Link>
                             <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
                               {product.description}
                             </p>
-                            <div className="flex flex-wrap gap-1 mb-2">
+                            <div className="flex flex-wrap gap-1">
                               {product.metal && (
                                 <Badge
                                   variant="outline"
@@ -1352,29 +1443,40 @@ export default function Products() {
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                              MOQ: {product.moq}
-                            </p>
                           </div>
-                          <div className="shrink-0 self-center">
+                          <div className="shrink-0 self-center flex flex-col gap-2">
                             <Button
                               size="sm"
                               className="bg-primary text-primary-foreground text-xs h-8 whitespace-nowrap"
                               onClick={() => {
                                 setInquiryProduct(product);
-                                setModalOpen(true);
+                                setInquiryOpen(true);
                               }}
                             >
                               Get Quote
                             </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-xs h-8"
+                              onClick={() => {
+                                setQuickViewProduct(product);
+                                setQuickViewOpen(true);
+                              }}
+                            >
+                              <Eye className="w-3 h-3 mr-1" /> Quick View
+                            </Button>
                           </div>
                         </div>
-                      ),
-                    )}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </>
               ) : (
-                <div className="text-center py-20">
+                <div
+                  className="text-center py-20"
+                  data-ocid="products.empty_state"
+                >
                   <p className="text-5xl mb-4">💎</p>
                   <p className="text-muted-foreground mb-2 font-medium">
                     No products match your filters.
@@ -1408,39 +1510,50 @@ export default function Products() {
                 </div>
               )}
 
-              {/* SEO section */}
-              <div className="bg-card border border-border rounded-xl p-6 mt-10">
+              {/* SEO content block */}
+              <div className="bg-muted/40 border border-border rounded-xl p-6 mt-10">
                 <h2 className="font-serif text-lg font-bold mb-3">
-                  Export Quality Artificial Jewellery Wholesale — India's Best
+                  Export Quality Wholesale Imitation Jewellery from Jaipur,
+                  India
                 </h2>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-3">
-                  Gemora Global is India's leading{" "}
+                  Gemora Global is a leading{" "}
                   <Link
                     to="/wholesale"
                     className="text-primary hover:underline"
                   >
                     bulk artificial jewellery manufacturer
-                  </Link>
-                  , supplying premium imitation jewellery to wholesale buyers in
-                  USA, UK, France, UAE, and 50+ countries. Our catalogue covers
-                  necklaces, earrings, bangles, bracelets, rings, and complete
-                  bridal sets in gold-plated, silver-plated, rose gold, and
-                  oxidised finishes.
+                  </Link>{" "}
+                  from Jaipur, India's jewellery capital. We supply premium
+                  imitation jewellery to wholesale buyers in USA, UK, France,
+                  UAE, and 50+ countries. Our catalogue covers necklaces,
+                  earrings, bangles, bracelets, rings, and bridal sets in
+                  gold-plated, silver-plated, rose gold, and oxidised finishes.
                 </p>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  MOQ starts at just 50 pieces per design. Contact us for the
-                  latest catalogue and wholesale pricing.
+                  MOQ starts at just 50 pieces per design.{" "}
+                  <Link to="/contact" className="text-primary hover:underline">
+                    Contact us
+                  </Link>{" "}
+                  for the latest catalogue and wholesale pricing.
                 </p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <Footer />
+
+      <QuickViewModal
+        product={quickViewProduct}
+        open={quickViewOpen}
+        onClose={() => setQuickViewOpen(false)}
+      />
       <InquiryModal
         product={inquiryProduct}
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        open={inquiryOpen}
+        onClose={() => setInquiryOpen(false)}
       />
     </div>
   );

@@ -8,14 +8,14 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const _CaffeineStorageCreateCertificateResult = IDL.Record({
+export const _ImmutableObjectStorageCreateCertificateResult = IDL.Record({
   'method' : IDL.Text,
   'blob_hash' : IDL.Text,
 });
-export const _CaffeineStorageRefillInformation = IDL.Record({
+export const _ImmutableObjectStorageRefillInformation = IDL.Record({
   'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
 });
-export const _CaffeineStorageRefillResult = IDL.Record({
+export const _ImmutableObjectStorageRefillResult = IDL.Record({
   'success' : IDL.Opt(IDL.Bool),
   'topped_up_amount' : IDL.Opt(IDL.Nat),
 });
@@ -24,10 +24,33 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const BlogPost = IDL.Record({
+  'id' : IDL.Nat,
+  'status' : IDL.Text,
+  'title' : IDL.Text,
+  'content' : IDL.Text,
+  'date' : IDL.Text,
+  'createdAt' : IDL.Int,
+  'slug' : IDL.Text,
+  'author' : IDL.Text,
+  'readTime' : IDL.Text,
+  'excerpt' : IDL.Text,
+  'category' : IDL.Text,
+  'image' : IDL.Text,
+});
 export const UserProfile = IDL.Record({
   'country' : IDL.Text,
   'name' : IDL.Text,
   'company' : IDL.Text,
+});
+export const Catalogue = IDL.Record({
+  'id' : IDL.Nat,
+  'title' : IDL.Text,
+  'createdAt' : IDL.Int,
+  'description' : IDL.Text,
+  'fileName' : IDL.Text,
+  'uploadedAt' : IDL.Text,
+  'fileUrl' : IDL.Text,
 });
 export const Category = IDL.Record({
   'id' : IDL.Nat,
@@ -73,59 +96,61 @@ export const Testimonial = IDL.Record({
   'rating' : IDL.Nat,
 });
 
-export const BlogPost = IDL.Record({
-  'id' : IDL.Nat,
-  'slug' : IDL.Text,
-  'title' : IDL.Text,
-  'category' : IDL.Text,
-  'excerpt' : IDL.Text,
-  'author' : IDL.Text,
-  'date' : IDL.Text,
-  'readTime' : IDL.Text,
-  'status' : IDL.Text,
-  'image' : IDL.Text,
-  'content' : IDL.Text,
-  'createdAt' : IDL.Int,
-});
-export const Catalogue = IDL.Record({
-  'id' : IDL.Nat,
-  'title' : IDL.Text,
-  'description' : IDL.Text,
-  'fileUrl' : IDL.Text,
-  'fileName' : IDL.Text,
-  'uploadedAt' : IDL.Text,
-  'createdAt' : IDL.Int,
-});
-
 export const idlService = IDL.Service({
-  '_caffeineStorageBlobIsLive' : IDL.Func(
-      [IDL.Vec(IDL.Nat8)],
-      [IDL.Bool],
+  '_immutableObjectStorageBlobsAreLive' : IDL.Func(
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      [IDL.Vec(IDL.Bool)],
       ['query'],
     ),
-  '_caffeineStorageBlobsToDelete' : IDL.Func(
+  '_immutableObjectStorageBlobsToDelete' : IDL.Func(
       [],
       [IDL.Vec(IDL.Vec(IDL.Nat8))],
       ['query'],
     ),
-  '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+  '_immutableObjectStorageConfirmBlobDeletion' : IDL.Func(
       [IDL.Vec(IDL.Vec(IDL.Nat8))],
       [],
       [],
     ),
-  '_caffeineStorageCreateCertificate' : IDL.Func(
+  '_immutableObjectStorageCreateCertificate' : IDL.Func(
       [IDL.Text],
-      [_CaffeineStorageCreateCertificateResult],
+      [_ImmutableObjectStorageCreateCertificateResult],
       [],
     ),
-  '_caffeineStorageRefillCashier' : IDL.Func(
-      [IDL.Opt(_CaffeineStorageRefillInformation)],
-      [_CaffeineStorageRefillResult],
+  '_immutableObjectStorageRefillCashier' : IDL.Func(
+      [IDL.Opt(_ImmutableObjectStorageRefillInformation)],
+      [_ImmutableObjectStorageRefillResult],
       [],
     ),
-  '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
-  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  '_immutableObjectStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
+  '_initializeAccessControl' : IDL.Func([], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'changeAdminCredentials' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+      [IDL.Bool],
+      [],
+    ),
+  'createBlogPost' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+      ],
+      [IDL.Nat],
+      [],
+    ),
+  'createCatalogue' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+      [IDL.Nat],
+      [],
+    ),
   'createCategory' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Int],
       [IDL.Nat],
@@ -146,12 +171,21 @@ export const idlService = IDL.Service({
       [IDL.Nat],
       [],
     ),
+  'deleteBlogPost' : IDL.Func([IDL.Nat], [], []),
+  'deleteCatalogue' : IDL.Func([IDL.Nat], [], []),
   'deleteCategory' : IDL.Func([IDL.Nat], [], []),
   'deleteGalleryItem' : IDL.Func([IDL.Nat], [], []),
   'deleteProduct' : IDL.Func([IDL.Nat], [], []),
   'deleteTestimonial' : IDL.Func([IDL.Nat], [], []),
+  'getBlogPost' : IDL.Func([IDL.Text], [IDL.Opt(BlogPost)], ['query']),
+  'getBlogPosts' : IDL.Func(
+      [IDL.Opt(IDL.Text)],
+      [IDL.Vec(BlogPost)],
+      ['query'],
+    ),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getCatalogues' : IDL.Func([], [IDL.Vec(Catalogue)], ['query']),
   'getCategories' : IDL.Func([], [IDL.Vec(Category)], ['query']),
   'getContent' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], ['query']),
   'getDashboardStats' : IDL.Func(
@@ -190,6 +224,23 @@ export const idlService = IDL.Service({
       [IDL.Nat],
       [],
     ),
+  'updateBlogPost' : IDL.Func(
+      [
+        IDL.Nat,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+      ],
+      [],
+      [],
+    ),
   'updateCategory' : IDL.Func(
       [IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Int],
       [],
@@ -219,19 +270,20 @@ export const idlService = IDL.Service({
       [],
       [],
     ),
+  'verifyAdminLogin' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], ['query']),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
-  const _CaffeineStorageCreateCertificateResult = IDL.Record({
+  const _ImmutableObjectStorageCreateCertificateResult = IDL.Record({
     'method' : IDL.Text,
     'blob_hash' : IDL.Text,
   });
-  const _CaffeineStorageRefillInformation = IDL.Record({
+  const _ImmutableObjectStorageRefillInformation = IDL.Record({
     'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
   });
-  const _CaffeineStorageRefillResult = IDL.Record({
+  const _ImmutableObjectStorageRefillResult = IDL.Record({
     'success' : IDL.Opt(IDL.Bool),
     'topped_up_amount' : IDL.Opt(IDL.Nat),
   });
@@ -240,10 +292,33 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const BlogPost = IDL.Record({
+    'id' : IDL.Nat,
+    'status' : IDL.Text,
+    'title' : IDL.Text,
+    'content' : IDL.Text,
+    'date' : IDL.Text,
+    'createdAt' : IDL.Int,
+    'slug' : IDL.Text,
+    'author' : IDL.Text,
+    'readTime' : IDL.Text,
+    'excerpt' : IDL.Text,
+    'category' : IDL.Text,
+    'image' : IDL.Text,
+  });
   const UserProfile = IDL.Record({
     'country' : IDL.Text,
     'name' : IDL.Text,
     'company' : IDL.Text,
+  });
+  const Catalogue = IDL.Record({
+    'id' : IDL.Nat,
+    'title' : IDL.Text,
+    'createdAt' : IDL.Int,
+    'description' : IDL.Text,
+    'fileName' : IDL.Text,
+    'uploadedAt' : IDL.Text,
+    'fileUrl' : IDL.Text,
   });
   const Category = IDL.Record({
     'id' : IDL.Nat,
@@ -290,34 +365,60 @@ export const idlFactory = ({ IDL }) => {
   });
   
   return IDL.Service({
-    '_caffeineStorageBlobIsLive' : IDL.Func(
-        [IDL.Vec(IDL.Nat8)],
-        [IDL.Bool],
+    '_immutableObjectStorageBlobsAreLive' : IDL.Func(
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        [IDL.Vec(IDL.Bool)],
         ['query'],
       ),
-    '_caffeineStorageBlobsToDelete' : IDL.Func(
+    '_immutableObjectStorageBlobsToDelete' : IDL.Func(
         [],
         [IDL.Vec(IDL.Vec(IDL.Nat8))],
         ['query'],
       ),
-    '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+    '_immutableObjectStorageConfirmBlobDeletion' : IDL.Func(
         [IDL.Vec(IDL.Vec(IDL.Nat8))],
         [],
         [],
       ),
-    '_caffeineStorageCreateCertificate' : IDL.Func(
+    '_immutableObjectStorageCreateCertificate' : IDL.Func(
         [IDL.Text],
-        [_CaffeineStorageCreateCertificateResult],
+        [_ImmutableObjectStorageCreateCertificateResult],
         [],
       ),
-    '_caffeineStorageRefillCashier' : IDL.Func(
-        [IDL.Opt(_CaffeineStorageRefillInformation)],
-        [_CaffeineStorageRefillResult],
+    '_immutableObjectStorageRefillCashier' : IDL.Func(
+        [IDL.Opt(_ImmutableObjectStorageRefillInformation)],
+        [_ImmutableObjectStorageRefillResult],
         [],
       ),
-    '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
-    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    '_immutableObjectStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
+    '_initializeAccessControl' : IDL.Func([], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'changeAdminCredentials' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [IDL.Bool],
+        [],
+      ),
+    'createBlogPost' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+        ],
+        [IDL.Nat],
+        [],
+      ),
+    'createCatalogue' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [IDL.Nat],
+        [],
+      ),
     'createCategory' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Int],
         [IDL.Nat],
@@ -338,12 +439,21 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Nat],
         [],
       ),
+    'deleteBlogPost' : IDL.Func([IDL.Nat], [], []),
+    'deleteCatalogue' : IDL.Func([IDL.Nat], [], []),
     'deleteCategory' : IDL.Func([IDL.Nat], [], []),
     'deleteGalleryItem' : IDL.Func([IDL.Nat], [], []),
     'deleteProduct' : IDL.Func([IDL.Nat], [], []),
     'deleteTestimonial' : IDL.Func([IDL.Nat], [], []),
+    'getBlogPost' : IDL.Func([IDL.Text], [IDL.Opt(BlogPost)], ['query']),
+    'getBlogPosts' : IDL.Func(
+        [IDL.Opt(IDL.Text)],
+        [IDL.Vec(BlogPost)],
+        ['query'],
+      ),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getCatalogues' : IDL.Func([], [IDL.Vec(Catalogue)], ['query']),
     'getCategories' : IDL.Func([], [IDL.Vec(Category)], ['query']),
     'getContent' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], ['query']),
     'getDashboardStats' : IDL.Func(
@@ -382,6 +492,23 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Nat],
         [],
       ),
+    'updateBlogPost' : IDL.Func(
+        [
+          IDL.Nat,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+        ],
+        [],
+        [],
+      ),
     'updateCategory' : IDL.Func(
         [IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Int],
         [],
@@ -412,15 +539,6 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'verifyAdminLogin' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], ['query']),
-    'changeAdminCredentials' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text], [IDL.Bool], []),
-    'getBlogPosts' : IDL.Func([IDL.Opt(IDL.Text)], [IDL.Vec(BlogPost)], ['query']),
-    'getBlogPost' : IDL.Func([IDL.Text], [IDL.Opt(BlogPost)], ['query']),
-    'createBlogPost' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
-    'updateBlogPost' : IDL.Func([IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text], [], []),
-    'deleteBlogPost' : IDL.Func([IDL.Nat], [], []),
-    'getCatalogues' : IDL.Func([], [IDL.Vec(Catalogue)], ['query']),
-    'createCatalogue' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
-    'deleteCatalogue' : IDL.Func([IDL.Nat], [], []),
   });
 };
 

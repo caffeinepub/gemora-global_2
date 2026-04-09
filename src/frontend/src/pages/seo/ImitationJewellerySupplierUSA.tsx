@@ -1,6 +1,79 @@
 import { Link } from "react-router-dom";
 import SeoLandingPage from "../../components/SeoLandingPage";
 
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "How do I import jewellery wholesale from India to the USA?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Contact Gemora Global, select designs from our catalogue, confirm your order quantity (MOQ 50 units), pay 30% advance, and we handle production and shipping to your US address via FedEx or DHL with all export documentation.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What are US import duties for Indian imitation jewellery?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Imitation jewellery (HS 7117) from India typically carries an 11% import duty in the USA. We provide all customs documentation to facilitate smooth clearance. Consult a US customs broker for the most current rates.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do you ship to all US states?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, we ship to all 50 US states via FedEx and DHL. Typical delivery time is 3–6 business days after dispatch from our Jaipur facility.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can USA-based boutiques get a wholesale price list in USD?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, we provide USD-denominated price lists for all USA wholesale buyers. Contact us via WhatsApp or the inquiry form to receive our current wholesale catalogue and USD pricing.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is there a minimum order for wholesale jewellery shipped to the USA?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, our MOQ is 50 units per design. For mixed shipments with multiple designs, the minimum total shipment is 200 units. This keeps per-unit shipping costs economical for USA buyers.",
+        },
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://gemoraglobal-tje.caffeine.xyz/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Our Services",
+        item: "https://gemoraglobal-tje.caffeine.xyz/wholesale",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "Imitation Jewellery Supplier USA",
+        item: "https://gemoraglobal-tje.caffeine.xyz/imitation-jewellery-supplier-usa",
+      },
+    ],
+  },
+];
+
 export default function ImitationJewellerySupplierUSA() {
   return (
     <SeoLandingPage
@@ -10,6 +83,29 @@ export default function ImitationJewellerySupplierUSA() {
       h1="Imitation Jewellery Supplier USA | Indian Wholesale"
       targetKeyword="imitation jewellery supplier usa"
       heroSubtitle="Gemora Global is India's trusted imitation jewellery supplier for the USA market. Wholesale fashion jewellery shipped directly to all US states via FedEx and DHL. Factory-direct pricing in USD, MOQ from 50 units."
+      schema={schema}
+      hreflangs={[
+        {
+          lang: "en",
+          url: "https://gemoraglobal-tje.caffeine.xyz/imitation-jewellery-supplier-usa",
+        },
+        {
+          lang: "en-US",
+          url: "https://gemoraglobal-tje.caffeine.xyz/imitation-jewellery-supplier-usa",
+        },
+        {
+          lang: "en-GB",
+          url: "https://gemoraglobal-tje.caffeine.xyz/wholesale-jewellery-uk",
+        },
+        {
+          lang: "en-AE",
+          url: "https://gemoraglobal-tje.caffeine.xyz/jewellery-exporter-uae",
+        },
+        {
+          lang: "x-default",
+          url: "https://gemoraglobal-tje.caffeine.xyz/imitation-jewellery-supplier-usa",
+        },
+      ]}
       bodyContent={
         <>
           <h2 className="text-xl font-serif font-bold text-primary mt-0">
@@ -58,7 +154,7 @@ export default function ImitationJewellerySupplierUSA() {
             Houston, Dallas, San Francisco, Miami, and all other US cities.
           </p>
           <h2 className="text-xl font-serif font-bold text-primary">
-            US Import Customs & Duties for Imitation Jewellery
+            US Import Customs &amp; Duties for Imitation Jewellery
           </h2>
           <p>
             Imitation jewellery imported into the USA is classified under HS
@@ -109,6 +205,15 @@ export default function ImitationJewellerySupplierUSA() {
               </Link>{" "}
               — for classical dance schools and cultural events
             </li>
+            <li>
+              <Link
+                to="/meenakari-jewellery-wholesale"
+                className="text-primary underline"
+              >
+                Meenakari jewellery
+              </Link>{" "}
+              — Jaipur enamel work, unique to Indian craft tradition
+            </li>
           </ul>
           <h2 className="text-xl font-serif font-bold text-primary">
             Pricing in USD for USA Wholesale Buyers
@@ -127,13 +232,20 @@ export default function ImitationJewellerySupplierUSA() {
               className="text-primary underline"
             >
               UAE jewellery supply
-            </Link>{" "}
-            and{" "}
+            </Link>
+            ,{" "}
             <Link
               to="/jewellery-supplier-uk"
               className="text-primary underline"
             >
               UK jewellery supply
+            </Link>
+            , and{" "}
+            <Link
+              to="/imitation-jewellery-manufacturer-jaipur"
+              className="text-primary underline"
+            >
+              Jaipur jewellery manufacturer
             </Link>{" "}
             pages.
           </p>

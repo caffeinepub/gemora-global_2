@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-const links = [
+const MAIN_LINKS = [
   { label: "Home", to: "/" },
   { label: "About", to: "/about" },
   { label: "Products", to: "/products" },
@@ -80,49 +80,70 @@ const SERVICE_LINKS = [
     label: "Private Label Jewellery India",
     to: "/private-label-jewellery-india",
   },
+  {
+    label: "Imitation Jewellery Manufacturer Jaipur",
+    to: "/imitation-jewellery-manufacturer-jaipur",
+  },
+  {
+    label: "Wholesale Jewellery Rajasthan",
+    to: "/wholesale-jewellery-rajasthan",
+  },
+  {
+    label: "Meenakari Jewellery Wholesale",
+    to: "/meenakari-jewellery-wholesale",
+  },
+  {
+    label: "Wholesale Jewellery UK",
+    to: "/wholesale-jewellery-uk",
+  },
 ];
 
 export default function Navbar() {
   const location = useLocation();
-  const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [servicesHover, setServicesHover] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navBg =
-    scrolled || open
-      ? "bg-[#1A237E]/95 backdrop-blur-md border-b border-[#3448bb]/60 shadow-lg"
-      : "bg-transparent border-b border-transparent";
+  const isSolid = scrolled || mobileOpen;
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${navBg}`}
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        isSolid
+          ? "bg-primary shadow-elevated border-b border-primary/60"
+          : "bg-transparent border-b border-transparent"
+      }`}
+      data-ocid="nav.bar"
     >
       <div className="container flex items-center justify-between h-16">
-        <Link to="/" className="flex items-center">
+        {/* Logo */}
+        <Link to="/" className="flex items-center flex-shrink-0">
           <img
             src="/assets/uploads/logo-removebg-preview-1-1.png"
             alt="Gemora Global"
-            className="h-14 w-auto object-contain"
+            className="h-12 w-auto object-contain"
           />
         </Link>
-        <div className="hidden md:flex items-center gap-5">
-          {links.map((l) => (
+
+        {/* Desktop nav */}
+        <div className="hidden lg:flex items-center gap-4">
+          {MAIN_LINKS.map((l) => (
             <Link
               key={l.to}
               to={l.to}
               data-ocid="nav.link"
-              className={`text-sm font-medium transition-colors ${
+              className={`text-sm font-medium transition-colors whitespace-nowrap ${
                 location.pathname === l.to
-                  ? "text-[#42A5F5]"
-                  : "text-white/90 hover:text-[#42A5F5]"
+                  ? "text-accent"
+                  : "text-white/90 hover:text-accent"
               }`}
             >
               {l.label}
@@ -137,8 +158,12 @@ export default function Navbar() {
           >
             <button
               type="button"
-              data-ocid="nav.link"
-              className="flex items-center gap-1 text-sm font-medium transition-colors text-white/90 hover:text-[#42A5F5]"
+              data-ocid="nav.services_toggle"
+              className={`flex items-center gap-1 text-sm font-medium transition-colors whitespace-nowrap ${
+                servicesHover
+                  ? "text-accent"
+                  : "text-white/90 hover:text-accent"
+              }`}
             >
               Our Services
               <ChevronDown
@@ -148,13 +173,13 @@ export default function Navbar() {
               />
             </button>
             {servicesHover && (
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[520px] bg-[#1A237E]/95 backdrop-blur-md border border-[#3448bb]/60 rounded-md shadow-xl z-50 py-2">
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[540px] bg-primary border border-primary/70 rounded-lg shadow-elevated z-50 py-3">
                 <div className="grid grid-cols-2">
                   {SERVICE_LINKS.map((s) => (
                     <Link
                       key={s.to}
                       to={s.to}
-                      className="block px-4 py-2 text-sm text-white/80 hover:bg-[#1a2e8a] hover:text-[#42A5F5] transition-colors"
+                      className="block px-4 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-accent transition-colors"
                       onClick={() => setServicesHover(false)}
                     >
                       {s.label}
@@ -165,21 +190,36 @@ export default function Navbar() {
             )}
           </div>
 
+          {/* WhatsApp CTA */}
+          <a
+            href="https://wa.me/917976341419?text=Hi%20Gemora%20Global%2C%20I%20am%20interested%20in%20wholesale%20jewellery"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-ocid="nav.whatsapp_cta"
+            className="flex items-center gap-1.5 bg-green-500 hover:bg-green-400 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
+          >
+            <MessageCircle className="w-4 h-4" />
+            WhatsApp
+          </a>
+
           <Button
             asChild
             size="sm"
-            className="bg-[#42A5F5] text-white hover:bg-[#3a95e5]"
+            className="bg-accent hover:bg-accent/90 text-primary font-bold"
           >
-            <Link to="/contact" data-ocid="nav.primary_button">
+            <Link to="/contact" data-ocid="nav.quote_cta">
               Get Quote
             </Link>
           </Button>
         </div>
+
+        {/* Mobile hamburger */}
         <button
           type="button"
           aria-label="Toggle menu"
-          className="md:hidden p-2 text-white/90"
-          onClick={() => setOpen(!open)}
+          className="lg:hidden p-2 text-white/90"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          data-ocid="nav.mobile_toggle"
         >
           <svg
             className="w-6 h-6"
@@ -188,7 +228,7 @@ export default function Navbar() {
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
-            {open ? (
+            {mobileOpen ? (
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -206,47 +246,50 @@ export default function Navbar() {
           </svg>
         </button>
       </div>
-      {open && (
-        <div className="md:hidden bg-[#1A237E]/95 backdrop-blur-md border-t border-[#3448bb]/60 px-4 py-3 flex flex-col gap-3">
-          {links.map((l) => (
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="lg:hidden bg-primary border-t border-primary/60 px-4 py-3 flex flex-col gap-2">
+          {MAIN_LINKS.map((l) => (
             <Link
               key={l.to}
               to={l.to}
               data-ocid="nav.link"
-              className={`text-sm py-1 transition-colors ${
+              className={`text-sm py-2 px-2 rounded transition-colors ${
                 location.pathname === l.to
-                  ? "text-[#42A5F5]"
-                  : "text-white/90 hover:text-[#42A5F5]"
+                  ? "text-accent bg-white/5"
+                  : "text-white/90 hover:text-accent hover:bg-white/5"
               }`}
-              onClick={() => setOpen(false)}
+              onClick={() => setMobileOpen(false)}
             >
               {l.label}
             </Link>
           ))}
 
-          {/* Mobile Our Services collapsible */}
+          {/* Mobile Services collapsible */}
           <div>
             <button
               type="button"
-              className="flex items-center gap-1 text-sm py-1 w-full text-left text-white/90 hover:text-[#42A5F5] transition-colors"
+              className="flex items-center justify-between gap-1 text-sm py-2 px-2 w-full text-left text-white/90 hover:text-accent rounded transition-colors"
               onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+              data-ocid="nav.services_mobile_toggle"
             >
               Our Services
               <ChevronDown
-                className={`w-4 h-4 ml-auto transition-transform duration-200 ${
+                className={`w-4 h-4 transition-transform duration-200 ${
                   mobileServicesOpen ? "rotate-180" : ""
                 }`}
               />
             </button>
             {mobileServicesOpen && (
-              <div className="pl-4 grid grid-cols-2 gap-x-2 mt-1">
+              <div className="grid grid-cols-2 gap-x-2 mt-1 pl-2">
                 {SERVICE_LINKS.map((s) => (
                   <Link
                     key={s.to}
                     to={s.to}
-                    className="text-sm text-white/70 hover:text-[#42A5F5] py-1 transition-colors"
+                    className="text-xs text-white/70 hover:text-accent py-1.5 transition-colors"
                     onClick={() => {
-                      setOpen(false);
+                      setMobileOpen(false);
                       setMobileServicesOpen(false);
                     }}
                   >
@@ -257,15 +300,27 @@ export default function Navbar() {
             )}
           </div>
 
-          <Button
-            asChild
-            size="sm"
-            className="bg-[#42A5F5] text-white hover:bg-[#3a95e5] w-fit"
-          >
-            <Link to="/contact" onClick={() => setOpen(false)}>
-              Get Quote
-            </Link>
-          </Button>
+          <div className="flex gap-2 pt-1">
+            <a
+              href="https://wa.me/917976341419?text=Hi%20Gemora%20Global%2C%20I%20am%20interested%20in%20wholesale%20jewellery"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 bg-green-500 text-white text-sm font-semibold px-3 py-2 rounded-lg flex-1 justify-center"
+              onClick={() => setMobileOpen(false)}
+            >
+              <MessageCircle className="w-4 h-4" />
+              WhatsApp
+            </a>
+            <Button
+              asChild
+              size="sm"
+              className="bg-accent hover:bg-accent/90 text-primary font-bold flex-1"
+            >
+              <Link to="/contact" onClick={() => setMobileOpen(false)}>
+                Get Quote
+              </Link>
+            </Button>
+          </div>
         </div>
       )}
     </nav>

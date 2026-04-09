@@ -1,10 +1,11 @@
+import { Mail, MapPin, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 
 function WhatsAppIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="w-5 h-5"
+      className="w-4 h-4"
       fill="currentColor"
       aria-hidden="true"
     >
@@ -13,59 +14,155 @@ function WhatsAppIcon() {
   );
 }
 
-function InstagramIcon() {
+const CATEGORIES = [
+  { label: "Kundan Jewellery", to: "/kundan-jewellery-wholesale" },
+  { label: "Temple Jewellery", to: "/temple-jewellery-manufacturer" },
+  { label: "Antique Jewellery", to: "/products?category=antique" },
+  { label: "Oxidised Jewellery", to: "/oxidised-jewellery-wholesale" },
+  { label: "Bridal Jewellery", to: "/bridal-jewellery-wholesale" },
+  { label: "Fashion Jewellery", to: "/fashion-jewellery-exporter" },
+  { label: "Meenakari Jewellery", to: "/products?category=meenakari" },
+  { label: "Bulk Jewellery", to: "/bulk-jewellery-supplier" },
+];
+
+const COMPANY_LINKS = [
+  { label: "About Gemora Global", to: "/about" },
+  { label: "Why Choose Us", to: "/why-choose-us" },
+  { label: "Our Products", to: "/products" },
+  { label: "Gallery", to: "/gallery" },
+  { label: "Wholesale & Export", to: "/wholesale" },
+  { label: "Global Markets", to: "/export" },
+  { label: "Blog", to: "/blog" },
+  { label: "Contact Us", to: "/contact" },
+];
+
+const RESOURCES = [
+  {
+    label: "Imitation Jewellery Supplier USA",
+    to: "/imitation-jewellery-supplier-usa",
+  },
+  { label: "Jewellery Exporter UAE", to: "/jewellery-exporter-uae" },
+  { label: "Jewellery Supplier UK", to: "/jewellery-supplier-uk" },
+  {
+    label: "Custom Jewellery Manufacturer",
+    to: "/custom-jewellery-manufacturer",
+  },
+  {
+    label: "Private Label Jewellery India",
+    to: "/private-label-jewellery-india",
+  },
+  {
+    label: "Jewellery Exporter India",
+    to: "/imitation-jewellery-exporter-india",
+  },
+  {
+    label: "Wholesale Imitation Jewellery",
+    to: "/wholesale-imitation-jewellery",
+  },
+  {
+    label: "Artificial Jewellery Exporter",
+    to: "/artificial-jewellery-exporter",
+  },
+];
+
+function FooterLink({ label, to }: { label: string; to: string }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      className="w-5 h-5"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-    </svg>
+    <li>
+      <Link
+        to={to}
+        className="text-sm transition-colors"
+        style={{ color: "rgba(255,255,255,0.65)" }}
+      >
+        <span className="hover:text-[#D4AF37]">{label}</span>
+      </Link>
+    </li>
   );
 }
 
-const QUICK_LINKS = [
-  { label: "Gemora Global Home", to: "/" },
-  { label: "About Gemora Global", to: "/about" },
-  { label: "Imitation Jewellery Products", to: "/products" },
-  { label: "Wholesale & Bulk Export", to: "/wholesale" },
-  { label: "Why Choose Gemora Global", to: "/why-choose-us" },
-  { label: "Global Export Markets", to: "/global-markets" },
-  { label: "Jewellery Gallery & Catalogue", to: "/gallery" },
-  { label: "Jewellery Export Blog", to: "/blog" },
-  { label: "Contact for Wholesale Inquiry", to: "/contact" },
-];
+function FooterColTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h4
+      className="font-semibold text-sm uppercase tracking-wider mb-4"
+      style={{ color: "#D4AF37" }}
+    >
+      {children}
+    </h4>
+  );
+}
 
 export default function Footer() {
+  const year = new Date().getFullYear();
+  const hostname =
+    typeof window !== "undefined" ? window.location.hostname : "";
+
   return (
-    <footer className="bg-card border-t border-border mt-16">
-      <div className="container py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div className="md:col-span-2">
-          <h3 className="font-serif text-lg text-primary font-bold mb-2">
-            GEMORA GLOBAL
-          </h3>
-          <p className="text-muted-foreground text-sm">
-            Global Jewellery. Indian Craftsmanship.
-          </p>
-          <p className="text-muted-foreground text-sm mt-2">
+    <footer style={{ background: "#0d1b6e", color: "#fff" }}>
+      {/* Main footer grid */}
+      <div className="container py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Brand column */}
+        <div>
+          <div className="mb-4">
+            <img
+              src="/assets/uploads/logo-removebg-preview-1-1.png"
+              alt="Gemora Global"
+              className="h-12 w-auto object-contain"
+            />
+          </div>
+          <p
+            className="text-sm leading-relaxed mb-4"
+            style={{ color: "rgba(255,255,255,0.7)" }}
+          >
             India&apos;s leading imitation jewellery manufacturer &amp; global
-            exporter — fashion jewellery manufacturer, wholesale jewellery
-            supplier, and imitation jewellery exporter serving boutiques &amp;
-            distributors worldwide.
+            exporter based in Jaipur, Rajasthan. Serving boutiques, retailers
+            &amp; wholesalers worldwide.
           </p>
-          <div className="flex gap-3 mt-4">
+          <div
+            className="space-y-2 text-sm"
+            style={{ color: "rgba(255,255,255,0.7)" }}
+          >
+            <div className="flex items-start gap-2">
+              <MapPin
+                className="w-4 h-4 mt-0.5 flex-shrink-0"
+                style={{ color: "#D4AF37" }}
+              />
+              <span>B 66 MAA Hinglaj Nagar, Vaishali Nagar, Jaipur 302021</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Phone
+                className="w-4 h-4 flex-shrink-0"
+                style={{ color: "#D4AF37" }}
+              />
+              <a
+                href="tel:+917976341419"
+                className="hover:text-[#D4AF37] transition-colors"
+              >
+                +91 7976341419
+              </a>
+            </div>
+            <div className="flex items-center gap-2">
+              <Mail
+                className="w-4 h-4 flex-shrink-0"
+                style={{ color: "#D4AF37" }}
+              />
+              <a
+                href="mailto:globalgemora@gmail.com"
+                className="hover:text-[#D4AF37] transition-colors"
+              >
+                globalgemora@gmail.com
+              </a>
+            </div>
+          </div>
+          {/* Social */}
+          <div className="flex gap-3 mt-5">
             <a
               href="https://wa.me/917976341419"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Chat on WhatsApp"
-              className="flex items-center gap-2 text-green-500 hover:text-green-400 text-sm font-medium transition-colors"
+              className="flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+              style={{ background: "rgba(37,211,102,0.15)", color: "#25d366" }}
             >
-              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-green-500/10 text-green-500">
-                <WhatsAppIcon />
-              </span>
+              <WhatsAppIcon />
               WhatsApp
             </a>
             <a
@@ -73,109 +170,70 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Follow on Instagram"
-              className="flex items-center gap-2 text-[#e1306c] hover:opacity-80 text-sm font-medium transition-colors"
+              className="flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+              style={{ background: "rgba(225,48,108,0.15)", color: "#e1306c" }}
             >
-              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#e1306c]/10 text-[#e1306c]">
-                <InstagramIcon />
-              </span>
+              <svg
+                viewBox="0 0 24 24"
+                className="w-4 h-4"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+              </svg>
               Instagram
             </a>
           </div>
         </div>
-        <div>
-          <h4 className="text-sm font-semibold mb-3">Navigation</h4>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>
-              <Link to="/" className="hover:text-primary">
-                Gemora Global Home
-              </Link>
-            </li>
-            <li>
-              <Link to="/about" className="hover:text-primary">
-                About Gemora Global
-              </Link>
-            </li>
-            <li>
-              <Link to="/products" className="hover:text-primary">
-                Imitation Jewellery Products
-              </Link>
-            </li>
-            <li>
-              <Link to="/wholesale" className="hover:text-primary">
-                Wholesale &amp; Bulk Export
-              </Link>
-            </li>
-            <li>
-              <Link to="/global-markets" className="hover:text-primary">
-                Global Export Markets
-              </Link>
-            </li>
-            <li>
-              <Link to="/gallery" className="hover:text-primary">
-                Jewellery Gallery &amp; Catalogue
-              </Link>
-            </li>
-            <li>
-              <Link to="/blog" className="hover:text-primary">
-                Jewellery Export Blog
-              </Link>
-            </li>
-            <li>
-              <Link to="/contact" className="hover:text-primary">
-                Contact for Wholesale Inquiry
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="text-sm font-semibold mb-3">Contact</h4>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>
-              B 66 MAA Hinglaj Nagar, Gandhi Path West,
-              <br />
-              Vaishali Nagar, Jaipur 302021
-            </li>
-            <li>globalgemora@gmail.com</li>
-            <li>+91 7976341419</li>
-            <li>
-              <Link to="/contact" className="hover:text-primary">
-                Send Inquiry
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </div>
 
-      {/* Quick Links sitemap row */}
-      <div className="border-t border-border">
-        <div className="container py-6">
-          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-4">
-            Quick Links
-          </h4>
-          <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2">
-            {QUICK_LINKS.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="text-xs text-muted-foreground hover:text-primary transition-colors"
-              >
-                {link.label}
-              </Link>
+        {/* Categories */}
+        <div>
+          <FooterColTitle>Categories</FooterColTitle>
+          <ul className="space-y-2">
+            {CATEGORIES.map((c) => (
+              <FooterLink key={c.to} label={c.label} to={c.to} />
             ))}
-          </div>
+          </ul>
+        </div>
+
+        {/* Company */}
+        <div>
+          <FooterColTitle>Company</FooterColTitle>
+          <ul className="space-y-2">
+            {COMPANY_LINKS.map((c) => (
+              <FooterLink key={c.to} label={c.label} to={c.to} />
+            ))}
+          </ul>
+        </div>
+
+        {/* Export Services */}
+        <div>
+          <FooterColTitle>Export Services</FooterColTitle>
+          <ul className="space-y-2">
+            {RESOURCES.map((r) => (
+              <FooterLink key={r.to} label={r.label} to={r.to} />
+            ))}
+          </ul>
         </div>
       </div>
 
-      <div className="border-t border-border">
-        <div className="container py-4 flex justify-between items-center text-xs text-muted-foreground">
+      {/* Bottom bar */}
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        <div
+          className="container py-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs"
+          style={{ color: "rgba(255,255,255,0.5)" }}
+        >
           <span>
-            &copy; {new Date().getFullYear()} Gemora Global. Built with{" "}
-            <span aria-hidden="true">&#10084;</span> using{" "}
+            &copy; {year} Gemora Global — Imitation Jewellery Manufacturer,
+            Jaipur, India. All rights reserved.
+          </span>
+          <span>
+            Built with <span aria-hidden="true">&#10084;</span> using{" "}
             <a
-              href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
+              href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(hostname)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-primary"
+              className="hover:text-[#D4AF37] transition-colors"
             >
               caffeine.ai
             </a>

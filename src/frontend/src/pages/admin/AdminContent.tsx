@@ -175,7 +175,8 @@ function ContentField({
   });
 
   useEffect(() => {
-    if (data !== undefined && data !== null) setValue(data as string);
+    if (data !== undefined && data !== null)
+      setValue(Array.isArray(data) ? (data[0] ?? "") : (data as string));
   }, [data]);
 
   const mutation = useMutation({

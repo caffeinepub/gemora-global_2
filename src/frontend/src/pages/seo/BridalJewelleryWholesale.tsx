@@ -1,5 +1,99 @@
 import SeoLandingPage from "../../components/SeoLandingPage";
 
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What types of bridal jewellery sets do you offer wholesale?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "We offer full bridal parure sets including necklace, earrings, maang tikka, nath, and bangles in kundan, polki, zircon, and CZ work. Gold-plated, silver-plated, and rose-gold finishes available.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can I customise stone colours for my bridal wholesale order?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. Stone colour customisation is available for orders of 100+ sets with 3–4 weeks lead time. Perfect for boutiques with specific wedding theme requirements.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is the MOQ for bridal jewellery sets?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "MOQ starts at 50 sets per design. For customised sets, MOQ is 100 sets. Mixed designs can be combined in a single order.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do you supply bridal jewellery to UK boutiques?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. UK is one of our strongest markets. We ship via DHL Express with 4–6 business day delivery. We provide all HMRC-compliant export documentation.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Are the bridal sets anti-tarnish?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. All Gemora Global bridal sets are finished with our multi-layer anti-tarnish coating, extending display life significantly compared to standard plated jewellery.",
+        },
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://gemoraglobal-tje.caffeine.xyz/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Our Services",
+        item: "https://gemoraglobal-tje.caffeine.xyz/wholesale",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "Bridal Jewellery Wholesale",
+        item: "https://gemoraglobal-tje.caffeine.xyz/bridal-jewellery-wholesale",
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "Gemora Global",
+    description:
+      "Bridal jewellery wholesale supplier and exporter from Jaipur, Rajasthan, India.",
+    url: "https://gemoraglobal-tje.caffeine.xyz/bridal-jewellery-wholesale",
+    telephone: "+91-7976341419",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "B 66 MAA Hinglaj Nagar",
+      addressLocality: "Jaipur",
+      addressRegion: "Rajasthan",
+      postalCode: "302021",
+      addressCountry: "IN",
+    },
+    sameAs: [
+      "https://www.indiamart.com/gemora-global",
+      "https://www.tradeindia.com/gemora-global",
+    ],
+  },
+];
+
 export default function BridalJewelleryWholesale() {
   return (
     <SeoLandingPage
@@ -9,6 +103,7 @@ export default function BridalJewelleryWholesale() {
       h1="Bridal Jewellery Wholesale — Complete Sets from India"
       targetKeyword="bridal imitation jewellery wholesale"
       heroSubtitle="India's trusted wholesale supplier for complete bridal jewellery sets. Kundan, polki, and zircon bridal sets for boutiques serving wedding markets in UK, UAE, USA, and beyond."
+      schema={schema}
       bodyContent={
         <>
           <h2 className="text-xl font-serif font-bold text-primary mt-0">
@@ -73,7 +168,14 @@ export default function BridalJewelleryWholesale() {
             our bridal sets for the large South Asian diaspora wedding retail
             segment and for multicultural wedding boutiques. We provide HS code
             classification support for US customs and full CBSA compliance
-            documentation for Canada.
+            documentation for Canada. Learn more on our dedicated{" "}
+            <a
+              href="/imitation-jewellery-manufacturer-jaipur"
+              className="text-primary underline"
+            >
+              Jaipur jewellery manufacturer
+            </a>{" "}
+            page.
           </p>
         </>
       }

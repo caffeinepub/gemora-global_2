@@ -10,9 +10,9 @@ import {
   YAxis,
 } from "recharts";
 import { toast } from "sonner";
-import type { Inquiry, Product } from "../../backend";
 import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
+import type { Inquiry, Product } from "../../types";
 
 const BOX = {
   background: "#fff",
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
 
   const { data: products } = useQuery<Product[]>({
     queryKey: ["products", null],
-    queryFn: () => actor!.getProducts(null),
+    queryFn: () => actor!.getProducts([]),
     enabled: !!actor,
   });
 

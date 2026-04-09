@@ -30,7 +30,7 @@ export default function BlogPostPage() {
 
   const { data: allPosts = [] } = useQuery({
     queryKey: ["blogPosts"],
-    queryFn: () => actor!.getBlogPosts(null),
+    queryFn: () => actor!.getBlogPosts([]),
     enabled: !!actor,
   });
 

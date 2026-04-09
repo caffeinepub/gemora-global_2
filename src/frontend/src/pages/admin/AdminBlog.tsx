@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loader2, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import AdminLayout from "../../components/AdminLayout";
 import { useActor } from "../../hooks/useActor";
 import { useStorageUpload } from "../../hooks/useStorageUpload";
 
-const categories = [
+const BLOG_CATEGORIES = [
   "Trends",
   "Business Guide",
   "Industry Insights",
@@ -34,13 +35,14 @@ const labelStyle = {
 
 const EMPTY_FORM = {
   title: "",
-  category: categories[0],
+  category: BLOG_CATEGORIES[0],
   author: "",
   date: "",
   status: "Draft",
   excerpt: "",
   content: "",
   image: "",
+  imageWebpKB: undefined as number | undefined,
 };
 
 function generateSlug(title: string): string {
@@ -58,12 +60,13 @@ export default function AdminBlog() {
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<bigint | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
-  const { uploadFile, uploading } = useStorageUpload();
+  const { uploadFileDetailed, uploading, converting, uploadError } =
+    useStorageUpload();
   const imageFileRef = useRef<HTMLInputElement>(null);
 
   const { data: posts = [] } = useQuery({
     queryKey: ["blogPosts"],
-    queryFn: () => actor!.getBlogPosts(null),
+    queryFn: () => actor!.getBlogPosts([]),
     enabled: !!actor,
   });
 
@@ -150,25 +153,25 @@ export default function AdminBlog() {
       excerpt: post.excerpt,
       content: post.content,
       image: post.image,
+      imageWebpKB: undefined,
     });
     setEditId(post.id);
     setShowForm(true);
-  };
-
-  const handleDelete = (id: bigint) => {
-    if (!confirm("Delete this blog post?")) return;
-    deleteMutation.mutate(id);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const url = await uploadFile(file);
-      setForm((f) => ({ ...f, image: url }));
-      toast.success("Image uploaded");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Image upload failed");
+      const result = await uploadFileDetailed(file);
+      setForm((f) => ({ ...f, image: result.url, imageWebpKB: result.webpKB }));
+      toast.success(
+        `Image uploaded & converted to WebP (${result.webpKB.toFixed(0)}KB)`,
+      );
+    } catch {
+      toast.error(
+        "Upload failed — please check your internet connection and try again",
+      );
     }
     if (imageFileRef.current) imageFileRef.current.value = "";
   };
@@ -182,7 +185,7 @@ export default function AdminBlog() {
   };
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
-
+  const uploadActive = converting || uploading;
   const statusColor = (s: string) =>
     s === "Published" ? "#22c55e" : s === "Draft" ? "#f59e0b" : "#6b7280";
 
@@ -268,7 +271,7 @@ export default function AdminBlog() {
                     setForm((f) => ({ ...f, category: e.target.value }))
                   }
                 >
-                  {categories.map((c) => (
+                  {BLOG_CATEGORIES.map((c) => (
                     <option key={c} value={c}>
                       {c}
                     </option>
@@ -310,19 +313,34 @@ export default function AdminBlog() {
                   <option value="Draft">Draft</option>
                 </select>
               </div>
+
+              {/* Featured Image — file only, no URL input */}
               <div>
-                <p style={labelStyle}>Featured Image</p>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 6,
+                  }}
+                >
+                  <p style={labelStyle}>Featured Image</p>
+                  <span style={{ color: "#888", fontSize: 11 }}>
+                    Auto-converted to WebP
+                  </span>
+                </div>
                 <div
                   style={{
                     border: "2px dashed #c5cae9",
                     borderRadius: 8,
                     padding: "14px 12px",
-                    background: uploading ? "#e8f4fe" : "#f5f7ff",
-                    cursor: uploading ? "not-allowed" : "pointer",
+                    background: uploadActive ? "#e8f4fe" : "#f5f7ff",
+                    cursor: uploadActive ? "not-allowed" : "pointer",
                     textAlign: "center",
                     transition: "all 0.2s",
+                    borderColor: uploadActive ? "#42A5F5" : "#c5cae9",
                   }}
-                  onClick={() => !uploading && imageFileRef.current?.click()}
+                  onClick={() => !uploadActive && imageFileRef.current?.click()}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ")
                       imageFileRef.current?.click();
@@ -333,12 +351,18 @@ export default function AdminBlog() {
                     const file = e.dataTransfer.files?.[0];
                     if (!file || !file.type.startsWith("image/")) return;
                     try {
-                      const url = await uploadFile(file);
-                      setForm((f) => ({ ...f, image: url }));
-                      toast.success("Image uploaded");
-                    } catch (err) {
+                      const result = await uploadFileDetailed(file);
+                      setForm((f) => ({
+                        ...f,
+                        image: result.url,
+                        imageWebpKB: result.webpKB,
+                      }));
+                      toast.success(
+                        `Image converted to WebP (${result.webpKB.toFixed(0)}KB)`,
+                      );
+                    } catch {
                       toast.error(
-                        err instanceof Error ? err.message : "Upload failed",
+                        "Upload failed — please check your internet connection and try again",
                       );
                     }
                   }}
@@ -351,17 +375,47 @@ export default function AdminBlog() {
                     className="hidden"
                     onChange={handleImageUpload}
                   />
-                  <span style={{ fontSize: 20 }}>📷</span>
-                  <p
-                    style={{
-                      fontSize: 12,
-                      color: uploading ? "#42A5F5" : "#666",
-                      marginTop: 4,
-                    }}
-                  >
-                    {uploading ? "Uploading..." : "Click or drag to upload"}
-                  </p>
+                  {uploadActive ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 8,
+                      }}
+                    >
+                      <Loader2
+                        size={16}
+                        className="animate-spin"
+                        style={{ color: "#42A5F5" }}
+                      />
+                      <span
+                        style={{
+                          color: "#42A5F5",
+                          fontSize: 13,
+                          fontWeight: 600,
+                        }}
+                      >
+                        {converting ? "Converting to WebP..." : "Uploading..."}
+                      </span>
+                    </div>
+                  ) : (
+                    <>
+                      <span style={{ fontSize: 20 }}>📷</span>
+                      <p style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
+                        Click or drag to upload
+                      </p>
+                    </>
+                  )}
                 </div>
+                {uploadError && (
+                  <p
+                    style={{ color: "crimson", fontSize: 12, marginTop: 4 }}
+                    data-ocid="admin.blog.upload_error"
+                  >
+                    {uploadError}
+                  </p>
+                )}
                 {form.image && (
                   <div
                     style={{
@@ -381,9 +435,34 @@ export default function AdminBlog() {
                         border: "1px solid #c5cae9",
                       }}
                     />
+                    {form.imageWebpKB !== undefined && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          background: "rgba(46,125,50,0.85)",
+                          color: "#fff",
+                          fontSize: 9,
+                          fontWeight: 700,
+                          textAlign: "center",
+                          borderRadius: "0 0 6px 6px",
+                          padding: "2px 0",
+                        }}
+                      >
+                        WebP ✓ {form.imageWebpKB.toFixed(0)}KB
+                      </span>
+                    )}
                     <button
                       type="button"
-                      onClick={() => setForm((f) => ({ ...f, image: "" }))}
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          image: "",
+                          imageWebpKB: undefined,
+                        }))
+                      }
                       style={{
                         position: "absolute",
                         top: -6,
@@ -402,12 +481,13 @@ export default function AdminBlog() {
                       }}
                       aria-label="Remove image"
                     >
-                      ×
+                      <X size={10} color="#fff" />
                     </button>
                   </div>
                 )}
               </div>
             </div>
+
             <div style={{ marginTop: 16 }}>
               <p style={labelStyle}>Excerpt</p>
               <textarea
@@ -431,11 +511,12 @@ export default function AdminBlog() {
                 placeholder="Full blog post content..."
               />
             </div>
+
             <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
               <button
                 type="button"
                 onClick={handleSave}
-                disabled={isSaving || uploading}
+                disabled={isSaving || uploadActive}
                 style={{
                   background: isSaving ? "#c5cae9" : "#1A237E",
                   color: "#fff",
@@ -623,7 +704,10 @@ export default function AdminBlog() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDelete(post.id)}
+                        onClick={() => {
+                          if (confirm("Delete this blog post?"))
+                            deleteMutation.mutate(post.id);
+                        }}
                         style={{
                           background: "crimson",
                           color: "#fff",

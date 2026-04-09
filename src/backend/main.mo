@@ -8,9 +8,9 @@ import Principal "mo:core/Principal";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
 import Time "mo:core/Time";
-import MixinStorage "blob-storage/Mixin";
-import MixinAuthorization "authorization/MixinAuthorization";
-import AccessControl "authorization/access-control";
+import MixinObjectStorage "mo:caffeineai-object-storage/Mixin";
+import MixinAuthorization "mo:caffeineai-authorization/MixinAuthorization";
+import AccessControl "mo:caffeineai-authorization/access-control";
 
 actor {
   type Category = {
@@ -127,7 +127,7 @@ actor {
   include MixinAuthorization(accessControlState);
 
   // Storage
-  include MixinStorage();
+  include MixinObjectStorage();
 
   // Admin password-based auth
   var adminUsername : Text = "admin";

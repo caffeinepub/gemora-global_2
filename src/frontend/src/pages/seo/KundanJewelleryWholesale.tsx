@@ -1,6 +1,100 @@
 import { Link } from "react-router-dom";
 import SeoLandingPage from "../../components/SeoLandingPage";
 
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What is kundan jewellery made of?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Kundan jewellery is made from base metals like brass or copper, coated in gold plating, with synthetic or semi-precious stones set in gold foil. Imitation kundan uses high-quality synthetic kundan stones instead of real gems.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is the minimum order quantity for kundan jewellery wholesale?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Our kundan jewellery wholesale MOQ starts from 50 units per design, making it accessible for boutiques and small distributors as well as large wholesalers.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do you export kundan jewellery to the USA and UK?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, we regularly export kundan jewellery wholesale to the USA, UK, UAE, Canada, and Australia. We handle all export documentation and ship via DHL, FedEx, and air freight.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How long does kundan jewellery production take?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Standard kundan wholesale orders are completed in 7–15 business days. Rush orders for smaller quantities can be fulfilled faster. Contact us for specific timelines.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is kundan jewellery anti-tarnish?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, all our kundan pieces are finished with multi-layer anti-tarnish coating, significantly extending their shelf life and reducing customer returns for retailers.",
+        },
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://gemoraglobal-tje.caffeine.xyz/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Our Services",
+        item: "https://gemoraglobal-tje.caffeine.xyz/wholesale",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "Kundan Jewellery Wholesale",
+        item: "https://gemoraglobal-tje.caffeine.xyz/kundan-jewellery-wholesale",
+      },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "Gemora Global",
+    description:
+      "Kundan jewellery wholesale manufacturer and exporter from Jaipur, Rajasthan, India.",
+    url: "https://gemoraglobal-tje.caffeine.xyz/kundan-jewellery-wholesale",
+    telephone: "+91-7976341419",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "B 66 MAA Hinglaj Nagar",
+      addressLocality: "Jaipur",
+      addressRegion: "Rajasthan",
+      postalCode: "302021",
+      addressCountry: "IN",
+    },
+    sameAs: [
+      "https://www.indiamart.com/gemora-global",
+      "https://www.tradeindia.com/gemora-global",
+    ],
+  },
+];
+
 export default function KundanJewelleryWholesale() {
   return (
     <SeoLandingPage
@@ -10,6 +104,7 @@ export default function KundanJewelleryWholesale() {
       h1="Kundan Jewellery Wholesale Supplier India"
       targetKeyword="kundan jewellery wholesale"
       heroSubtitle="Gemora Global is a leading kundan jewellery wholesale supplier from Jaipur, India. Factory-direct pricing on kundan necklaces, earrings, maang tikkas, and full bridal sets. MOQ from 50 units with worldwide shipping."
+      schema={schema}
       bodyContent={
         <>
           <h2 className="text-xl font-serif font-bold text-primary mt-0">
@@ -119,6 +214,20 @@ export default function KundanJewelleryWholesale() {
               className="text-primary underline"
             >
               temple jewellery manufacturer
+            </Link>{" "}
+            page. Also explore our{" "}
+            <Link
+              to="/meenakari-jewellery-wholesale"
+              className="text-primary underline"
+            >
+              meenakari jewellery wholesale
+            </Link>{" "}
+            page and our{" "}
+            <Link
+              to="/imitation-jewellery-manufacturer-jaipur"
+              className="text-primary underline"
+            >
+              Jaipur jewellery manufacturer
             </Link>{" "}
             page.
           </p>

@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loader2, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import AdminLayout from "../../components/AdminLayout";
@@ -19,10 +20,7 @@ const BOX = {
 function SettingCard({
   title,
   children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+}: { title: string; children: React.ReactNode }) {
   return (
     <div style={BOX}>
       <h3
@@ -40,14 +38,32 @@ function SettingCard({
   );
 }
 
+type SlotInfo = {
+  key: string;
+  label: string;
+  ref: React.RefObject<HTMLInputElement | null>;
+  webpKB?: number;
+};
+
 export default function AdminWebsiteSettings() {
   const { actor } = useActor();
   const qc = useQueryClient();
-  const { uploadFile, uploading } = useStorageUpload();
+  const { uploadFileDetailed, uploading, converting, uploadError } =
+    useStorageUpload();
   const logoFileRef = useRef<HTMLInputElement>(null);
   const heroFile1Ref = useRef<HTMLInputElement>(null);
   const heroFile2Ref = useRef<HTMLInputElement>(null);
   const heroFile3Ref = useRef<HTMLInputElement>(null);
+
+  // Per-slot uploading state (key → boolean)
+  const [slotUploading, setSlotUploading] = useState<Record<string, boolean>>(
+    {},
+  );
+  const [slotConverting, setSlotConverting] = useState<Record<string, boolean>>(
+    {},
+  );
+  const [slotWebpKB, setSlotWebpKB] = useState<Record<string, number>>({});
+  const [slotError, setSlotError] = useState<Record<string, string>>({});
 
   const keys = [
     "hero_title",
@@ -69,7 +85,10 @@ export default function AdminWebsiteSettings() {
       const entries = await Promise.all(
         keys.map(async (k) => {
           const v = await actor.getContent(k);
-          return [k, v ?? ""] as [string, string];
+          return [k, Array.isArray(v) ? (v[0] ?? "") : (v ?? "")] as [
+            string,
+            string,
+          ];
         }),
       );
       return Object.fromEntries(entries);
@@ -78,35 +97,34 @@ export default function AdminWebsiteSettings() {
   });
 
   const [localMap, setLocalMap] = useState<Record<string, string>>({});
-
   const getValue = (key: string) =>
     localMap[key] !== undefined ? localMap[key] : (contentMap?.[key] ?? "");
-
   const setValue = (key: string, value: string) =>
     setLocalMap((m) => ({ ...m, [key]: value }));
 
   const saveMutation = useMutation({
     mutationFn: async (key: string) => {
-      const value = getValue(key);
-      await actor!.setContent(key, value);
+      await actor!.setContent(key, getValue(key));
     },
     onSuccess: () => {
       toast.success("Setting saved");
       qc.invalidateQueries({ queryKey: ["content-all"] });
     },
-    onError: () => toast.error("Failed to save"),
+    onError: () => toast.error("Failed to save setting"),
   });
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const url = await uploadFile(file);
-      await actor!.setContent("logo_url", url);
-      toast.success("Logo updated successfully");
+      const result = await uploadFileDetailed(file);
+      await actor!.setContent("logo_url", result.url);
+      toast.success(`Logo updated (WebP, ${result.webpKB.toFixed(0)}KB)`);
       qc.invalidateQueries({ queryKey: ["content-all"] });
     } catch {
-      toast.error("Failed to upload logo");
+      toast.error(
+        "Upload failed — please check your internet connection and try again",
+      );
     }
     if (logoFileRef.current) logoFileRef.current.value = "";
   };
@@ -118,24 +136,38 @@ export default function AdminWebsiteSettings() {
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setSlotConverting((s) => ({ ...s, [slotKey]: true }));
+    setSlotUploading((s) => ({ ...s, [slotKey]: true }));
+    setSlotError((s) => ({ ...s, [slotKey]: "" }));
     try {
-      const url = await uploadFile(file);
-      await actor!.setContent(slotKey, url);
-      toast.success("Slide image updated");
+      const result = await uploadFileDetailed(file);
+      setSlotConverting((s) => ({ ...s, [slotKey]: false }));
+      await actor!.setContent(slotKey, result.url);
+      setSlotWebpKB((s) => ({ ...s, [slotKey]: result.webpKB }));
+      toast.success(`Slide updated — WebP ${result.webpKB.toFixed(0)}KB`);
       qc.invalidateQueries({ queryKey: ["content-all"] });
       qc.invalidateQueries({ queryKey: ["content", slotKey] });
     } catch {
-      toast.error("Failed to upload slide image");
+      const msg =
+        "Upload failed — please check your internet connection and try again";
+      setSlotError((s) => ({ ...s, [slotKey]: msg }));
+      toast.error(msg);
     }
+    setSlotUploading((s) => ({ ...s, [slotKey]: false }));
+    setSlotConverting((s) => ({ ...s, [slotKey]: false }));
     if (fileRef.current) fileRef.current.value = "";
   };
 
   const handleHeroSlideRemove = async (slotKey: string) => {
     try {
       await actor!.setContent(slotKey, "");
+      setSlotWebpKB((s) => {
+        const n = { ...s };
+        delete n[slotKey];
+        return n;
+      });
       toast.success("Slide image removed");
       qc.invalidateQueries({ queryKey: ["content-all"] });
-      qc.invalidateQueries({ queryKey: ["content", slotKey] });
     } catch {
       toast.error("Failed to remove slide image");
     }
@@ -163,11 +195,14 @@ export default function AdminWebsiteSettings() {
     </button>
   );
 
-  const slotDefs = [
+  const slotDefs: SlotInfo[] = [
     { key: "hero_image_1", label: "Slide 1", ref: heroFile1Ref },
     { key: "hero_image_2", label: "Slide 2", ref: heroFile2Ref },
     { key: "hero_image_3", label: "Slide 3", ref: heroFile3Ref },
   ];
+
+  const anyUploading =
+    uploading || converting || Object.values(slotUploading).some(Boolean);
 
   return (
     <AdminLayout>
@@ -217,19 +252,24 @@ export default function AdminWebsiteSettings() {
           <SaveBtn k="hero_subtitle" />
         </div>
 
-        {/* Hero Slider Images */}
+        {/* Hero Slider — file-only, WebP auto-conversion */}
         <div style={{ marginTop: 4 }}>
-          <Label style={{ color: "#1A237E", fontWeight: 600, fontSize: 14 }}>
-            Hero Slider Images (up to 3)
-          </Label>
-          <p
+          <div
             style={{
-              color: "#888",
-              fontSize: 12,
-              marginBottom: 12,
-              marginTop: 2,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 4,
             }}
           >
+            <Label style={{ color: "#1A237E", fontWeight: 600, fontSize: 14 }}>
+              Hero Slider Images (up to 3)
+            </Label>
+            <span style={{ color: "#888", fontSize: 11 }}>
+              All images auto-converted to WebP
+            </span>
+          </div>
+          <p style={{ color: "#888", fontSize: 12, marginBottom: 12 }}>
             Upload up to 3 images that will automatically slide in the hero
             section.
           </p>
@@ -240,95 +280,148 @@ export default function AdminWebsiteSettings() {
               gap: 16,
             }}
           >
-            {slotDefs.map((slot) => (
-              <div
-                key={slot.key}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 8,
-                }}
-              >
-                <Label style={{ color: "#555", fontWeight: 600, fontSize: 13 }}>
-                  {slot.label}
-                </Label>
-                {/* Upload box */}
-                <label
-                  htmlFor={`file-input-${slot.key}`}
-                  style={{
-                    border: "2px dashed #c5cae9",
-                    borderRadius: 8,
-                    padding: "14px 10px",
-                    textAlign: "center",
-                    cursor: uploading ? "not-allowed" : "pointer",
-                    background: "#f5f7ff",
-                    minHeight: 72,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  data-ocid={`admin.websettings.${slot.key}.dropzone`}
+            {slotDefs.map((slot) => {
+              const isSlotUploading = slotUploading[slot.key];
+              const isSlotConverting = slotConverting[slot.key];
+              const slotErrMsg = slotError[slot.key];
+              const webpKBVal = slotWebpKB[slot.key];
+              return (
+                <div
+                  key={slot.key}
+                  style={{ display: "flex", flexDirection: "column", gap: 8 }}
                 >
-                  <input
-                    id={`file-input-${slot.key}`}
-                    ref={slot.ref}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    data-slot={slot.key}
-                    disabled={uploading}
-                    onChange={(e) =>
-                      handleHeroSlideUpload(e, slot.key, slot.ref)
-                    }
-                  />
-                  <p
-                    style={{
-                      color: uploading ? "#42A5F5" : "#888",
-                      fontSize: 12,
-                    }}
+                  <Label
+                    style={{ color: "#555", fontWeight: 600, fontSize: 13 }}
                   >
-                    {uploading ? "Uploading..." : "Click to upload"}
-                  </p>
-                </label>
-
-                {/* Preview */}
-                {getValue(slot.key) && (
-                  <div style={{ position: "relative" }}>
-                    <img
-                      src={getValue(slot.key)}
-                      alt={`${slot.label} preview`}
-                      style={{
-                        width: "100%",
-                        height: 100,
-                        objectFit: "cover",
-                        borderRadius: 6,
-                        border: "1px solid #c5cae9",
-                      }}
+                    {slot.label}
+                  </Label>
+                  <label
+                    htmlFor={`file-input-${slot.key}`}
+                    style={{
+                      border: `2px dashed ${isSlotConverting || isSlotUploading ? "#42A5F5" : "#c5cae9"}`,
+                      borderRadius: 8,
+                      padding: "14px 10px",
+                      textAlign: "center",
+                      cursor: anyUploading ? "not-allowed" : "pointer",
+                      background:
+                        isSlotConverting || isSlotUploading
+                          ? "#e8f4fe"
+                          : "#f5f7ff",
+                      minHeight: 72,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexDirection: "column" as const,
+                      gap: 6,
+                      transition: "all 0.2s",
+                    }}
+                    data-ocid={`admin.websettings.${slot.key}.dropzone`}
+                  >
+                    <input
+                      id={`file-input-${slot.key}`}
+                      ref={slot.ref}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      data-slot={slot.key}
+                      disabled={anyUploading}
+                      onChange={(e) =>
+                        handleHeroSlideUpload(e, slot.key, slot.ref)
+                      }
                     />
-                    <button
-                      type="button"
-                      onClick={() => handleHeroSlideRemove(slot.key)}
-                      style={{
-                        position: "absolute",
-                        top: 4,
-                        right: 4,
-                        background: "rgba(0,0,0,0.6)",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: 4,
-                        padding: "2px 7px",
-                        fontSize: 11,
-                        cursor: "pointer",
-                        fontWeight: 600,
-                      }}
-                      data-ocid={`admin.websettings.${slot.key}.delete_button`}
+                    {isSlotConverting || isSlotUploading ? (
+                      <>
+                        <Loader2
+                          size={16}
+                          className="animate-spin"
+                          style={{ color: "#42A5F5" }}
+                        />
+                        <p
+                          style={{
+                            color: "#42A5F5",
+                            fontSize: 11,
+                            fontWeight: 600,
+                          }}
+                        >
+                          {isSlotConverting ? "Converting..." : "Uploading..."}
+                        </p>
+                      </>
+                    ) : (
+                      <p style={{ color: "#888", fontSize: 12 }}>
+                        Click to upload
+                      </p>
+                    )}
+                  </label>
+                  {slotErrMsg && (
+                    <p
+                      style={{ color: "crimson", fontSize: 11 }}
+                      data-ocid={`admin.websettings.${slot.key}.error`}
                     >
-                      Remove
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
+                      {slotErrMsg}
+                    </p>
+                  )}
+
+                  {/* Preview with WebP badge + remove */}
+                  {getValue(slot.key) && (
+                    <div style={{ position: "relative" }}>
+                      <img
+                        src={getValue(slot.key)}
+                        alt={`${slot.label} preview`}
+                        style={{
+                          width: "100%",
+                          height: 100,
+                          objectFit: "cover",
+                          borderRadius: 6,
+                          border: "1px solid #c5cae9",
+                        }}
+                      />
+                      {webpKBVal !== undefined && (
+                        <span
+                          style={{
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            background: "rgba(46,125,50,0.85)",
+                            color: "#fff",
+                            fontSize: 9,
+                            fontWeight: 700,
+                            textAlign: "center",
+                            padding: "2px 0",
+                            borderRadius: "0 0 6px 6px",
+                          }}
+                        >
+                          WebP ✓ {webpKBVal.toFixed(0)}KB
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleHeroSlideRemove(slot.key)}
+                        style={{
+                          position: "absolute",
+                          top: 4,
+                          right: 4,
+                          background: "rgba(0,0,0,0.6)",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: 4,
+                          padding: "2px 7px",
+                          fontSize: 11,
+                          cursor: "pointer",
+                          fontWeight: 600,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 3,
+                        }}
+                        data-ocid={`admin.websettings.${slot.key}.delete_button`}
+                      >
+                        <X size={10} /> Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </SettingCard>
@@ -351,18 +444,33 @@ export default function AdminWebsiteSettings() {
       </SettingCard>
 
       <SettingCard title="🖼 Logo Upload">
-        <Label style={{ color: "#555" }}>Upload New Logo</Label>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 4,
+          }}
+        >
+          <Label style={{ color: "#555" }}>Upload New Logo</Label>
+          <span style={{ color: "#888", fontSize: 11 }}>
+            Auto-converted to WebP
+          </span>
+        </div>
         <div
           style={{
             marginTop: 8,
-            border: "2px dashed #c5cae9",
+            border: `2px dashed ${uploading || converting ? "#42A5F5" : "#c5cae9"}`,
             borderRadius: 8,
             padding: "20px",
             textAlign: "center",
-            cursor: "pointer",
-            background: "#f5f7ff",
+            cursor: uploading || converting ? "not-allowed" : "pointer",
+            background: uploading || converting ? "#e8f4fe" : "#f5f7ff",
+            transition: "all 0.2s",
           }}
-          onClick={() => logoFileRef.current?.click()}
+          onClick={() =>
+            !(uploading || converting) && logoFileRef.current?.click()
+          }
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ")
               logoFileRef.current?.click();
@@ -376,12 +484,38 @@ export default function AdminWebsiteSettings() {
             className="hidden"
             onChange={handleLogoUpload}
           />
-          <p style={{ color: uploading ? "#42A5F5" : "#888", fontSize: 13 }}>
-            {uploading
-              ? "Uploading..."
-              : "Click to upload logo (PNG, SVG, WEBP)"}
-          </p>
+          {uploading || converting ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+              }}
+            >
+              <Loader2
+                size={16}
+                className="animate-spin"
+                style={{ color: "#42A5F5" }}
+              />
+              <span style={{ color: "#42A5F5", fontSize: 13, fontWeight: 600 }}>
+                {converting ? "Converting to WebP..." : "Uploading..."}
+              </span>
+            </div>
+          ) : (
+            <p style={{ color: "#888", fontSize: 13 }}>
+              Click to upload logo (PNG, SVG, WEBP)
+            </p>
+          )}
         </div>
+        {uploadError && (
+          <p
+            style={{ color: "crimson", fontSize: 12, marginTop: 4 }}
+            data-ocid="admin.websettings.logo.error"
+          >
+            {uploadError}
+          </p>
+        )}
         <img
           src="/assets/uploads/logo-removebg-preview-1.png"
           alt="Current logo"

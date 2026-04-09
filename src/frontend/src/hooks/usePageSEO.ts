@@ -1,5 +1,10 @@
 import { useEffect } from "react";
 
+interface HreflangEntry {
+  lang: string;
+  url: string;
+}
+
 interface PageSEOOptions {
   title: string;
   description: string;
@@ -14,6 +19,7 @@ interface PageSEOOptions {
   ogSiteName?: string;
   twitterCard?: string;
   schema?: object | object[];
+  hreflangs?: HreflangEntry[];
 }
 
 function upsertMeta(selector: string, attr: string, value: string) {
@@ -42,6 +48,7 @@ export function usePageSEO(options: PageSEOOptions) {
     ogSiteName = "Gemora Global",
     twitterCard = "summary_large_image",
     schema,
+    hreflangs,
   } = options;
 
   useEffect(() => {
@@ -114,8 +121,28 @@ export function usePageSEO(options: PageSEOOptions) {
       document.head.appendChild(script);
     }
 
+    // Hreflang alternate links
+    const injectedHreflangs: HTMLLinkElement[] = [];
+    if (hreflangs && hreflangs.length > 0) {
+      // Remove any previously injected hreflang links
+      for (const el of document.querySelectorAll(
+        "link[rel='alternate'][hreflang]",
+      )) {
+        el.remove();
+      }
+      for (const { lang, url } of hreflangs) {
+        const link = document.createElement("link");
+        link.rel = "alternate";
+        link.setAttribute("hreflang", lang);
+        link.href = url;
+        document.head.appendChild(link);
+        injectedHreflangs.push(link);
+      }
+    }
+
     return () => {
       document.title = prevTitle;
+      for (const el of injectedHreflangs) el.remove();
     };
   }, [
     title,
@@ -131,5 +158,6 @@ export function usePageSEO(options: PageSEOOptions) {
     ogSiteName,
     twitterCard,
     schema,
+    hreflangs,
   ]);
 }

@@ -1,0 +1,172 @@
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfile = 
+ record {
+   company: text;
+   country: text;
+   name: text;
+ };
+type Testimonial = 
+ record {
+   active: bool;
+   company: text;
+   country: text;
+   id: nat;
+   name: text;
+   rating: nat;
+   "text": text;
+ };
+type Product = 
+ record {
+   categoryId: nat;
+   createdAt: int;
+   description: text;
+   featured: bool;
+   id: nat;
+   imageUrls: vec text;
+   moq: text;
+   name: text;
+ };
+type Inquiry = 
+ record {
+   country: text;
+   createdAt: int;
+   id: nat;
+   name: text;
+   productId: opt nat;
+   requirement: text;
+   status: text;
+   whatsapp: text;
+ };
+type GalleryItem = 
+ record {
+   caption: text;
+   id: nat;
+   imageUrl: text;
+   itemType: text;
+   sortOrder: int;
+ };
+type Category = 
+ record {
+   description: text;
+   id: nat;
+   imageUrl: text;
+   name: text;
+   sortOrder: int;
+ };
+type Catalogue = 
+ record {
+   createdAt: int;
+   description: text;
+   fileName: text;
+   fileUrl: text;
+   id: nat;
+   title: text;
+   uploadedAt: text;
+ };
+type BlogPost = 
+ record {
+   author: text;
+   category: text;
+   content: text;
+   createdAt: int;
+   date: text;
+   excerpt: text;
+   id: nat;
+   image: text;
+   readTime: text;
+   slug: text;
+   status: text;
+   title: text;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initializeAccessControl: () -> ();
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  changeAdminCredentials: (currentUsername: text, currentPassword: text,
+   newUsername: text, newPassword: text) -> (bool);
+  createBlogPost: (slug: text, title: text, category: text, excerpt: 
+   text, author: text, date: text, readTime: text, status: text, image: 
+   text, content: text) -> (nat);
+  createCatalogue: (title: text, description: text, fileUrl: text, fileName:
+   text, uploadedAt: text) -> (nat);
+  createCategory: (name: text, description: text, imageUrl: text, sortOrder:
+   int) -> (nat);
+  createGalleryItem: (imageUrl: text, caption: text, itemType: text,
+   sortOrder: int) -> (nat);
+  createProduct: (categoryId: nat, name: text, description: text, moq: 
+   text, imageUrls: vec text, featured: bool) -> (nat);
+  createTestimonial: (name: text, company: text, country: text, "text": 
+   text, rating: nat, active: bool) -> (nat);
+  deleteBlogPost: (id: nat) -> ();
+  deleteCatalogue: (id: nat) -> ();
+  deleteCategory: (id: nat) -> ();
+  deleteGalleryItem: (id: nat) -> ();
+  deleteProduct: (id: nat) -> ();
+  deleteTestimonial: (id: nat) -> ();
+  getBlogPost: (slug: text) -> (opt BlogPost) query;
+  getBlogPosts: (status: opt text) -> (vec BlogPost) query;
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getCatalogues: () -> (vec Catalogue) query;
+  getCategories: () -> (vec Category) query;
+  getContent: (key: text) -> (opt text) query;
+  getDashboardStats: () ->
+   (record {
+      newInquiries: nat;
+      totalInquiries: nat;
+      totalProducts: nat;
+      totalVisits: nat;
+    }) query;
+  getFeaturedProducts: () -> (vec Product) query;
+  getGallery: (itemType: opt text) -> (vec GalleryItem) query;
+  getInquiries: () -> (vec Inquiry) query;
+  getProduct: (id: nat) -> (opt Product) query;
+  getProducts: (categoryId: opt nat) -> (vec Product) query;
+  getTestimonials: () -> (vec Testimonial) query;
+  getUserProfile: (user: principal) -> (opt UserProfile) query;
+  isCallerAdmin: () -> (bool) query;
+  recordVisit: () -> ();
+  saveCallerUserProfile: (profile: UserProfile) -> ();
+  setContent: (key: text, value: text) -> ();
+  submitInquiry: (name: text, country: text, whatsapp: text, requirement:
+   text, productId: opt nat) -> (nat);
+  updateBlogPost: (id: nat, slug: text, title: text, category: text, excerpt:
+   text, author: text, date: text, readTime: text, status: text, image: 
+   text, content: text) -> ();
+  updateCategory: (id: nat, name: text, description: text, imageUrl: 
+   text, sortOrder: int) -> ();
+  updateGalleryItem: (id: nat, imageUrl: text, caption: text, itemType: 
+   text, sortOrder: int) -> ();
+  updateInquiryStatus: (id: nat, status: text) -> ();
+  updateProduct: (id: nat, categoryId: nat, name: text, description: 
+   text, moq: text, imageUrls: vec text, featured: bool) -> ();
+  updateTestimonial: (id: nat, name: text, company: text, country: text,
+   "text": text, rating: nat, active: bool) -> ();
+  verifyAdminLogin: (username: text, password: text) -> (bool) query;
+}
